@@ -39,7 +39,7 @@ def _parse_ipynb_header(content: str) -> HeaderIpynb:
     return _header
 
 
-def convert_ipynb_to_post(path_ipynb: str, _folder_github_page: str, b_exclud_code: bool=True) -> HeaderIpynb:
+def convert_ipynb_to_post(path_ipynb: str, _folder_github_page: str, b_exclud_code: bool=True, b_numbering=False) -> HeaderIpynb:
     _folder_github_page = os.path.abspath(_folder_github_page)
 
     filename_ext_ipynb = os.path.split(path_ipynb)[1]
@@ -62,6 +62,9 @@ def convert_ipynb_to_post(path_ipynb: str, _folder_github_page: str, b_exclud_co
         md = re.sub('---python\n# Show in Markdown', '```python\n', md)
 
     md = re.sub('# Show in Markdown\n', '', md)
+
+    if b_numbering:
+        md = numbering_of_header_of_md(md)
 
     _header = _parse_ipynb_header(md)
 
@@ -89,6 +92,109 @@ def convert_ipynb_to_post(path_ipynb: str, _folder_github_page: str, b_exclud_co
     return _header
 
 
+def count_sharp(line):
+    r"""문장에서 시작하는 #의 개수를 센다
+
+    Parameters
+    ----------
+    line : str
+        #으로 시작하는 문장
+
+    Returns
+    -------
+    int
+        시작하는 #의 개수
+    """
+
+    n_sharp = 0
+    for char in line:
+        if char == '#':
+            n_sharp += 1
+        else:
+            break
+    return n_sharp
+
+
+def convert_n_sharp_to_number(n_sharp_list):
+    r"""Markdown의 #의 List를 받아서 숫자로 변경한다.
+
+    Parameters
+    ----------
+    n_sharp_list : List[int]
+        Sharp의 개수를 저장한 List
+
+    Returns
+    -------
+    str
+        [description]
+    """
+
+    n_sharp_last = n_sharp_list[-1]
+    num_list = [0] * (max(n_sharp_list)+1)
+    number_str = ''
+
+    for n_sharp_cur in n_sharp_list:
+        num_list[n_sharp_cur] += 1
+        for idx in range(n_sharp_cur+1, len(num_list)):
+            num_list[idx] = 0
+
+    for idx in range(2, n_sharp_last+1):
+        number_str += f'{num_list[idx]}.'
+
+    return number_str + ' '
+
+
+def numbering_of_header_of_md(md_str):
+    """Markdown Header에 숫자를 넣고 Header간 간격을 둔다.
+
+    Parameters
+    ----------
+    md_str : str
+        Markdown Type String
+
+    Returns
+    -------
+    str
+        Markdown Type String
+    """
+
+    b_block: bool = False
+    n_valid_line = 0
+    n_header_line = -1
+    md_list_old = md_str.split('\n')
+    md_list: List[str] = []
+    n_sharp_list: List[str] = []
+
+    for line in md_list_old:
+        line_strip = line.strip()
+        if len(line_strip) > 0:
+            n_valid_line += 1
+
+            if b_block is False and line_strip[0] == '#':
+                if n_header_line != -1 and n_header_line + 1 != n_valid_line:
+                    md_list.append('<br>')
+                    md_list.append('')
+                n_header_line = n_valid_line
+
+                n_sharp = count_sharp(line)
+                if n_sharp > 1:  # 1은 코드의 제목으로 Numbering을 하지 않는다.
+                    n_sharp_list.append(n_sharp)
+                    line = line[:n_sharp+1] + \
+                        convert_n_sharp_to_number(
+                            n_sharp_list) + line[n_sharp+1:]
+
+            elif b_block is False and line_strip[:3] == '```':
+                b_block = True
+
+            elif b_block is True:
+                if line_strip[:3] == '```':
+                    b_block = False
+
+        md_list.append(line)
+
+    return '\n'.join(md_list)
+
+
 def check_tags_in_home_page(tags_in_content: List[str], _folder_github_page: str) -> List[str]:
     _tag_not_exist = []
     folder_tags = f'{os.path.abspath(_folder_github_page)}{os.sep}tag{os.sep}'
@@ -113,7 +219,8 @@ if __name__ == '__main__':
         header = convert_ipynb_to_post(pathname, folder_github_page)
         tags_in_ipynb.extend(header.tags)
     for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Python/*.ipynb', recursive=True):
-        header = convert_ipynb_to_post(pathname, folder_github_page)
+        header = convert_ipynb_to_post(
+            pathname, folder_github_page, b_numbering=True)
         tags_in_ipynb.extend(header.tags)
 
     tag_not_exist = check_tags_in_home_page(tags_in_ipynb, folder_github_page)
