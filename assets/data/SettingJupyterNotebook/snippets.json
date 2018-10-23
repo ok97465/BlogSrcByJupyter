@@ -1,0 +1,105 @@
+{
+    "snippets": [
+        {
+            "name": "Python : init & matlab command",
+            "code": [
+                "%load_ext autoreload",
+                "%autoreload 2",
+                "%matplotlib nbagg",
+                "",
+                "from oklib.init import ipython_clear",
+                "ipython_clear(b_plot_close=True)",
+                "",
+                "import numpy as np",
+                "import matplotlib.pyplot as plt",
+                "from matplotlib.pyplot import plot, hist, figure",
+                "from oklib.signal import (db2, nextpow2, sind, cosd, tand, arcsind, arccosd, arctand)",
+                "from oklib.plot import imagesc",
+                "from oklib.file import save_vars, load_vars",
+                "from numpy import (pi, deg2rad, rad2deg, unwrap, angle, zeros, array, ones, linspace, cumsum, diff, arange, interp, conj, exp, sqrt)",
+                "from numpy import (cos, sin, tan, arcsin, arccos, arctan)",
+                "from numpy import (amin, amax, argmin, argmax, sum, mean)",
+                "from numpy.fft import (fft, ifft, fft2, ifft2, fftshift, ifftshift)",
+                "from numpy.linalg import svd, norm",
+                "from numpy.random_intel import randn, standard_normal, randint",
+                "from oklib.var_list import wh",
+                ""
+            ]
+        },
+        {
+            "name": "Python : Numpy Docstring",
+            "code": [
+                "r\"\"\"This is an example of a module level function.",
+                "",
+                "The __init__ method may be documented in either the class level",
+                "Reference example : if you cited the article below using the text [1]_",
+                "The value of :math:`\\omega` is larger than 5.",
+                ".. math::",
+                "",
+                "    x(n) * y(n) \\Leftrightarrow X(e^{j\\omega } )Y(e^{j\\omega } )\\\\",
+                "    another equation",
+                "",
+                "Parameters",
+                "----------",
+                "param1 : type, optional",
+                "    Description of `param1`",
+                "",
+                "Returns",
+                "-------",
+                "bool",
+                "    True if successful, False otherwise.",
+                "",
+                "Note",
+                "----",
+                "Do not include the `self` parameter in the ``Parameters`` section.",
+                "",
+                "Examples",
+                "--------",
+                "Examples should be written in doctest format, and should illustrate how to use the function.",
+                "",
+                ">>> print([i for i in example_generator(4)])",
+                "[0, 1, 2, 3]",
+                "",
+                "References",
+                "----------",
+                ".. [] 책: 저자명. (발행년). Title of chapter. In 편집자명 (역할), title of book (쪽). 발행지 : 발행사",
+                ".. [] 학위 논문: 학위자명, \"논문제목\", 대학원 이름 석사 학윈논문, 1990",
+                ".. [] 저널 논문: 저자. \"논문제목\". 저널명, . pp.",
+                "\"\"\""
+            ]
+        },
+        {
+            "name": "Markdown : Header of Blog Post",
+            "code": [
+                "///---",
+                "layout: post",
+                "title: \"<Title>\"",
+                "comments: true",
+                "share: true",
+                "date: 2018-00-00 00:00:00",
+                "description: <Description>",
+                "tags: sympy python math signal_system",
+                "sitemap :",
+                "    changefreq : daily",
+                "    priority : 1.0",
+                "///---"
+            ]
+        },
+        {
+            "name": "Markdown : link Image",
+            "code": [
+                "<p align=\"center\"> ",
+                "  <img src=\"\" alt=\"description\" width=\"720\" height=\"\">",
+                "</p>"
+            ]
+        },
+        {
+            "name": "Markdown : Comment Reference",
+            "code": [
+                "[] 책: 저자명. (발행년). Title of chapter. In 편집자명 (역할), title of book (쪽). 발행지 : 발행사",
+                "[] 학위 논문: 학위자명, \"논문제목\", 대학원 이름 석사 학위논문, 1990",
+                "[] 저널 논문: 저자. \"논문제목\". 저널명, . pp."
+            ]
+        }
+    ]
+}

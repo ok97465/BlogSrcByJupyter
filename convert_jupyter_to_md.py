@@ -1,3 +1,8 @@
+"""ipynb를 Blog의 html로 변경하는 도구.
+
+[description]
+
+"""
 import re
 import os
 import glob
@@ -39,7 +44,28 @@ def _parse_ipynb_header(content: str) -> HeaderIpynb:
     return _header
 
 
-def convert_ipynb_to_post(path_ipynb: str, _folder_github_page: str, b_exclud_code: bool=True, b_numbering=False) -> HeaderIpynb:
+def convert_ipynb_to_post(path_ipynb, _folder_github_page, b_exclud_code=True, b_numbering=False) -> HeaderIpynb:
+    """ipynb를 mardkdown file로 변환.
+    
+    [description]
+    
+    Parameters
+    ----------
+    path_ipynb : str
+        파일 경로
+    _folder_github_page : str
+        변환 파일을 저장할 폴더
+    b_exclud_code : bool,
+        [description] (the default is True)
+    b_numbering : bool
+        [description] (the default is False)
+    
+    Returns
+    -------
+    HeaderIpynb
+        [description]
+
+    """
     _folder_github_page = os.path.abspath(_folder_github_page)
 
     filename_ext_ipynb = os.path.split(path_ipynb)[1]
@@ -65,6 +91,8 @@ def convert_ipynb_to_post(path_ipynb: str, _folder_github_page: str, b_exclud_co
 
     if b_numbering:
         md = numbering_of_header_of_md(md)
+
+    md = re.sub('../assets/images/', '/assets/images/', md)
 
     _header = _parse_ipynb_header(md)
 
@@ -93,7 +121,7 @@ def convert_ipynb_to_post(path_ipynb: str, _folder_github_page: str, b_exclud_co
 
 
 def count_sharp(line):
-    r"""문장에서 시작하는 #의 개수를 센다
+    r"""문장에서 시작하는 #의 개수를 센다.
 
     Parameters
     ----------
@@ -104,8 +132,8 @@ def count_sharp(line):
     -------
     int
         시작하는 #의 개수
-    """
 
+    """
     n_sharp = 0
     for char in line:
         if char == '#':
@@ -127,8 +155,8 @@ def convert_n_sharp_to_number(n_sharp_list):
     -------
     str
         [description]
-    """
 
+    """
     n_sharp_last = n_sharp_list[-1]
     num_list = [0] * (max(n_sharp_list)+1)
     number_str = ''
@@ -156,8 +184,8 @@ def numbering_of_header_of_md(md_str):
     -------
     str
         Markdown Type String
-    """
 
+    """
     b_block: bool = False
     n_valid_line = 0
     n_header_line = -1
@@ -216,7 +244,7 @@ if __name__ == '__main__':
     tags_in_ipynb = []
     folder_github_page = '/home/ok97465/ok97465.github.io'
     for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Math/*.ipynb', recursive=True):
-        header = convert_ipynb_to_post(pathname, folder_github_page)
+        header = convert_ipynb_to_post(pathname, folder_github_page, b_numbering=True)
         tags_in_ipynb.extend(header.tags)
     for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Python/*.ipynb', recursive=True):
         header = convert_ipynb_to_post(
