@@ -12,18 +12,24 @@
                 "",
                 "import numpy as np",
                 "import matplotlib.pyplot as plt",
-                "from matplotlib.pyplot import plot, hist, figure",
+                "from matplotlib.pyplot import plot, hist, figure, subplots",
                 "from oklib.signal import (db2, nextpow2, sind, cosd, tand, arcsind, arccosd, arctand)",
                 "from oklib.plot import imagesc",
                 "from oklib.file import save_vars, load_vars",
-                "from numpy import (pi, deg2rad, rad2deg, unwrap, angle, zeros, array, ones, linspace, cumsum, diff, arange, interp, conj, exp, sqrt)",
+                "from numpy import (pi, deg2rad, rad2deg, unwrap, angle, zeros, array, ones, linspace, cumsum, diff, arange, interp, conj, exp, sqrt, vstack, hstack)",
                 "from numpy import (cos, sin, tan, arcsin, arccos, arctan)",
                 "from numpy import (amin, amax, argmin, argmax, sum, mean)",
                 "from numpy.fft import (fft, ifft, fft2, ifft2, fftshift, ifftshift)",
                 "from numpy.linalg import svd, norm",
-                "from numpy.random_intel import randn, standard_normal, randint",
+                "from numpy.random_intel import randn, standard_normal, randint, choice, uniform",
                 "from oklib.var_list import wh",
                 ""
+            ]
+        },
+        {
+            "name": "Python : Show in Markdown",
+            "code": [
+                "# Show in Markdown"
             ]
         },
         {
