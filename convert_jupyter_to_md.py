@@ -240,20 +240,38 @@ def check_tags_in_home_page(tags_in_content: List[str], _folder_github_page: str
     return _tag_not_exist
 
 
+def convert_color_to_dark(pathname: str):
+    import cv2
+    import numpy as np
+
+    from_folder_to_name, ext = os.path.splitext(pathname)
+    im_frame = cv2.imread(pathname, cv2.IMREAD_UNCHANGED)
+    np_frame = np.array(im_frame)
+    for idx in range(min(im_frame.shape[2], 3)):
+        np_frame[:, :, idx] = np.uint8((255 - np_frame[:, :, idx])/256 * 150 + 58)
+    
+    cv2.imwrite(from_folder_to_name + '_dark' + ext, np_frame)
+
+
+
 if __name__ == '__main__':
-    tags_in_ipynb = []
-    folder_github_page = '/home/ok97465/ok97465.github.io'
-    for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Math/*.ipynb', recursive=True):
-        header = convert_ipynb_to_post(pathname, folder_github_page, b_numbering=True)
-        tags_in_ipynb.extend(header.tags)
-    for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Python/*.ipynb', recursive=True):
-        header = convert_ipynb_to_post(
-            pathname, folder_github_page, b_numbering=True)
-        tags_in_ipynb.extend(header.tags)
+    if 1:
+        tags_in_ipynb = []
+        folder_github_page = '/home/ok97465/ok97465.github.io'
+        for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Math/*.ipynb', recursive=True):
+            header = convert_ipynb_to_post(pathname, folder_github_page, b_numbering=True)
+            tags_in_ipynb.extend(header.tags)
+        for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Python/*.ipynb', recursive=True):
+            header = convert_ipynb_to_post(
+                pathname, folder_github_page, b_numbering=True)
+            tags_in_ipynb.extend(header.tags)
 
-    tag_not_exist = check_tags_in_home_page(tags_in_ipynb, folder_github_page)
+        tag_not_exist = check_tags_in_home_page(tags_in_ipynb, folder_github_page)
 
-    copy_tree(
-        '/home/ok97465/python/BlogSrcByJupyter/assets', folder_github_page+'/assets')
+        copy_tree(
+            '/home/ok97465/python/BlogSrcByJupyter/assets', folder_github_page+'/assets')
 
-    print(f'Check tag : {tag_not_exist}')
+        print(f'Check tag : {tag_not_exist}')
+    else:
+        print('----------convert_color_to_dark--------------')
+        convert_color_to_dark('/home/ok97465/python/BlogSrcByJupyter/assets/images/reflection_refraction/refraction.png')
