@@ -10,11 +10,16 @@ from notebook import notebookapp
 from jupyterlab.labapp import main
 
 if __name__ == '__main__':
+    port = 9876
     jupyter_server_list = list(notebookapp.list_running_servers())
     write_index_ipynb(r'/home/ok97465/python/BlogSrcByJupyter')
+    b_server = False
 
-    if len(jupyter_server_list) > 0:
-        webbrowser.open(jupyter_server_list[0]['url']+'lab')
-    else:
+    for jupyter_server in jupyter_server_list:
+        if(jupyter_server['port'] == port):
+            webbrowser.open(jupyter_server['url']+'lab')
+            b_server=True
+    
+    if b_server==False:
         os.chdir('/home/ok97465/python/BlogSrcByJupyter')
-        sys.exit(main(port=9876))
+        sys.exit(main(port=port))
