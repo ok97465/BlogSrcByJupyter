@@ -12,34 +12,104 @@
 	// 	],
 	// 	"description": "Log output to console"
 	// }
+
 	"clear 명령": {
 	 "prefix": "clear",
 	 "body": [
+		"from oklib.init import ipython_clear",
+		"ipython_clear(b_plot_close=True)",
+		"from oklib.init import load_func_frequently",
+		"load_func_frequently(globals())",
+		""
 	 ]
-	}
+	},
 	"새로운 figure 명령": {
 	 "prefix": "fig,",
 	 "body": [
+		"fig, ax = subplots()",
+		"ax.plot($1)",
+		"ax.set_title('$2')",
+		"ax.set_xlabel('$3')",
+		"ax.set_ylabel('$0')",
+		"ax.grid(True)"
 	 ]
-	}
+	},
 	"matlab 명령 import": {
 	 "prefix": "matlab",
 	 "body": [
+		"import numpy as np",
+		"import matplotlib.pyplot as plt",
+		"from matplotlib.pyplot import plot, hist, figure, subplots",
+		"from oklib.signal import (db2, nextpow2, sind, cosd, tand, arcsind, arccosd, arctand)",
+		"from oklib.plot import imagesc",
+		"from oklib.file import save_vars, load_vars",
+		"from numpy import (pi, deg2rad, rad2deg, unwrap, angle, zeros, array, ones, linspace, cumsum, diff, arange, interp,",
+		"                   conj, exp, sqrt, vstack, hstack)",
+		"from numpy import (cos, sin, tan, arcsin, arccos, arctan)",
+		"from numpy import (amin, amax, argmin, argmax, sum, mean)",
+		"from numpy.fft import (fft, ifft, fft2, ifft2, fftshift, ifftshift)",
+		"from numpy.linalg import svd, norm",
+		"from numpy.random_intel import randn, standard_normal, randint, choice, uniform",
+		""
 	 ]
-	}
+	},
 	"모든 figure 창 닫기": {
 	 "prefix": "close all",
 	 "body": [
+		"plt.close('all')"
 	 ]
-	}
+	},
 	"save 명령": {
 	 "prefix": "save",
 	 "body": [
+		"save_vars('$0', globals())"
 	 ]
-	}
+	},
 	"load 명령": {
 	 "prefix": "load",
 	 "body": [
+		"load_vars('$0', globals())"
+	 ]
+	},
+	"sympy 명령": {
+	 "prefix": "sympy",
+	 "body": [
+		"import sympy",
+		"from IPython.display import display",
+		"from sympy import (symbols, init_printing, pi, exp, sqrt, cos, sin, tan, atan,",
+		"                   diff, integrate, solve, Abs, Eq, simplify)",
+		"from sympy.integrals.transforms import fourier_transform",
+		"init_printing()",
+		"$0",
+		"x, y, th1 = symbols('x y theta_1')",
+		"",
+		"# simultaneous Equation",
+		"eq1 = Eq(lhs=x + sqrt(y) + th1**2, rhs=1)",
+		"eq2 = Eq(lhs=x + y, rhs=0.5)",
+		"eq3 = Eq(lhs=th1, rhs=0.8)",
+		"display(eq1)",
+		"display(eq2)",
+		"display(eq3)",
+		"answer = solve([eq1, eq2, eq3], x, y, th1)",
+		"display(answer)",
+		"",
+		"# derviation",
+		"fx = x**2",
+		"dfx = diff(fx, x)",
+		"display(dfx)",
+		"",
+		"# integral",
+		"Fx = integrate(fx, x)",
+		"display(Fx)",
+		"",
+		"# substitute",
+		"expr = x**3 + 4*x*y - th1",
+		"display(expr.subs([(x, 3), (y, 7), (th1, 30)]))",
+		"",
+		"#fourier transform",
+		"Fourier_y = fourier_transform(exp(1j * pi * x**2), x, y)",
+		"display(Fourier_y)",
+		""
 	 ]
 	}
 }
