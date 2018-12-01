@@ -274,4 +274,5 @@ if __name__ == '__main__':
         print(f'Check tag : {tag_not_exist}')
     else:
         print('----------convert_color_to_dark--------------')
-        convert_color_to_dark('/home/ok97465/python/BlogSrcByJupyter/assets/images/reflection_refraction/refraction.png')
+        convert_color_to_dark('/home/ok97465/python/BlogSrcByJupyter/assets/images/EulerLagrange/181122_EulerLagrangeEquation_eta.dio.png')
+
