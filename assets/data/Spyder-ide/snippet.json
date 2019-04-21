@@ -1,0 +1,12 @@
+{
+    "fig,": ["fig, ax = subplots()",
+             "ax.plot()",
+             "ax.set_xlabel('')",
+             "ax.set_ylabel('')",
+             "ax.set_title('')",
+             "ax.grid(True)"],
+    "dark_plot": ["jtplot.style('monokai')"],
+    "close_all": ["plt.close('all')"],
+    "save": ["save_vars('', globals())"],
+    "load": ["load_vars('', globals())"]
+}
