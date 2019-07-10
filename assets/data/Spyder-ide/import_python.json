@@ -8,10 +8,13 @@
         "spc": "scipy.constants",
         "sns": "seaborn",
         "pd": "pandas",
-        "mpl": "matplotlib"
+        "mpl": "matplotlib",
+        "re": "re",
+        "os": "os"
     },
     "module":
     {
+        "typing": ["List", "Tuple"],
         "numpy": ["linspace", "vstack", "hstack", "unravel_index", "flipud", "fliplr"],
         "numpy.random": ["binomial", "chisquare", "choice", "dirichlet", "exponential", "gamma",
             "lognormal", "permutation", "poisson", "rand", "randint", "randn", "random_integers",
@@ -48,9 +51,11 @@
             "signbit", "sin", "sinh", "spacing", "sqrt", "square", "subtract", "tan",
             "tanh", "true_divide", "trunc"],
         "numpy.lib.function_base": ["diff", "unwrap", "angle", "median", "sinc", "hamming", "hanning", "bartlett",
-                "blackman", "kaiser", "trapz", "meshgrid"],
+                "blackman", "kaiser", "trapz", "meshgrid", "interp"],
         "numpy.linalg": ["norm", "inv", "det", "pinv", "eig", "svd"],
         "scipy.fftpack": ["next_fast_len"],
+        "scipy.signal": ["resample"],
+        "scipy.interpolate": ["interp1d"],
         "matplotlib.pyplot": ["plot", "hist", "figure", "subplots", "imshow"],
         "pymap3d": ["geodetic2ecef", "ecef2geodetic", "enu2ecef", "ecef2enu", "ned2ecef", "ned2geodetic", "geodetic2ned",
                     "ecef2ned", "enu2geodetic", "geodetic2enu", "vdist", "vreckon"],
