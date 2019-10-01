@@ -1,12 +1,38 @@
 {
-    "fig,": ["fig, ax = subplots()",
-             "ax.plot()",
-             "ax.set_xlabel('')",
-             "ax.set_ylabel('')",
-             "ax.set_title('')",
-             "ax.grid(True)"],
-    "dark_plot": ["jtplot.style('monokai')"],
-    "close_all": ["plt.close('all')"],
-    "save": ["save_vars('', globals())"],
-    "load": ["load_vars('', globals())"]
+  "fig,": [
+    "fig, ax = subplots()",
+    "ax.plot($1)",
+    "ax.set_xlabel('$2')",
+    "ax.set_ylabel('$3')",
+    "ax.set_title('$4')",
+    "ax.grid(True)",
+    "$0"
+  ],
+  "theme_plot": [
+    "# %% Set Theme",
+    "if 1:  # Dark Style",
+    "    jtstyle = 'monokai'",
+    "    colormap = 'mako'",
+    "else:",
+    "    jtstyle = 'grade3'",
+    "    colormap = 'jet'",
+    "jtplot.style(jtstyle, context='poster', fscale=2.6)",
+    "${1:figsize_2col = get_figsize(1, 2)}",
+    "$0"
+  ],
+  "close_all": [
+    "plt.close('all')"
+  ],
+  "save": [
+    "save_vars('$1', globals())$0"
+  ],
+  "load": [
+    "load_vars('$1', globals())$0"
+  ],
+  "backend_mpl": [
+    "# %% Set Backend of matplotlib",
+    "ipython = get_ipython()",
+    "ipython.magic('%matplotlib inline')",
+    "$0"
+  ]
 }
