@@ -1,6 +1,6 @@
 {
   "fig,": [
-    "fig, ax = subplots()",
+    "fig, ax = subplots(nrows=1, ncols=1)",
     "ax.plot($1)",
     "ax.set_xlabel('$2')",
     "ax.set_ylabel('$3')",
