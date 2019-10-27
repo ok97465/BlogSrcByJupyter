@@ -255,7 +255,7 @@ def convert_color_to_dark(pathname: str):
 
 
 if __name__ == '__main__':
-    if 1:
+    if 0:
         tags_in_ipynb = []
         folder_github_page = '/home/ok97465/ok97465.github.io'
         for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Math/*.ipynb', recursive=True):
@@ -274,5 +274,5 @@ if __name__ == '__main__':
         print(f'Check tag : {tag_not_exist}')
     else:
         print('----------convert_color_to_dark--------------')
-        convert_color_to_dark('/home/ok97465/python/BlogSrcByJupyter/assets/images/EulerLagrange/181122_EulerLagrangeEquation_eta.dio.png')
+        convert_color_to_dark('/home/ok97465/다운로드/99FE29395CF9E00407.jpeg')
 

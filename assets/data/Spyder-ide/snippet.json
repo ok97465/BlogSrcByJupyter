@@ -1,38 +1,99 @@
 {
-  "fig,": [
-    "fig, ax = subplots(nrows=1, ncols=1)",
-    "ax.plot($1)",
-    "ax.set_xlabel('$2')",
-    "ax.set_ylabel('$3')",
-    "ax.set_title('$4')",
-    "ax.grid(True)",
-    "$0"
-  ],
-  "theme_plot": [
-    "# %% Set Theme",
-    "if 1:  # Dark Style",
-    "    jtstyle = 'monokai'",
-    "    colormap = 'mako'",
-    "else:",
-    "    jtstyle = 'grade3'",
-    "    colormap = 'jet'",
-    "jtplot.style(jtstyle, context='poster', fscale=2.6)",
-    "${1:figsize_2col = get_figsize(1, 2)}",
-    "$0"
-  ],
-  "close_all": [
-    "plt.close('all')"
-  ],
-  "save": [
-    "save_vars('$1', globals())$0"
-  ],
-  "load": [
-    "load_vars('$1', globals())$0"
-  ],
-  "backend_mpl": [
-    "# %% Set Backend of matplotlib",
-    "ipython = get_ipython()",
-    "ipython.magic('%matplotlib inline')",
-    "$0"
-  ]
+  "subplots of matplotlib": {
+    "prefix": "fig,",
+    "body": [
+      "fig, ax = subplots(nrows=1, ncols=1)",
+      "ax.plot($1)",
+      "ax.set_xlabel('$2')",
+      "ax.set_ylabel('$3')",
+      "ax.set_title('$4')",
+      "ax.grid(True)",
+      "$0"
+    ],
+    "description": "subplots for plot of matplotlib"
+  },
+  "change theme of matplotlib": {
+    "prefix": "theme_plot",
+    "body": [
+      "# %% Set theme",
+      "if 1:  # Dark Style",
+      "    jtstyle = 'monokai'",
+      "    colormap = 'mako'",
+      "else:",
+      "    xkcd()",
+      "    jtstyle = 'grade3'",
+      "    colormap = 'jet'",
+      "jtplot.style(jtstyle, context='poster', fscale=2.6)",
+      "${1:figsize_2col = get_figsize(1, 2)}",
+      "$0"
+    ],
+    "description": "Set the theme of matplotlib"
+  },
+  "save variables by dill": {
+    "prefix": "save",
+    "body": [
+      "save_vars('$1', globals())$0"
+    ],
+    "description": "save by dill"
+  },
+  "load variables by dill": {
+    "prefix": "load",
+    "body": [
+      "load_vars('$1', globals())$0"
+    ],
+    "description": "load by dill"
+  },
+  "Set Backend of matplotlib": {
+    "prefix": "backend_mpl",
+    "body": [
+      "# %% Set backend of matplotlib",
+      "ipython = get_ipython()",
+      "ipython.magic('%matplotlib inline')",
+      "$0"
+    ],
+    "description": "Set backend of matplotlib"
+  },
+  "sympy command": {
+    "prefix": "sympy_command",
+    "body": [
+      "import sympy",
+      "from IPython.display import display",
+      "from sympy import (",
+      "    symbols, init_printing, pi, exp, sqrt, cos, sin, tan, atan,",
+      "    diff, integrate, solve, Abs, Eq, simplify)",
+      "from sympy.integrals.transforms import fourier_transform",
+      "init_printing(forecolor='White')",
+      "$0",
+      "x, y, th1 = symbols('x y theta_1')",
+      "",
+      "# simultaneous Equation",
+      "eq1 = Eq(lhs=x + sqrt(y) + th1**2, rhs=1)",
+      "eq2 = Eq(lhs=x + y, rhs=0.5)",
+      "eq3 = Eq(lhs=th1, rhs=0.8)",
+      "display(eq1)",
+      "display(eq2)",
+      "display(eq3)",
+      "answer = solve([eq1, eq2, eq3], x, y, th1)",
+      "display(answer)",
+      "",
+      "# derviation",
+      "fx = x**2",
+      "dfx = diff(fx, x)",
+      "display(dfx)",
+      "",
+      "# integral",
+      "Fx = integrate(fx, x)",
+      "display(Fx)",
+      "",
+      "# substitute",
+      "expr = x**3 + 4*x*y - th1",
+      "display(expr.subs([(x, 3), (y, 7), (th1, 30)]))",
+      "",
+      "#fourier transform",
+      "Fourier_y = fourier_transform(exp(1j * pi * x**2), x, y)",
+      "display(Fourier_y)",
+      ""
+    ],
+    "description": "Insert Sympy Example"
+  }
 }
