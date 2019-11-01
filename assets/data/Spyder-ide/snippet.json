@@ -15,7 +15,7 @@
   "change theme of matplotlib": {
     "prefix": "theme_plot",
     "body": [
-      "# %% Set theme",
+      "# %% Theme of matplotlib",
       "if 1:  # Dark Style",
       "    jtstyle = 'monokai'",
       "    colormap = 'mako'",
@@ -46,12 +46,12 @@
   "Set Backend of matplotlib": {
     "prefix": "backend_mpl",
     "body": [
-      "# %% Set backend of matplotlib",
+      "# %% Backend of matplotlib",
       "ipython = get_ipython()",
       "ipython.magic('%matplotlib inline')",
       "$0"
     ],
-    "description": "Set backend of matplotlib"
+    "description": "Set Backend of matplotlib"
   },
   "sympy command": {
     "prefix": "sympy_command",

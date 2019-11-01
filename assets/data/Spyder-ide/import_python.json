@@ -9,9 +9,17 @@
     "mpl": "matplotlib",
     "re": "re",
     "os": "os",
-    "cv2": "cv2"
+    "cv2": "cv2",
+    "struct": "struct"
   },
   "module": {
+    "struct": [
+      "unpack",
+      "pack"
+    ],
+    "copy": [
+      "deepcopy"
+    ],
     "IPython": [
       "get_ipython"
     ],
