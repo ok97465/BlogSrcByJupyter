@@ -44,7 +44,9 @@ def _parse_ipynb_header(content: str) -> HeaderIpynb:
     return _header
 
 
-def convert_ipynb_to_post(path_ipynb, _folder_github_page, b_exclud_code=True, b_numbering=False) -> HeaderIpynb:
+def convert_ipynb_to_post(path_ipynb, _folder_github_page, 
+                          out_subfolder="_posts",
+                          b_exclud_code=True, b_numbering=False) -> HeaderIpynb:
     """ipynb를 mardkdown file로 변환.
     
     [description]
@@ -55,6 +57,8 @@ def convert_ipynb_to_post(path_ipynb, _folder_github_page, b_exclud_code=True, b
         파일 경로
     _folder_github_page : str
         변환 파일을 저장할 폴더
+    out_subfolder : str
+        MD파일을 저장할 _folder_github_page의 하위 폴더
     b_exclud_code : bool,
         [description] (the default is True)
     b_numbering : bool
@@ -97,7 +101,7 @@ def convert_ipynb_to_post(path_ipynb, _folder_github_page, b_exclud_code=True, b
     _header = _parse_ipynb_header(md)
 
     filename_post = f'{_header.date.strftime("%Y-%m-%d")}-{filename_ipynb}'
-    folder_post = f'{_folder_github_page}{os.sep}_posts{os.sep}'
+    folder_post = f'{_folder_github_page}{os.sep}{out_subfolder}{os.sep}'
     folder_img = f'{_folder_github_page}{os.sep}assets{os.sep}images{os.sep}{filename_post}{os.sep}'
 
     shutil.rmtree(folder_img, ignore_errors=True)
@@ -255,7 +259,7 @@ def convert_color_to_dark(pathname: str):
 
 
 if __name__ == '__main__':
-    if 0:
+    if 1:
         tags_in_ipynb = []
         folder_github_page = '/home/ok97465/ok97465.github.io'
         for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Math/*.ipynb', recursive=True):
@@ -264,6 +268,11 @@ if __name__ == '__main__':
         for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Python/*.ipynb', recursive=True):
             header = convert_ipynb_to_post(
                 pathname, folder_github_page, b_numbering=True)
+            tags_in_ipynb.extend(header.tags)
+        for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/QuickNotes/*.ipynb', recursive=True):
+            header = convert_ipynb_to_post(
+                pathname, folder_github_page, out_subfolder='_quicknotes',
+                b_numbering=True)
             tags_in_ipynb.extend(header.tags)
 
         tag_not_exist = check_tags_in_home_page(tags_in_ipynb, folder_github_page)
