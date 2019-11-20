@@ -12,6 +12,28 @@
     ],
     "description": "subplots for plot of matplotlib"
   },
+  "subplots of matplotlib 3d": {
+    "prefix": "fig_3d,",
+    "body": [
+      "fig = figure()",
+      "ax = fig.add_subplot(111, projection='3d')",
+      "ax.plot($1)",
+      "ax.set_xlabel('$2')",
+      "ax.set_ylabel('$3')",
+      "ax.set_zlabel('$4')",
+      "ax.set_title('$5')",
+      "ax.grid(True)",
+      "ax.xaxis.labelpad = 40",
+      "ax.yaxis.labelpad = 40",
+      "ax.zaxis.labelpad = 40",
+      "ax.dist = 11",
+      "ax.view_init(elev=27, azim=-37)",
+      "# ax.set_aspect('equal', 'box')",
+      "fig.tight_layout()",
+      "$0"
+    ],
+    "description": "Axes3D is required."
+  },
   "change theme of matplotlib": {
     "prefix": "theme_plot",
     "body": [

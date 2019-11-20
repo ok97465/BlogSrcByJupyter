@@ -10,7 +10,8 @@
     "re": "re",
     "os": "os",
     "cv2": "cv2",
-    "struct": "struct"
+    "struct": "struct",
+    "sys": "sys"
   },
   "module": {
     "struct": [
@@ -238,7 +239,15 @@
     "scipy.linalg": [
       "lu"
     ],
+    "scipy.io": [
+      "loadmat",
+      "savemat"
+    ],
+    "mpl_toolkits.mplot3d": [
+      "Axes3D"
+    ],
     "matplotlib.pyplot": [
+      "figure",
       "plot",
       "hist",
       "subplots",
