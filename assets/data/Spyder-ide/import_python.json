@@ -39,6 +39,10 @@
       "flipud",
       "fliplr"
     ],
+    "numpy.polynomial.polynomial": [
+      "polyfit",
+      "polyval"
+    ],
     "numpy.random": [
       "binomial",
       "chisquare",
