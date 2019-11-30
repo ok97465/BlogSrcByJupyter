@@ -283,5 +283,5 @@ if __name__ == '__main__':
         print(f'Check tag : {tag_not_exist}')
     else:
         print('----------convert_color_to_dark--------------')
-        convert_color_to_dark('/home/ok97465/private/BlogSrcByJupyter/assets/images/PrincipleOfCT/1_X-ray2.png')
+        convert_color_to_dark('/home/ok97465/private/BlogSrcByJupyter/assets/images/PrincipleOfCT/2_Radon.png')
 
