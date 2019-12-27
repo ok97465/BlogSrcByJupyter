@@ -11,7 +11,9 @@
     "os": "os",
     "cv2": "cv2",
     "struct": "struct",
-    "sys": "sys"
+    "sys": "sys",
+    "itertools": "itertools",
+    "ctypes": "ctypes"
   },
   "module": {
     "struct": [
@@ -20,6 +22,12 @@
     ],
     "copy": [
       "deepcopy"
+    ],
+    "ctypes": [
+      "sizeof"
+    ],
+    "itertools": [
+      "product"
     ],
     "IPython": [
       "get_ipython"
@@ -144,7 +152,6 @@
       "ndim",
       "nonzero",
       "prod",
-      "product",
       "rank",
       "ravel",
       "repeat",
@@ -221,6 +228,9 @@
       "meshgrid",
       "interp"
     ],
+    "numpy.lib.shape_base": [
+      "tile"
+    ],
     "numpy.linalg": [
       "norm",
       "inv",
@@ -230,6 +240,11 @@
       "svd",
       "qr",
       "matrix_rank"
+    ],
+    "scipy.special": [
+      "sindg",
+      "cosdg",
+      "tandg"
     ],
     "scipy.constants": [
       "speed_of_light"
