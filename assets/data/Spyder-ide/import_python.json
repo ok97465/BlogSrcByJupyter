@@ -45,7 +45,8 @@
       "hstack",
       "unravel_index",
       "flipud",
-      "fliplr"
+      "fliplr",
+      "fix"
     ],
     "numpy.polynomial.polynomial": [
       "polyfit",
@@ -253,7 +254,10 @@
       "next_fast_len"
     ],
     "scipy.signal": [
-      "resample"
+      "resample",
+      "periodogram",
+      "argrelmax",
+      "argrelmin"
     ],
     "scipy.linalg": [
       "lu"
