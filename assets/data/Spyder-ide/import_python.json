@@ -16,6 +16,9 @@
     "ctypes": "ctypes"
   },
   "module": {
+    "time": [
+      "sleep"
+    ],
     "struct": [
       "unpack",
       "pack"
@@ -261,6 +264,10 @@
     ],
     "scipy.linalg": [
       "lu"
+    ],
+    "scipy.interpolate":
+    [
+      "InterpolatedUnivariateSpline"
     ],
     "scipy.io": [
       "loadmat",
