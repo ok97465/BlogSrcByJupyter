@@ -12,7 +12,7 @@ from jupyterlab.labapp import main
 if __name__ == '__main__':
     port = 9876
     jupyter_server_list = list(notebookapp.list_running_servers())
-    write_index_ipynb(r'/home/ok97465/python/BlogSrcByJupyter')
+    write_index_ipynb(r'/home/ok97465/codepy/BlogSrcByJupyter')
     b_server = False
 
     for jupyter_server in jupyter_server_list:
@@ -21,5 +21,5 @@ if __name__ == '__main__':
             b_server=True
     
     if b_server==False:
-        os.chdir('/home/ok97465/python/BlogSrcByJupyter')
+        os.chdir('/home/ok97465/codepy/BlogSrcByJupyter')
         sys.exit(main(port=port))

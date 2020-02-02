@@ -118,4 +118,4 @@ def write_index_ipynb(folder_base: str):
 
 
 if __name__ == "__main__":
-    write_index_ipynb(r'/home/ok97465/python/BlogSrcByJupyter')
+    write_index_ipynb(r'/home/ok97465/codepy/BlogSrcByJupyter')

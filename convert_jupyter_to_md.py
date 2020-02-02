@@ -262,14 +262,14 @@ if __name__ == '__main__':
     if 1:
         tags_in_ipynb = []
         folder_github_page = '/home/ok97465/ok97465.github.io'
-        for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Math/*.ipynb', recursive=True):
+        for pathname in glob.iglob('/home/ok97465/codepy/BlogSrcByJupyter/Math/*.ipynb', recursive=True):
             header = convert_ipynb_to_post(pathname, folder_github_page, b_numbering=True)
             tags_in_ipynb.extend(header.tags)
-        for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/Python/*.ipynb', recursive=True):
+        for pathname in glob.iglob('/home/ok97465/codepy/BlogSrcByJupyter/Python/*.ipynb', recursive=True):
             header = convert_ipynb_to_post(
                 pathname, folder_github_page, b_numbering=True)
             tags_in_ipynb.extend(header.tags)
-        for pathname in glob.iglob('/home/ok97465/python/BlogSrcByJupyter/QuickNotes/*.ipynb', recursive=True):
+        for pathname in glob.iglob('/home/ok97465/codepy/BlogSrcByJupyter/QuickNotes/*.ipynb', recursive=True):
             header = convert_ipynb_to_post(
                 pathname, folder_github_page, out_subfolder='_quicknotes',
                 b_numbering=True)
@@ -278,7 +278,7 @@ if __name__ == '__main__':
         tag_not_exist = check_tags_in_home_page(tags_in_ipynb, folder_github_page)
 
         copy_tree(
-            '/home/ok97465/python/BlogSrcByJupyter/assets', folder_github_page+'/assets')
+            '/home/ok97465/codepy/BlogSrcByJupyter/assets', folder_github_page+'/assets')
 
         print(f'Check tag : {tag_not_exist}')
     else:
