@@ -16,6 +16,12 @@
     "ctypes": "ctypes"
   },
   "module": {
+    "types": [
+      "SimpleNamespace"
+    ],
+    "dataclasses": [
+      "dataclass"
+    ],
     "time": [
       "sleep"
     ],
@@ -30,7 +36,8 @@
       "sizeof"
     ],
     "itertools": [
-      "product"
+      "product",
+      "zip_longest"
     ],
     "IPython": [
       "get_ipython"
@@ -54,6 +61,9 @@
     "numpy.polynomial.polynomial": [
       "polyfit",
       "polyval"
+    ],
+    "numpy.lib.npyio": [
+      "savez"
     ],
     "numpy.random": [
       "binomial",
@@ -260,13 +270,13 @@
       "resample",
       "periodogram",
       "argrelmax",
-      "argrelmin"
+      "argrelmin",
+      "firls"
     ],
     "scipy.linalg": [
       "lu"
     ],
-    "scipy.interpolate":
-    [
+    "scipy.interpolate": [
       "InterpolatedUnivariateSpline"
     ],
     "scipy.io": [
