@@ -1,0 +1,2 @@
+# Select All
+map <c-a> :unselect; invert
