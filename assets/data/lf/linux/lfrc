@@ -1,12 +1,16 @@
 # Delete file
-cmd delete ${{
-    set -f
-    printf "$fx\n"
-    printf "delete?[y/n]"
-    read ans
-    [ $ans = "y" ] && rm -rf $fx
-}}
 map D delete
 
 # Select All
 map <c-a> :unselect; invert
+
+# Explorer
+map <c-e> %nautilus .
+
+# Go where
+map gp :cd ~/codepy
+map gd :cd ~/다운로드
+map gf :cd /mnt/hdd
+
+# Archive
+map Z !zip -r archive.zip $fx
