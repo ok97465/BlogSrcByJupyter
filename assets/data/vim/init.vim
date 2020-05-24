@@ -140,7 +140,7 @@ let NERDTreeIgnore=['\.pyc$', '\~$']    "ignore files in NERDTree
 " use tab to forward cycle
 inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 " use tab to backward cycle
-inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "\<s-tab>"
+inoremap <silent><expr><c-tab> pumvisible() ? "\<c-p>" : "\<c-tab>"
 " For deoplete-ternjs
 " let g:deoplete#sources#ternjs#filetypes = [
 "                 \ 'vue',
@@ -201,3 +201,8 @@ if has("nvim")
   au TermOpen * tnoremap <Esc> <c-\><c-n>
   au FileType fzf tunmap <Esc>
 endif
+" ------ Run python ------
+autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
+autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
+" ------ get parenthesis out ------
+imap <S-Tab> <esc>la
