@@ -5,12 +5,12 @@ map D delete
 map <c-a> :unselect; invert
 
 # Explorer
-map <c-e> %nautilus .
+map <c-e> &nemo .
 
 # Go where
 map gp :cd ~/codepy
-map gd :cd ~/다운로드
-map gf :cd /mnt/hdd
+map gd :cd /mnt/data/Downloads
+map gf :cd /mnt/data
 
 # Archive
 map Z !zip -r archive.zip $fx
