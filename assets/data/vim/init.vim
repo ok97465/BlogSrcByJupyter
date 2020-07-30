@@ -61,23 +61,6 @@ silent !mkdir ~/.config/nvim/backups > /dev/null 2>&1
 set undodir=~/.config/nvim/backups
 set undofile
 
-" ================================ Ctags settings ===================================
-set tags=./tags;                "find tags in current dir
-" Set Ctrl + [ to previous
-nnoremap <C-[> :po<CR>
-nnoremap <leader>. :CtrlPTag<cr>
-
-
-" ================================ Auto command ===================================
-
-autocmd InsertEnter * :set nocul                  "Remove cursorline highlight
-autocmd InsertLeave * :set cul                    "Add cursorline highlight in normal mode
-autocmd FileType html setlocal sw=2 ts=2 "Set indentation to 4 for html, css, scss, js
-autocmd FileType css setlocal sw=2 ts=2
-autocmd FileType scss setlocal sw=2 ts=2
-autocmd FileType js setlocal sw=2 ts=2
-autocmd FileType yml setlocal sw=2 ts=2
-
 "================================= Plugins ========================================
 call plug#begin('~/.vim/plugged')
 if has('nvim')
@@ -100,23 +83,11 @@ Plug 'w0rp/ale'
 Plug 'nightsense/simplifysimplify'
 Plug 'scrooloose/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'          "Toggle nerd tree with one key
-Plug 'mattn/emmet-vim'                  "Trigger: <C-y><leader>
-Plug 'tpope/vim-commentary'             "Trigger: gc
 Plug 'jiangmiao/auto-pairs'             "Auto pair for ',), }, ]...
-Plug 'airblade/vim-gitgutter'           "Show git status in vim
-Plug 'tpope/vim-fugitive'               "Git warpper
 Plug 'ctrlpvim/ctrlp.vim'               "Ctrl + P for search file
-" Plug '~/.fzf'                           "https://github.com/junegunn/fzf.vim
-" Plug 'junegunn/fzf.vim'
-Plug '/usr/local/opt/fzf'
-Plug 'junegunn/fzf.vim'
 Plug 'mhinz/vim-startify'               "fancy start page for empty vim
-Plug 'posva/vim-vue'
 Plug 'iCyMind/NeoSolarized'
 Plug 'tmhedberg/matchit'                "extended % matching
-Plug 'kshneoy/vim-signature'            "Showing mark in vim
-Plug 'rizzatti/dash.vim'                "Integration with dash
-Plug 'tomlion/vim-solidity'             "vim solidity syntax
 Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
 
 call plug#end()
@@ -124,17 +95,20 @@ call plug#end()
 " User deoplete
 let g:deoplete#enable_at_startup = 1
 
-"----- useful but not installed -----
-" vim airline: Many information about file, git and buffer
-" Plugin 'vim-airline/vim-airline'
-" Plugin 'vim-airline/vim-airline-themes'
 
 "================================= Plugins setting ==================================
 "----- Nerd Tree -----
-" nmap <leader>nt <ESC>:NERDTreeToggle<CR>
-map nt :NERDTreeToggle<CR>
-"map nt <ESC>:NERDTree<CR>
 let NERDTreeIgnore=['\.pyc$', '\~$']    "ignore files in NERDTree
+nnoremap <Leader>rc :rightbelow vnew $MYVIMRC<CR>
+
+" 창이동 단축키
+noremap <C-h> <C-w>h
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
+
+noremap <C-F> :NERDTreeFind<CR>
+noremap <Leader>n :NERDTreeToggle<CR>
 
 "----- deoplete -----
 " use tab to forward cycle
@@ -180,26 +154,11 @@ nnoremap <leader>. :CtrlPTag<cr>
 " ------ silver_searcher -------
 let g:ackprg = 'ag --nogroup --nocolor --column'
 
-" ------ fzf ------
-" Mapping selecting mappings
-nmap <leader><tab> <plug>(fzf-maps-n)
-" Insert mode completion
-imap <c-x><c-k> <plug>(fzf-complete-word)
-imap <c-x><c-f> <plug>(fzf-complete-path)
-imap <c-x><c-j> <plug>(fzf-complete-file-ag)
-imap <c-x><c-l> <plug>(fzf-complete-line)
-inoremap <expr> <c-x><c-k> fzf#vim#complete('cat /usr/share/dict/words')
 
 " ------ terminal mode --------
 " use Esc to enter Terminal Normal mode
 if has("nvim")
   tnoremap <Esc> <c-\><c-n>
-endif
-" ------ vim fzf --------
-" avoid interferance with terminal mode key mapping
-if has("nvim")
-  au TermOpen * tnoremap <Esc> <c-\><c-n>
-  au FileType fzf tunmap <Esc>
 endif
 " ------ Run python ------
 autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>

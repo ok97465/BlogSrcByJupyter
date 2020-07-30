@@ -1,0 +1,99 @@
+" 기능 설정
+syntax on           " 언어에 따른 자동 문법, 구문의 색을 다르게 표시
+filetype on         " 파일 종류를 자동으로 인식
+colorscheme desert  " 컴러스킴을 변경
+
+set nocompatible " vi와 호환하지 않음
+set ru           " 화면 우측 한단에 현재 커서의 위치(줄,칸)를 표시(ruler)
+set sc           " 완성중인 명령을 표시
+set sm           " 함수 닫기 표시
+set vb           " 키를 잘못눌렀을 때 삑 소리를 내는 대신 번쩍임
+set hls          " 검색된 스트링의 하이라이트
+"set nu           " 라인수를 표시
+set rnu          " 상대적인 라인수를 표시
+set scs          " 똑똑한 대소문자 구별 기능
+set hi=50        " 명령어를 기록에 날길 개수 지정
+set cul          " 커서가 있는 라인 하이라이트
+set ic           " 검색시 대소문자 무시
+set incsearch    " 키워드 입력시 점진적 검색
+set title        " change the terminal title
+set mousehide    " 타이핑시 마우스 커서 감추기
+set scrolloff=2  " 최소한 2줄이하로는 자동 스크롤
+set guioptions-=T " gvim 툴바 제거 
+set backspace=eol,start,indent "  줄의 끝, 시작, 들여쓰기에서 백스페이스시 이전줄로
+
+syntax sync minlines=200        "speed-up vim
+set clipboard=unnamed           "yank, paste to system clipboard
+
+"================================= Turn of swap =====================================
+set noswapfile
+set nobackup
+set nowb
+
+"================================= Indentation ======================================
+set si           " 좀더 똑똑한 들여 쓰기
+set ts=4         " TAB 간격을 4칸으로 설정
+set sw=4         " 자동 들여쓰기를 4칸으로 설정
+set et           " TAB을 Space로 대체
+set ai           " 자동 들여쓰기
+set ci           " C 형태의 들여쓰기
+
+"================================ 폰트 지정 =========================================
+set encoding=cp949  " Menu encoding
+set fileencodings=utf-8,cp949
+set fencs=ucs-bom,utf-8,euc-kr.latin1 " 한글 파일은 euc-kr로, 유니코드는 유니코드로
+set tenc=cp949      " 터미널 인코딩
+set guifont=D2Coding\ Ligature:h20:cHANGEUL
+"set guifont=D2Coding\ Ligature:h14:cHANGEUL
+
+"============================== GUI 초기 윈도우 크기 지정 ===========================
+au GUIEnter * winsize 128 40
+"au GUIEnter * winsize 84 30
+
+" ESC키를 누르면 한글모드가 해제
+" 입력모드에서 이전 언어 설정 모드를 유지
+inoremap <ESC> <ESC>:set imdisable<CR>
+nnoremap i :set noimd<CR>i
+nnoremap I :set noimd<CR>I
+nnoremap a :set noimd<CR>a
+nnoremap A :set noimd<CR>A
+nnoremap o :set noimd<CR>o
+nnoremap O :set noimd<CR>O
+
+"============================= Plugin ===============================================
+call plug#begin('~/.vim/plugged')
+
+Plug 'nightsense/simplifysimplify'
+Plug 'scrooloose/nerdtree'
+Plug 'jiangmiao/auto-pairs'             "Auto pair for ',), }, ]...
+Plug 'ctrlpvim/ctrlp.vim'               "Ctrl + P for search file
+Plug 'mhinz/vim-startify'               "fancy start page for empty vim
+
+call plug#end()
+
+" ----- Ctrlp ----
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
+let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']       "Ignore in .gitignore
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'                                           "Ignore node_modules
+let g:ctrlp_custom_ignore = {
+  \ 'file': '\v\.(pyc|so|dll)$',
+  \ }
+
+nnoremap <leader>. :CtrlPTag<cr>
+
+"============================ Key binding ===========================================
+let mapleader=","
+" 설정 파일 단축키
+nnoremap <Leader>rc :rightbelow vnew $MYVIMRC<CR>
+
+" 창이동 단축키
+noremap <C-h> <C-w>h
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
+
+noremap <C-F> :NERDTreeFind<CR>
+noremap <Leader>n :NERDTreeToggle<CR>
+
+" ------ get parenthesis out ------
+imap <S-Tab> <esc>la
