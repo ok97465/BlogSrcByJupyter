@@ -1,6 +1,10 @@
 # Delete file
 map D delete
 
+# New
+map o !mkdir 00_new
+map O !touch 00_new.md
+
 # Select All
 map <c-a> :unselect; invert
 
