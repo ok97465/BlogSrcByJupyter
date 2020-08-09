@@ -57,6 +57,8 @@ Plug 'mhinz/vim-startify'               "fancy start page for empty vim
 Plug 'iCyMind/NeoSolarized'
 Plug 'tmhedberg/matchit'                "extended % matching
 Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 
 call plug#end()
 
@@ -94,6 +96,12 @@ let g:ctrlp_custom_ignore = {
   \ }
 
 nnoremap <leader>. :CtrlPTag<cr>
+
+" ----- UltiSnips -----
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+let g:UltiSnipsEditSplit="vertical"
 
 "================================= Key binding ==================================
 " ----- 창이동 단축키 -----
