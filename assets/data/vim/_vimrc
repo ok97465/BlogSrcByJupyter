@@ -1,7 +1,7 @@
 " 기능 설정
 syntax on           " 언어에 따른 자동 문법, 구문의 색을 다르게 표시
 filetype on         " 파일 종류를 자동으로 인식
-colorscheme desert  " 컴러스킴을 변경
+"colorscheme desert  " 컴러스킴을 변경
 
 set nocompatible " vi와 호환하지 않음
 set ru           " 화면 우측 한단에 현재 커서의 위치(줄,칸)를 표시(ruler)
@@ -9,7 +9,7 @@ set sc           " 완성중인 명령을 표시
 set sm           " 함수 닫기 표시
 set vb           " 키를 잘못눌렀을 때 삑 소리를 내는 대신 번쩍임
 set hls          " 검색된 스트링의 하이라이트
-"set nu           " 라인수를 표시
+set nu           " 라인수를 표시
 set rnu          " 상대적인 라인수를 표시
 set scs          " 똑똑한 대소문자 구별 기능
 set hi=50        " 명령어를 기록에 날길 개수 지정
@@ -43,33 +43,51 @@ set encoding=cp949  " Menu encoding
 set fileencodings=utf-8,cp949
 set fencs=ucs-bom,utf-8,euc-kr.latin1 " 한글 파일은 euc-kr로, 유니코드는 유니코드로
 set tenc=cp949      " 터미널 인코딩
-set guifont=D2Coding\ Ligature:h20:cHANGEUL
-"set guifont=D2Coding\ Ligature:h14:cHANGEUL
+"set guifont=D2Coding\ Ligature:h20:cHANGEUL
+set guifont=D2Coding\ Ligature:h14:cHANGEUL
 
 "============================== GUI 초기 윈도우 크기 지정 ===========================
-au GUIEnter * winsize 128 40
-"au GUIEnter * winsize 84 30
-
-" ESC키를 누르면 한글모드가 해제
-" 입력모드에서 이전 언어 설정 모드를 유지
-inoremap <ESC> <ESC>:set imdisable<CR>
-nnoremap i :set noimd<CR>i
-nnoremap I :set noimd<CR>I
-nnoremap a :set noimd<CR>a
-nnoremap A :set noimd<CR>A
-nnoremap o :set noimd<CR>o
-nnoremap O :set noimd<CR>O
+"au GUIEnter * winsize 128 40
+au GUIEnter * winsize 84 30
 
 "============================= Plugin ===============================================
 call plug#begin('~/.vim/plugged')
+Plug 'w0rp/ale'
 
 Plug 'nightsense/simplifysimplify'
 Plug 'scrooloose/nerdtree'
 Plug 'jiangmiao/auto-pairs'             "Auto pair for ',), }, ]...
 Plug 'ctrlpvim/ctrlp.vim'               "Ctrl + P for search file
 Plug 'mhinz/vim-startify'               "fancy start page for empty vim
+Plug 'iCyMind/NeoSolarized'
+Plug 'tmhedberg/matchit'                "extended % matching
 
 call plug#end()
+
+"================================= Plugins setting ==================================
+" ----- Nerd Tree -----
+autocmd VimEnter *
+            \   if !argc()
+            \ |   Startify
+            \ |   NERDTree
+            \ |   wincmd w
+            \ | endif
+let NERDTreeIgnore=['\.pyc$', '\~$', '\c^ntuser\..*']    "ignore files in NERDTree
+noremap <C-F> :NERDTreeFind<CR>
+noremap <Leader>n :NERDTreeToggle<CR>
+
+" ----- ale -----
+let g:ale_lint_on_save = 1              "Lint when saving a file
+let g:ale_sign_error = 'x'                                                      "Lint error sign
+let g:ale_sign_warning = 'w'                                                    "Lint warning sign
+let g:ale_statusline_format =[' %d E ', ' %d W ', '']                           "Status line texts
+let g:ale_linters = {
+\   'python': ['flake8'],
+\}
+let g:ale_pattern_options = {
+\   '.*\.js$': {'ale_enabled': 0},
+\   '.*\.html$': {'ale_enabled': 0},
+\}
 
 " ----- Ctrlp ----
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
@@ -81,19 +99,39 @@ let g:ctrlp_custom_ignore = {
 
 nnoremap <leader>. :CtrlPTag<cr>
 
+" ----- NeoSolarized -----
+colorscheme NeoSolarized
+set background=dark
+
 "============================ Key binding ===========================================
 let mapleader=","
-" 설정 파일 단축키
-nnoremap <Leader>rc :rightbelow vnew $MYVIMRC<CR>
 
-" 창이동 단축키
+" ESC키를 누르면 한글모드가 해제
+" 입력모드에서 이전 언어 설정 모드를 유지
+inoremap <ESC> <ESC>:set imdisable<CR>
+nnoremap i :set noimd<CR>i
+nnoremap I :set noimd<CR>I
+nnoremap a :set noimd<CR>a
+nnoremap A :set noimd<CR>A
+nnoremap o :set noimd<CR>o
+nnoremap O :set noimd<CR>O
+
+" ----- 창이동 단축키 -----
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
-noremap <C-F> :NERDTreeFind<CR>
-noremap <Leader>n :NERDTreeToggle<CR>
+" ----- For completion widget -----
+" use tab to forward cycle
+inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+" use tab to backward cycle or tabout
+inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "<esc>la"
 
-" ------ get parenthesis out ------
-imap <S-Tab> <esc>la
+" ------ Run python ------
+autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
+autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
+
+" ------ Edit vimrc  -----
+nnoremap <Leader>rc :e $MYVIMRC<CR>
+
