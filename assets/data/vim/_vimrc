@@ -47,8 +47,12 @@ set tenc=cp949      " 터미널 인코딩
 set guifont=D2Coding\ Ligature:h14:cHANGEUL
 
 "============================== GUI 초기 윈도우 크기 지정 ===========================
-"au GUIEnter * winsize 128 40
-au GUIEnter * winsize 84 30
+au GUIEnter * winsize 128 40
+"au GUIEnter * winsize 84 30
+
+"============================== Python =======================================
+set pythonthreedll=C:\Anaconda3\python38.dll
+set pythonthreehome=C:\Anaconda3
 
 "============================= Plugin ===============================================
 call plug#begin('~/.vim/plugged')
@@ -56,11 +60,14 @@ Plug 'w0rp/ale'
 
 Plug 'nightsense/simplifysimplify'
 Plug 'scrooloose/nerdtree'
+Plug 'jistr/vim-nerdtree-tabs'
 Plug 'jiangmiao/auto-pairs'             "Auto pair for ',), }, ]...
 Plug 'ctrlpvim/ctrlp.vim'               "Ctrl + P for search file
 Plug 'mhinz/vim-startify'               "fancy start page for empty vim
 Plug 'iCyMind/NeoSolarized'
 Plug 'tmhedberg/matchit'                "extended % matching
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 
 call plug#end()
 
@@ -99,6 +106,12 @@ let g:ctrlp_custom_ignore = {
 
 nnoremap <leader>. :CtrlPTag<cr>
 
+" ---- UltiSnips ----
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+let g:UltiSnipsEditSplit="vertical"
+
 " ----- NeoSolarized -----
 colorscheme NeoSolarized
 set background=dark
@@ -124,9 +137,9 @@ noremap <C-l> <C-w>l
 
 " ----- For completion widget -----
 " use tab to forward cycle
-inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+"inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 " use tab to backward cycle or tabout
-inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "<esc>la"
+"inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "<esc>la"
 
 " ------ Run python ------
 autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
@@ -135,3 +148,5 @@ autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescap
 " ------ Edit vimrc  -----
 nnoremap <Leader>rc :e $MYVIMRC<CR>
 
+" ------ tabout ------
+inoremap <s-tab> <esc>la

@@ -112,9 +112,9 @@ noremap <C-l> <C-w>l
 
 " ----- For completion widget -----
 " use tab to forward cycle
-inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+"inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 " use tab to backward cycle or tabout
-inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "<esc>la"
+"inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "<esc>la"
 
 " ------ terminal mode --------
 " use Esc to enter Terminal Normal mode
@@ -129,3 +129,5 @@ autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescap
 " ------ Edit vimrc  -----
 nnoremap <Leader>rc :e $MYVIMRC<CR>
 
+" ------ tabout ------
+inoremap <s-tab> <esc>la
