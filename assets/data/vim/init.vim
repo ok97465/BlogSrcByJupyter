@@ -57,8 +57,10 @@ Plug 'mhinz/vim-startify'               "fancy start page for empty vim
 Plug 'iCyMind/NeoSolarized'
 Plug 'tmhedberg/matchit'                "extended % matching
 Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+Plug 'SirVer/ultisnips'                 "snippets engine
+Plug 'honza/vim-snippets'               "snippets
+Plug 'vim-airline/vim-airline'          "statusbar
+Plug 'vim-airline/vim-airline-themes'   "statusbar theme
 
 call plug#end()
 
@@ -102,6 +104,11 @@ let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 let g:UltiSnipsEditSplit="vertical"
+
+" ----- airline -----
+let g:airline#extensions#tabline#enabled = 1 " turn on buffer list
+let g:airline_theme='minimalist'
+set laststatus=2 " turn on bottom bar
 
 "================================= Key binding ==================================
 " ----- 창이동 단축키 -----
