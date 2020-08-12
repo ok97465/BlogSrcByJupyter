@@ -1,26 +1,25 @@
-" ±â´É ¼³Á¤
-syntax on           " ¾ğ¾î¿¡ µû¸¥ ÀÚµ¿ ¹®¹ı, ±¸¹®ÀÇ »öÀ» ´Ù¸£°Ô Ç¥½Ã
-filetype on         " ÆÄÀÏ Á¾·ù¸¦ ÀÚµ¿À¸·Î ÀÎ½Ä
-"colorscheme desert  " ÄÄ·¯½ºÅ´À» º¯°æ
+" ê¸°ëŠ¥ ì„¤ì •
+syntax on           " ì–¸ì–´ì— ë”°ë¥¸ ìë™ ë¬¸ë²•, êµ¬ë¬¸ì˜ ìƒ‰ì„ ë‹¤ë¥´ê²Œ í‘œì‹œ
+filetype on         " íŒŒì¼ ì¢…ë¥˜ë¥¼ ìë™ìœ¼ë¡œ ì¸ì‹
 
-set nocompatible " vi¿Í È£È¯ÇÏÁö ¾ÊÀ½
-set ru           " È­¸é ¿ìÃø ÇÑ´Ü¿¡ ÇöÀç Ä¿¼­ÀÇ À§Ä¡(ÁÙ,Ä­)¸¦ Ç¥½Ã(ruler)
-set sc           " ¿Ï¼ºÁßÀÎ ¸í·ÉÀ» Ç¥½Ã
-set sm           " ÇÔ¼ö ´İ±â Ç¥½Ã
-set vb           " Å°¸¦ Àß¸ø´­·¶À» ¶§ »à ¼Ò¸®¸¦ ³»´Â ´ë½Å ¹øÂ½ÀÓ
-set hls          " °Ë»öµÈ ½ºÆ®¸µÀÇ ÇÏÀÌ¶óÀÌÆ®
-set nu           " ¶óÀÎ¼ö¸¦ Ç¥½Ã
-set rnu          " »ó´ëÀûÀÎ ¶óÀÎ¼ö¸¦ Ç¥½Ã
-set scs          " ¶È¶ÈÇÑ ´ë¼Ò¹®ÀÚ ±¸º° ±â´É
-set hi=50        " ¸í·É¾î¸¦ ±â·Ï¿¡ ³¯±æ °³¼ö ÁöÁ¤
-set cul          " Ä¿¼­°¡ ÀÖ´Â ¶óÀÎ ÇÏÀÌ¶óÀÌÆ®
-set ic           " °Ë»ö½Ã ´ë¼Ò¹®ÀÚ ¹«½Ã
-set incsearch    " Å°¿öµå ÀÔ·Â½Ã Á¡ÁøÀû °Ë»ö
+set nocompatible " viì™€ í˜¸í™˜í•˜ì§€ ì•ŠìŒ
+set ru           " í™”ë©´ ìš°ì¸¡ í•œë‹¨ì— í˜„ì¬ ì»¤ì„œì˜ ìœ„ì¹˜(ì¤„,ì¹¸)ë¥¼ í‘œì‹œ(ruler)
+set sc           " ì™„ì„±ì¤‘ì¸ ëª…ë ¹ì„ í‘œì‹œ
+set sm           " í•¨ìˆ˜ ë‹«ê¸° í‘œì‹œ
+set vb           " í‚¤ë¥¼ ì˜ëª»ëˆŒë €ì„ ë•Œ ì‚‘ ì†Œë¦¬ë¥¼ ë‚´ëŠ” ëŒ€ì‹  ë²ˆì©ì„
+set hls          " ê²€ìƒ‰ëœ ìŠ¤íŠ¸ë§ì˜ í•˜ì´ë¼ì´íŠ¸
+set nu           " ë¼ì¸ìˆ˜ë¥¼ í‘œì‹œ
+set rnu          " ìƒëŒ€ì ì¸ ë¼ì¸ìˆ˜ë¥¼ í‘œì‹œ
+set scs          " ë˜‘ë˜‘í•œ ëŒ€ì†Œë¬¸ì êµ¬ë³„ ê¸°ëŠ¥
+set hi=50        " ëª…ë ¹ì–´ë¥¼ ê¸°ë¡ì— ë‚ ê¸¸ ê°œìˆ˜ ì§€ì •
+set cul          " ì»¤ì„œê°€ ìˆëŠ” ë¼ì¸ í•˜ì´ë¼ì´íŠ¸
+set ic           " ê²€ìƒ‰ì‹œ ëŒ€ì†Œë¬¸ì ë¬´ì‹œ
+set incsearch    " í‚¤ì›Œë“œ ì…ë ¥ì‹œ ì ì§„ì  ê²€ìƒ‰
 set title        " change the terminal title
-set mousehide    " Å¸ÀÌÇÎ½Ã ¸¶¿ì½º Ä¿¼­ °¨Ãß±â
-set scrolloff=2  " ÃÖ¼ÒÇÑ 2ÁÙÀÌÇÏ·Î´Â ÀÚµ¿ ½ºÅ©·Ñ
-set guioptions-=T " gvim Åø¹Ù Á¦°Å 
-set backspace=eol,start,indent "  ÁÙÀÇ ³¡, ½ÃÀÛ, µé¿©¾²±â¿¡¼­ ¹é½ºÆäÀÌ½º½Ã ÀÌÀüÁÙ·Î
+set mousehide    " íƒ€ì´í•‘ì‹œ ë§ˆìš°ìŠ¤ ì»¤ì„œ ê°ì¶”ê¸°
+set scrolloff=2  " ìµœì†Œí•œ 2ì¤„ì´í•˜ë¡œëŠ” ìë™ ìŠ¤í¬ë¡¤
+set guioptions-=T " gvim íˆ´ë°” ì œê±° 
+set backspace=eol,start,indent "  ì¤„ì˜ ë, ì‹œì‘, ë“¤ì—¬ì“°ê¸°ì—ì„œ ë°±ìŠ¤í˜ì´ìŠ¤ì‹œ ì´ì „ì¤„ë¡œ
 
 syntax sync minlines=200        "speed-up vim
 set clipboard=unnamed           "yank, paste to system clipboard
@@ -31,22 +30,22 @@ set nobackup
 set nowb
 
 "================================= Indentation ======================================
-set si           " Á»´õ ¶È¶ÈÇÑ µé¿© ¾²±â
-set ts=4         " TAB °£°İÀ» 4Ä­À¸·Î ¼³Á¤
-set sw=4         " ÀÚµ¿ µé¿©¾²±â¸¦ 4Ä­À¸·Î ¼³Á¤
-set et           " TABÀ» Space·Î ´ëÃ¼
-set ai           " ÀÚµ¿ µé¿©¾²±â
-set ci           " C ÇüÅÂÀÇ µé¿©¾²±â
+set si           " ì¢€ë” ë˜‘ë˜‘í•œ ë“¤ì—¬ ì“°ê¸°
+set ts=4         " TAB ê°„ê²©ì„ 4ì¹¸ìœ¼ë¡œ ì„¤ì •
+set sw=4         " ìë™ ë“¤ì—¬ì“°ê¸°ë¥¼ 4ì¹¸ìœ¼ë¡œ ì„¤ì •
+set et           " TABì„ Spaceë¡œ ëŒ€ì²´
+set ai           " ìë™ ë“¤ì—¬ì“°ê¸°
+set ci           " C í˜•íƒœì˜ ë“¤ì—¬ì“°ê¸°
 
-"================================ ÆùÆ® ÁöÁ¤ =========================================
+"================================ í°íŠ¸ ì§€ì • =========================================
 set encoding=cp949  " Menu encoding
 set fileencodings=utf-8,cp949
-set fencs=ucs-bom,utf-8,euc-kr.latin1 " ÇÑ±Û ÆÄÀÏÀº euc-kr·Î, À¯´ÏÄÚµå´Â À¯´ÏÄÚµå·Î
-set tenc=cp949      " ÅÍ¹Ì³Î ÀÎÄÚµù
+set fencs=ucs-bom,utf-8,euc-kr.latin1 " í•œê¸€ íŒŒì¼ì€ euc-krë¡œ, ìœ ë‹ˆì½”ë“œëŠ” ìœ ë‹ˆì½”ë“œë¡œ
+set tenc=cp949      " í„°ë¯¸ë„ ì¸ì½”ë”©
 "set guifont=D2Coding\ Ligature:h20:cHANGEUL
 set guifont=D2Coding\ Ligature:h14:cHANGEUL
 
-"============================== GUI ÃÊ±â À©µµ¿ì Å©±â ÁöÁ¤ ===========================
+"============================== GUI ì´ˆê¸° ìœˆë„ìš° í¬ê¸° ì§€ì • ===========================
 au GUIEnter * winsize 128 40
 "au GUIEnter * winsize 84 30
 
@@ -70,6 +69,7 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'vim-airline/vim-airline'          "statusbar
 Plug 'vim-airline/vim-airline-themes'   "statusbar theme
+Plug 'preservim/nerdcommenter'          "Comment Toggle
 
 call plug#end()
 
@@ -119,6 +119,9 @@ let g:airline#extensions#tabline#enabled = 1 " turn on buffer list
 let g:airline_theme='minimalist'
 set laststatus=2 " turn on bottom bar
 
+" ----- Nerd commenter -----
+map <Leader>r <Plug>NERDCommenterToggle
+
 " ----- NeoSolarized -----
 colorscheme NeoSolarized
 set background=dark
@@ -126,8 +129,8 @@ set background=dark
 "============================ Key binding ===========================================
 let mapleader=","
 
-" ESCÅ°¸¦ ´©¸£¸é ÇÑ±Û¸ğµå°¡ ÇØÁ¦
-" ÀÔ·Â¸ğµå¿¡¼­ ÀÌÀü ¾ğ¾î ¼³Á¤ ¸ğµå¸¦ À¯Áö
+" ESCí‚¤ë¥¼ ëˆ„ë¥´ë©´ í•œê¸€ëª¨ë“œê°€ í•´ì œ
+" ì…ë ¥ëª¨ë“œì—ì„œ ì´ì „ ì–¸ì–´ ì„¤ì • ëª¨ë“œë¥¼ ìœ ì§€
 inoremap <ESC> <ESC>:set imdisable<CR>
 nnoremap i :set noimd<CR>i
 nnoremap I :set noimd<CR>I
@@ -136,17 +139,11 @@ nnoremap A :set noimd<CR>A
 nnoremap o :set noimd<CR>o
 nnoremap O :set noimd<CR>O
 
-" ----- Ã¢ÀÌµ¿ ´ÜÃàÅ° -----
+" ----- ì°½ì´ë™ ë‹¨ì¶•í‚¤ -----
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
-
-" ----- For completion widget -----
-" use tab to forward cycle
-"inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
-" use tab to backward cycle or tabout
-"inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "<esc>la"
 
 " ------ Run python ------
 autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
@@ -157,3 +154,4 @@ nnoremap <Leader>rc :e $MYVIMRC<CR>
 
 " ------ tabout ------
 inoremap <s-tab> <esc>la
+

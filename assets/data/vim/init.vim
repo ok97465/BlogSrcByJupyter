@@ -59,8 +59,9 @@ Plug 'tmhedberg/matchit'                "extended % matching
 Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
 Plug 'SirVer/ultisnips'                 "snippets engine
 Plug 'honza/vim-snippets'               "snippets
-Plug 'vim-airline/vim-airline'          "statusbar
-Plug 'vim-airline/vim-airline-themes'   "statusbar theme
+Plug 'vim-airline/vim-airline'          "status bar
+Plug 'vim-airline/vim-airline-themes'   "status bar theme
+Plug 'preservim/nerdcommenter'          "Comment Toggle
 
 call plug#end()
 
@@ -110,18 +111,15 @@ let g:airline#extensions#tabline#enabled = 1 " turn on buffer list
 let g:airline_theme='minimalist'
 set laststatus=2 " turn on bottom bar
 
+" ----- Nerd commenter -----
+map <Leader>r <Plug>NERDCommenterToggle
+
 "================================= Key binding ==================================
 " ----- 창이동 단축키 -----
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
-
-" ----- For completion widget -----
-" use tab to forward cycle
-"inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
-" use tab to backward cycle or tabout
-"inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "<esc>la"
 
 " ------ terminal mode --------
 " use Esc to enter Terminal Normal mode
@@ -138,3 +136,4 @@ nnoremap <Leader>rc :e $MYVIMRC<CR>
 
 " ------ tabout ------
 inoremap <s-tab> <esc>la
+
