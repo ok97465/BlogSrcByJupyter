@@ -1,6 +1,7 @@
 " 기능 설정
 syntax on           " 언어에 따른 자동 문법, 구문의 색을 다르게 표시
 filetype on         " 파일 종류를 자동으로 인식
+let mapleader=","
 
 set nocompatible " vi와 호환하지 않음
 set ru           " 화면 우측 한단에 현재 커서의 위치(줄,칸)를 표시(ruler)
@@ -119,7 +120,7 @@ let g:airline#extensions#tabline#enabled = 1 " turn on buffer list
 let g:airline_theme='minimalist'
 set laststatus=2 " turn on bottom bar
 
-" ----- Nerd commenter -----
+" ----- Nerd commenter ----
 map <Leader>r <Plug>NERDCommenterToggle
 
 " ----- NeoSolarized -----
@@ -127,7 +128,6 @@ colorscheme NeoSolarized
 set background=dark
 
 "============================ Key binding ===========================================
-let mapleader=","
 
 " ESC키를 누르면 한글모드가 해제
 " 입력모드에서 이전 언어 설정 모드를 유지
@@ -150,7 +150,7 @@ autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape(@%, 
 autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
 
 " ------ Edit vimrc  -----
-nnoremap <Leader>rc :e $MYVIMRC<CR>
+nnoremap <Leader>, :e $MYVIMRC<CR>
 
 " ------ tabout ------
 inoremap <s-tab> <esc>la

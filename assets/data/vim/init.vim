@@ -114,6 +114,7 @@ set laststatus=2 " turn on bottom bar
 " ----- Nerd commenter -----
 map <Leader>r <Plug>NERDCommenterToggle
 
+
 "================================= Key binding ==================================
 " ----- 창이동 단축키 -----
 noremap <C-h> <C-w>h
@@ -132,8 +133,7 @@ autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape(@%, 
 autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
 
 " ------ Edit vimrc  -----
-nnoremap <Leader>rc :e $MYVIMRC<CR>
+nnoremap <Leader>, :e $MYVIMRC<CR>
 
 " ------ tabout ------
 inoremap <s-tab> <esc>la
-
