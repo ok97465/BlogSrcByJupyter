@@ -86,6 +86,10 @@ let g:ale_pattern_options = {
 \   '.*\.js$': {'ale_enabled': 0},
 \   '.*\.html$': {'ale_enabled': 0},
 \}
+highlight ALEErrorSign ctermbg=DarkMagenta
+highlight ALEWarningSign ctermbg=DarkYellow
+highlight clear SpellBad  " LintError color link to SpellBad 
+highlight SpellBad term=standout ctermfg=DarkMagenta term=underline cterm=underline
 
 " ----- Ctrlp ----
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
