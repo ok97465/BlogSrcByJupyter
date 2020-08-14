@@ -59,6 +59,7 @@ Plug 'honza/vim-snippets'               " Snippets
 Plug 'vim-airline/vim-airline'          " Statusbar
 Plug 'vim-airline/vim-airline-themes'   " Statusbar theme
 Plug 'preservim/nerdcommenter'          " Comment toggle
+Plug 'Yggdroot/indentLine'              " Indent guide
 
 call plug#end()
 
@@ -114,6 +115,10 @@ set laststatus=2 " turn on bottom bar
 
 " ----- Nerd commenter -----
 map <Leader>r <Plug>NERDCommenterToggle
+
+" ----- Indent guide -----
+let g:indentLine_enabled = 1
+set list listchars=trail:·
 
 "================================= Key binding ==================================
 " ----- 창이동 단축키 -----
