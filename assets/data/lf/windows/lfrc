@@ -1,2 +1,24 @@
+# Set filesep to use %fs% on windows
+set filesep " "
+
+# Delete file
+map D delete
+
 # Select All
 map <c-a> :unselect; invert
+
+# Drive list
+cmd drive-list !wmic logicaldisk get volumename.name
+map <c-l> drive-list
+map <c-c> push :cd<space>
+
+# Goto favoriate folder
+map gp :cd C:/codepy
+map gd :cd ~/Downloads
+
+# New content
+map o %mkdir 00_new
+map O $echo . > 00_new.md
+
+# Explorer
+map <c-e> &explorer .
