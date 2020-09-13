@@ -17,4 +17,8 @@ map gd :cd /mnt/data/Downloads
 map gf :cd /mnt/data
 
 # Archive
-map Z !zip -r archive.zip $fx
+map Z !python /home/ok97465/codepy/clis/archive.py $fx
+map E !python /home/ok97465/codepy/clis/extract.py $fx
+
+# Copy path
+map Y $echo $fx | xclip -selection clipboard

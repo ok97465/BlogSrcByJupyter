@@ -22,3 +22,10 @@ map O $echo . > 00_new.md
 
 # Explorer
 map <c-e> &explorer .
+
+# Archive
+map Z !python c:/codepy/clis/archive.py %fx%
+map E !python c:/codepy/clis/extract.py %fx%
+
+# Copy file path
+map Y %echo %fx% | clip
