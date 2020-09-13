@@ -4,7 +4,7 @@
 "================================= General Config ===================================
 syntax on           " 언어에 따른 자동 문법, 구문의 색을 다르게 표시
 filetype on         " 파일 종류를 자동으로 인식
-let mapleader=","
+let mapleader=" "
 
 set nocompatible                " vi와 호환하지 않음
 set number                      " line numbers
@@ -12,7 +12,7 @@ set history=1000                " store :cmd history
 set hlsearch                    " highlight searching result
 set ignorecase                  " ignore Case sensitive when searching
 set showmatch                   " highlight matched bracket ()
-set wrap
+set nowrap
 
 "================================= Optional setting =================================
 set relativenumber              " show relative number from current line
@@ -60,6 +60,12 @@ Plug 'vim-airline/vim-airline'          " Statusbar
 Plug 'vim-airline/vim-airline-themes'   " Statusbar theme
 Plug 'preservim/nerdcommenter'          " Comment toggle
 Plug 'Yggdroot/indentLine'              " Indent guide
+Plug 'tpope/vim-fugitive'               " For git
+Plug 'mbbill/undotree'                  " Visualize undo history
+Plug 'alfredodeza/pytest.vim'           " Pytest
+Plug 'ThePrimeagen/vim-be-good'         " Vim Game
+Plug 'jremmen/vim-ripgrep'              " Recursive search for regex
+Plug 'junegunn/vim-easy-align'          " vim alignment
 
 call plug#end()
 
@@ -119,6 +125,24 @@ map <Leader>r <Plug>NERDCommenterToggle
 " ----- Indent guide -----
 let g:indentLine_enabled = 1
 set list listchars=trail:·
+
+" ----- Fugitive ----- 
+nmap <leader>gs :G<CR>
+
+" ----- Undotreee -----
+nmap <leader>u :UndotreeShow<CR>
+
+" ----- RipGrep -----
+if executable('rg')
+    let g:rg_derive_root='true'
+endif
+
+" ----- Vim-easy-align -----
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
 
 "================================= Key binding ==================================
 " ----- 창이동 단축키 -----
