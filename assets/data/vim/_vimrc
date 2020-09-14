@@ -62,8 +62,6 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'w0rp/ale'                         " Lint engine
 Plug 'nightsense/simplifysimplify'      " Theme
-Plug 'scrooloose/nerdtree'              " File system explorer 
-Plug 'jistr/vim-nerdtree-tabs'          " Nerdtree into tab
 Plug 'jiangmiao/auto-pairs'             " Auto pair for ',), }, ]...
 Plug 'ctrlpvim/ctrlp.vim'               " Ctrl + P for search file
 Plug 'mhinz/vim-startify'               " Fancy start page for empty vim
@@ -83,16 +81,53 @@ Plug 'junegunn/vim-easy-align'          " vim alignment
 call plug#end()
 
 "================================= Plugins setting ==================================
-" ----- Nerd Tree -----
-autocmd VimEnter *
-            \   if !argc()
-            \ |   Startify
-            \ |   NERDTree
-            \ |   wincmd w
-            \ | endif
-let NERDTreeIgnore=['\.pyc$', '\~$', '\c^ntuser\..*']  "ignore files in NERDTree
-noremap <C-F> :NERDTreeFind<CR>
-noremap <Leader>n :NERDTreeToggle<CR>
+" ----- netrw -----
+let g:netrw_banner=0                                   " disable annoying banner
+let g:netrw_winsize = 18                               " width in percent
+let g:netrw_browse_split=4                             " open in prior window
+let g:netrw_altv=1                                     " open splits to the right
+let g:netrw_hide=1                                     " show not-hidden files
+let g:netrw_list_hide='\.o,\.obj,*\~,\.pyc,\.class'    "stuff to ignore when tab completing
+let g:netrw_list_hide.='\.env,'
+let g:netrw_list_hide.='\.env[0-9].,'
+let g:netrw_list_hide.='\.env-pypy,'
+let g:netrw_list_hide.='\.git,'
+let g:netrw_list_hide.='\.gitkeep,'
+let g:netrw_list_hide.='\.vagrant,'
+let g:netrw_list_hide.='\.tmp,'
+let g:netrw_list_hide.='\.coverage$,'
+let g:netrw_list_hide.='\.DS_Store,'
+let g:netrw_list_hide.='__pycache__,'
+let g:netrw_list_hide.='\.webassets-cache/,'
+let g:netrw_list_hide.='\.sass-cache/,'
+let g:netrw_list_hide.='\.ropeproject/,'
+let g:netrw_list_hide.='vendor/rails/,'
+let g:netrw_list_hide.='vendor/cache/,'
+let g:netrw_list_hide.='\.gem,'
+let g:netrw_list_hide.='\.ropeproject/,'
+let g:netrw_list_hide.='\.coverage/,'
+let g:netrw_list_hide.='log/,'
+let g:netrw_list_hide.='tmp/,'
+let g:netrw_list_hide.='\.tox/,'
+let g:netrw_list_hide.='\.idea/,'
+let g:netrw_list_hide.='\.egg,\.egg-info,'
+let g:netrw_list_hide.='\.png,\.jpg,\.gif,\.ico,'
+let g:netrw_list_hide.='\.docx,\.pptx,\.xlsx,'
+let g:netrw_list_hide.='\.so,\.swp,\.zip,/\.Trash/,\.pdf,\.dmg,/Library/,/\.rbenv/,'
+let g:netrw_list_hide.='*/\.nx/**,*\.app'
+let g:netrw_list_hide.='__pycache__/'
+
+augroup NetRw
+  autocmd!
+  autocmd filetype netrw call NetrwMapping()
+  autocmd VimEnter * if argc() == 0 | cd ~ | Vexplore | wincmd w | Startify | endif
+augroup END
+
+function! NetrwMapping()
+  nnoremap <buffer> <c-l> :wincmd l<cr>                " Unmap keybinding
+endfunction
+
+nnoremap <leader>e :Vexplore<cr>
 
 " ----- ale -----
 let g:ale_lint_on_save = 1                            "Lint when saving a file
