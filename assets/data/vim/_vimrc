@@ -31,6 +31,10 @@ set noswapfile
 set nobackup
 set nowb
 
+"================================= Turn of undo ==============================
+set undodir=~/undo               " Undo Folder
+set undofile
+
 "================================= Indentation ======================================
 set si           " 좀더 똑똑한 들여 쓰기
 set ts=4         " TAB 간격을 4칸으로 설정
