@@ -127,7 +127,7 @@ function! NetrwMapping()
   nnoremap <buffer> <c-l> :wincmd l<cr>                " Unmap keybinding
 endfunction
 
-nnoremap <leader>e :Vexplore<cr>
+nnoremap <silent> <leader>e :Vexplore<cr>
 
 " ----- ale -----
 let g:ale_lint_on_save = 1                            "Lint when saving a file
@@ -150,7 +150,7 @@ let g:ctrlp_custom_ignore = {
   \ 'file': '\v\.(pyc|so|dll)$',
   \ }
 
-nnoremap <leader>. :CtrlPTag<cr>
+nnoremap <silent> <leader>. :CtrlPTag<cr>
 
 " ---- UltiSnips ----
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -164,7 +164,7 @@ let g:airline_theme='minimalist'
 set laststatus=2                              " turn on bottom bar
 
 " ----- Nerd commenter ----
-map <Leader>r <Plug>NERDCommenterToggle
+map <silent> <Leader>r <Plug>NERDCommenterToggle
 
 " ----- NeoSolarized -----
 colorscheme simplifysimplify-dark
@@ -174,15 +174,16 @@ let g:indentLine_enabled = 1
 set list listchars=trail:.
 
 " ----- Fugitive ----- 
-nmap <leader>gs :G<CR>
+nmap <silent> <leader>gs :G<CR>
 
 " ----- Undotreee -----
-nmap <leader>u :UndotreeShow<CR>
+nmap <silent> <leader>u :UndotreeShow<CR>
 
 " ----- RipGrep -----
 if executable('rg')
     let g:rg_derive_root='true'
 endif
+nnoremap <C-f> :Rg -i 
 
 " ----- Vim-easy-align -----
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -209,17 +210,17 @@ noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
 " ----- 창 크기 조절 -----
-noremap <Leader>[ :set columns+=30<CR><C-w>=
-noremap <Leader>] :set columns-=30<CR><C-w>=
-noremap <Leader>= :set lines+=4<CR><C-w>=
-noremap <Leader>- :set lines-=4<CR><C-w>=
+noremap <silent> <Leader>[ :set columns+=30<CR><C-w>=
+noremap <silent> <Leader>] :set columns-=30<CR><C-w>=
+noremap <silent> <Leader>= :set lines+=4<CR><C-w>=
+noremap <silent> <Leader>- :set lines-=4<CR><C-w>=
 
 " ------ Run python ------
 autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
 
 " ------ Edit vimrc  -----
-nnoremap <Leader>, :e $MYVIMRC<CR>
+nnoremap <silent> <Leader>, :e $MYVIMRC<CR>
 
 " ------ tabout ------
 inoremap <s-tab> <esc>la

@@ -49,7 +49,6 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'w0rp/ale'                         " Lint engine
 Plug 'jiangmiao/auto-pairs'             " Auto pair for ',), }, ]...
-Plug 'ctrlpvim/ctrlp.vim'               " Ctrl + P for search file
 Plug 'mhinz/vim-startify'               " Fancy start page for empty vim
 Plug 'tmhedberg/matchit'                " Extended % matching
 Plug 'SirVer/ultisnips'                 " Snippets engine
@@ -64,6 +63,8 @@ Plug 'alfredodeza/pytest.vim'           " Pytest
 "Plug 'ThePrimeagen/vim-be-good'         " Vim Game
 Plug 'jremmen/vim-ripgrep'              " Recursive search for regex
 Plug 'junegunn/vim-easy-align'          " vim alignment
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } "Install fzf
+Plug 'junegunn/fzf.vim'                 " fzf plugin
 
 call plug#end()
 
@@ -114,7 +115,7 @@ function! NetrwMapping()
   nnoremap <buffer> <c-l> :wincmd l<cr>                " Unmap keybinding
 endfunction
 
-nnoremap <leader>e :Vexplore<cr>
+nnoremap <silent> <leader>e :Vexplore<cr>
 
 " ----- ale -----
 let g:ale_lint_on_save = 1                             " Lint when saving a file
@@ -133,16 +134,6 @@ highlight ALEWarningSign ctermbg=DarkYellow
 highlight clear SpellBad  " LintError color link to SpellBad 
 highlight SpellBad term=standout ctermfg=DarkMagenta term=underline cterm=underline
 
-" ----- Ctrlp ----
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
-let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']       "Ignore in .gitignore
-let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'                                           "Ignore node_modules
-let g:ctrlp_custom_ignore = {
-  \ 'file': '\v\.(pyc|so|dll)$',
-  \ }
-
-nnoremap <leader>. :CtrlPTag<cr>
-
 " ----- UltiSnips -----
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
@@ -155,22 +146,23 @@ let g:airline_theme='minimalist'
 set laststatus=2 " turn on bottom bar
 
 " ----- Nerd commenter -----
-map <Leader>r <Plug>NERDCommenterToggle
+map <silent> <Leader>r <Plug>NERDCommenterToggle
 
 " ----- Indent guide -----
 let g:indentLine_enabled = 1
 set list listchars=trail:·
 
 " ----- Fugitive ----- 
-nmap <leader>gs :G<CR>
+nmap <silent> <leader>gs :G<CR>
 
 " ----- Undotreee -----
-nmap <leader>u :UndotreeShow<CR>
+nmap <silent> <leader>u :UndotreeShow<CR>
 
 " ----- RipGrep -----
 if executable('rg')
     let g:rg_derive_root='true'
 endif
+nnoremap <C-f> :Rg -i 
 
 " ----- Vim-easy-align -----
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -178,6 +170,10 @@ xmap ga <Plug>(EasyAlign)
 
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
+
+" ----- FZF -----
+nnoremap <silent> <C-p> :Files<CR>
+nnoremap <silent> <C-o> :Buffers<CR>
 
 "================================= Key binding ==================================
 " ----- 창이동 단축키 -----
@@ -187,10 +183,10 @@ noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
 " ----- 창 크기 조절 -----
-noremap <Leader>[ :set columns+=30<CR><C-w>=
-noremap <Leader>] :set columns-=30<CR><C-w>=
-noremap <Leader>= :set lines+=4<CR><C-w>=
-noremap <Leader>- :set lines-=4<CR><C-w>=
+noremap <silent> <Leader>[ :set columns+=30<CR><C-w>=
+noremap <silent> <Leader>] :set columns-=30<CR><C-w>=
+noremap <silent> <Leader>= :set lines+=4<CR><C-w>=
+noremap <silent> <Leader>- :set lines-=4<CR><C-w>=
 
 " ------ terminal mode --------
 " use Esc to enter Terminal Normal mode
@@ -203,7 +199,6 @@ autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape(@%, 
 autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
 
 " ------ Edit vimrc  -----
-nnoremap <Leader>, :e $MYVIMRC<CR>
+nnoremap <silent> <Leader>, :e $MYVIMRC<CR>
 
 " ------ tabout ------
-inoremap <s-tab> <esc>la
