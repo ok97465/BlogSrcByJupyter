@@ -61,7 +61,6 @@ Plug 'tpope/vim-fugitive'               " For git
 Plug 'mbbill/undotree'                  " Visualize undo history
 Plug 'alfredodeza/pytest.vim'           " Pytest
 "Plug 'ThePrimeagen/vim-be-good'         " Vim Game
-Plug 'jremmen/vim-ripgrep'              " Recursive search for regex
 Plug 'junegunn/vim-easy-align'          " vim alignment
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } "Install fzf
 Plug 'junegunn/fzf.vim'                 " fzf plugin
@@ -158,12 +157,6 @@ nmap <silent> <leader>gs :G<CR>
 " ----- Undotreee -----
 nmap <silent> <leader>u :UndotreeShow<CR>
 
-" ----- RipGrep -----
-if executable('rg')
-    let g:rg_derive_root='true'
-endif
-nnoremap <C-f> :Rg -i 
-
 " ----- Vim-easy-align -----
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
@@ -174,6 +167,7 @@ nmap ga <Plug>(EasyAlign)
 " ----- FZF -----
 nnoremap <silent> <C-p> :Files<CR>
 nnoremap <silent> <C-o> :Buffers<CR>
+nnoremap <C-f> :Rg 
 
 "================================= Key binding ==================================
 " ----- 창이동 단축키 -----
