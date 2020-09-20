@@ -12,7 +12,10 @@ set history=1000                " store :cmd history
 set hlsearch                    " highlight searching result
 set ignorecase                  " ignore Case sensitive when searching
 set showmatch                   " highlight matched bracket ()
-set nowrap
+set nowrap                      " display long lines as just on line
+set cmdheight=2                 " Give more space for displaying messages
+set updatetime=300              " Set updatetime
+set shortmess+=c                " Don't pass message to ins-completion-menu
 
 "================================= Optional setting =================================
 set relativenumber              " show relative number from current line
@@ -64,6 +67,7 @@ Plug 'alfredodeza/pytest.vim'           " Pytest
 Plug 'junegunn/vim-easy-align'          " vim alignment
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } "Install fzf
 Plug 'junegunn/fzf.vim'                 " fzf plugin
+Plug 'neoclide/coc.nvim', {'branch': 'release'} " Completion
 
 call plug#end()
 
@@ -168,6 +172,27 @@ nmap ga <Plug>(EasyAlign)
 nnoremap <silent> <C-p> :Files<CR>
 nnoremap <silent> <C-o> :Buffers<CR>
 nnoremap <C-f> :Rg 
+
+" ----- COC -----
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
 
 "================================= Key binding ==================================
 " ----- 창이동 단축키 -----
