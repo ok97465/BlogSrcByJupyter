@@ -108,17 +108,35 @@ let g:netrw_list_hide.='\.so,\.swp,\.zip,/\.Trash/,\.pdf,\.dmg,/Library/,/\.rben
 let g:netrw_list_hide.='*/\.nx/**,*\.app'
 let g:netrw_list_hide.='__pycache__/'
 
+function! NetrwMapping()
+  nnoremap <buffer> <silent> <c-l> :wincmd l<cr>                " Unmap keybinding
+endfunction
+
+" Toggle Vexplore with Leader-E
+let g:NetrwIsOpen=0
+
+function! ToggleNetrw()
+    if g:NetrwIsOpen
+        let i = bufnr("$")
+        while (i >= 1)
+            if (getbufvar(i, "&filetype") == "netrw")
+                silent exe "bwipeout " . i 
+            endif
+            let i-=1
+        endwhile
+        let g:NetrwIsOpen=0
+    else
+        let g:NetrwIsOpen=1
+        silent Lexplore
+    endif
+endfunction
+nnoremap <silent> <leader>e :call ToggleNetrw()<CR>
+
 augroup NetRw
   autocmd!
   autocmd filetype netrw call NetrwMapping()
-  autocmd VimEnter * if argc() == 0 | Vexplore | wincmd w | Startify | endif
+  autocmd VimEnter * if argc() == 0 | Startify | call ToggleNetrw() | wincmd w | endif
 augroup END
-
-function! NetrwMapping()
-  nnoremap <buffer> <c-l> :wincmd l<cr>                " Unmap keybinding
-endfunction
-
-nnoremap <silent> <leader>e :Vexplore<cr>
 
 " ----- ale -----
 let g:ale_lint_on_save = 1                             " Lint when saving a file
@@ -221,3 +239,4 @@ autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescap
 nnoremap <silent> <Leader>, :e $MYVIMRC<CR>
 
 " ------ tabout ------
+inoremap <s-tab> <esc>la
