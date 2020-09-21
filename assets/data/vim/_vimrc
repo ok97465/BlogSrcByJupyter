@@ -21,7 +21,10 @@ set mousehide                   " 타이핑시 마우스 커서 감추기
 set scrolloff=2                 " 최소한 2줄이하로는 자동 스크롤
 set guioptions-=T               " gvim 툴바 제거 
 set backspace=eol,start,indent  " 줄 끝, 시작, 들여쓰기의 백스페이스시 이전줄로
-set nowrap
+set nowrap                      " display long lines as just on line
+set cmdheight=2                 " Give more space for displaying messages
+set updatetime=300              " Set updatetime
+set shortmess+=c                " Don't pass message to ins-completion-menu
 
 syntax sync minlines=200        " speed-up vim
 set colorcolumn=80              " ruler
@@ -117,17 +120,35 @@ let g:netrw_list_hide.='\.so,\.swp,\.zip,/\.Trash/,\.pdf,\.dmg,/Library/,/\.rben
 let g:netrw_list_hide.='*/\.nx/**,*\.app'
 let g:netrw_list_hide.='__pycache__/'
 
+function! NetrwMapping()
+  nnoremap <buffer> <silent> <c-l> :wincmd l<cr>                " Unmap keybinding
+endfunction
+
+" Toggle Vexplore with Leader-E
+let g:NetrwIsOpen=0
+
+function! ToggleNetrw()
+    if g:NetrwIsOpen
+        let i = bufnr("$")
+        while (i >= 1)
+            if (getbufvar(i, "&filetype") == "netrw")
+                silent exe "bwipeout " . i 
+            endif
+            let i-=1
+        endwhile
+        let g:NetrwIsOpen=0
+    else
+        let g:NetrwIsOpen=1
+        silent Lexplore
+    endif
+endfunction
+nnoremap <silent> <leader>e :call ToggleNetrw()<CR>
+
 augroup NetRw
   autocmd!
   autocmd filetype netrw call NetrwMapping()
-  autocmd VimEnter * if argc() == 0 | cd ~ | Vexplore | wincmd w | Startify | endif
+  autocmd VimEnter * if argc() == 0 | cd ~ | Startify | call ToggleNetrw() | wincmd w | endif
 augroup END
-
-function! NetrwMapping()
-  nnoremap <buffer> <c-l> :wincmd l<cr>                " Unmap keybinding
-endfunction
-
-nnoremap <silent> <leader>e :Vexplore<cr>
 
 " ----- ale -----
 let g:ale_lint_on_save = 1                            "Lint when saving a file
