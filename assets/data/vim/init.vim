@@ -68,6 +68,8 @@ Plug 'junegunn/vim-easy-align'          " vim alignment
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } "Install fzf
 Plug 'junegunn/fzf.vim'                 " fzf plugin
 Plug 'neoclide/coc.nvim', {'branch': 'release'} " Completion
+Plug 'fisadev/vim-isort'                " Sort import statements of python
+Plug 'heavenshell/vim-pydocstring', { 'do': 'make install' }  " Autodocstring
 
 call plug#end()
 
@@ -75,7 +77,7 @@ call plug#end()
 " ----- netrw -----
 let g:netrw_banner=0                                   " disable annoying banner
 let g:netrw_winsize = 18                               " width in percent
-let g:netrw_browse_split=4                             " open in prior window
+"let g:netrw_browse_split=1                             " open in prior window
 let g:netrw_altv=1                                     " open splits to the right
 let g:netrw_hide=1                                     " show not-hidden files
 let g:netrw_list_hide='\.o,\.obj,*\~,\.pyc,\.class'    "stuff to ignore when tab completing
@@ -187,9 +189,10 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 " ----- FZF -----
+nnoremap <silent> <C-s-p> :Files<CR>
 nnoremap <silent> <C-p> :Files<CR>
 nnoremap <silent> <C-o> :Buffers<CR>
-nnoremap <C-f> :Rg 
+nnoremap <C-f> :Rg<CR>
 
 " ----- COC -----
 " GoTo code navigation.
@@ -211,6 +214,19 @@ endfunction
 
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" ----- isort -----
+let g:vim_isort_config_overrides = {
+  \ 'line_length': 79, 'include_trailing_comma': 1,
+  \ 'use_parentheses': 1, 'atomic': 0, 'multi_line_output': 4,
+  \ 'import_heading_stdlib': 'Standard library imports',
+  \ 'import_heading_firstparty' : 'Local imports',
+  \ 'import_heading_thirdparty': 'Third party imports'}
+
+" ----- vim-pydocstring -----
+autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
+nmap <silent> <leader>d <Plug>(pydocstring)
+let g:pydocstring_formatter = 'numpy'
 
 "================================= Key binding ==================================
 " ----- 창이동 단축키 -----
