@@ -137,7 +137,7 @@ nnoremap <silent> <leader>e :call ToggleNetrw()<CR>
 augroup NetRw
   autocmd!
   autocmd filetype netrw call NetrwMapping()
-  autocmd VimEnter * if argc() == 0 | Startify | call ToggleNetrw() | wincmd w | endif
+  "autocmd VimEnter * if argc() == 0 | Startify | call ToggleNetrw() | wincmd w | endif
 augroup END
 
 " ----- ale -----
@@ -180,6 +180,10 @@ nmap <silent> <leader>gs :G<CR>
 
 " ----- Undotreee -----
 nmap <silent> <leader>u :UndotreeShow<CR>
+
+" ----- pytest -----
+nmap <silent> <leader>pp :w<CR>:Pytest project<CR>
+nmap <silent> <leader>pf :w<CR>:Pytest function<CR>
 
 " ----- Vim-easy-align -----
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -229,6 +233,12 @@ nmap <silent> <leader>d <Plug>(pydocstring)
 let g:pydocstring_formatter = 'numpy'
 
 "================================= Key binding ==================================
+" ----- pip install . -----
+noremap <silent> <Leader>pip :w<CR>:!pip install .<CR>
+
+" ----- Change working directory -----
+noremap <silent> <Leader>cd :cd %:h<CR>
+
 " ----- 창이동 단축키 -----
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
