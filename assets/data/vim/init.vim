@@ -169,7 +169,7 @@ let g:airline_theme='minimalist'
 set laststatus=2 " turn on bottom bar
 
 " ----- Nerd commenter -----
-map <silent> <Leader>r <Plug>NERDCommenterToggle
+map <silent> <Leader>t <Plug>NERDCommenterToggle
 
 " ----- Indent guide -----
 let g:indentLine_enabled = 1
@@ -193,9 +193,8 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 " ----- FZF -----
-nnoremap <silent> <C-s-p> :Files<CR>
 nnoremap <silent> <C-p> :Files<CR>
-nnoremap <silent> <C-o> :Buffers<CR>
+nnoremap <silent> <C-[> :Buffers<CR>
 nnoremap <C-f> :Rg<CR>
 
 " ----- COC -----
