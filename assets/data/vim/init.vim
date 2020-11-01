@@ -169,21 +169,21 @@ let g:airline_theme='minimalist'
 set laststatus=2 " turn on bottom bar
 
 " ----- Nerd commenter -----
-map <silent> <Leader>t <Plug>NERDCommenterToggle
+noremap <silent> <leader>gc <Plug>NERDCommenterToggle
 
 " ----- Indent guide -----
 let g:indentLine_enabled = 1
 set list listchars=trail:·
 
 " ----- Fugitive ----- 
-nmap <silent> <leader>gs :G<CR>
+nnoremap <silent> <leader>gs :G<CR>
 
 " ----- Undotreee -----
-nmap <silent> <leader>u :UndotreeShow<CR>
+nnoremap <silent> <leader>u :UndotreeShow<CR>
 
 " ----- pytest -----
-nmap <silent> <leader>pp :w<CR>:Pytest project<CR>
-nmap <silent> <leader>pf :w<CR>:Pytest function<CR>
+nnoremap <silent> <leader>tp :w<CR>:Pytest project<CR>
+nnoremap <silent> <leader>tf :w<CR>:Pytest function<CR>
 
 " ----- Vim-easy-align -----
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -194,7 +194,7 @@ nmap ga <Plug>(EasyAlign)
 
 " ----- FZF -----
 nnoremap <silent> <C-p> :Files<CR>
-nnoremap <silent> <C-[> :Buffers<CR>
+nnoremap <silent> <leader>p :Buffers<CR>
 nnoremap <C-f> :Rg<CR>
 
 " ----- COC -----
@@ -233,10 +233,10 @@ let g:pydocstring_formatter = 'numpy'
 
 "================================= Key binding ==================================
 " ----- pip install . -----
-noremap <silent> <Leader>pip :w<CR>:!pip install .<CR>
+nnoremap <silent> <Leader>in :w<CR>:!pip install .<CR>
 
 " ----- Change working directory -----
-noremap <silent> <Leader>cd :cd %:h<CR>
+nnoremap <silent> <Leader>cd :cd %:h<CR>
 
 " ----- 창이동 단축키 -----
 noremap <C-h> <C-w>h
