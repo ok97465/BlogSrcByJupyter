@@ -58,7 +58,7 @@ Plug 'SirVer/ultisnips'                 " Snippets engine
 Plug 'honza/vim-snippets'               " Snippets
 Plug 'vim-airline/vim-airline'          " Statusbar
 Plug 'vim-airline/vim-airline-themes'   " Statusbar theme
-Plug 'preservim/nerdcommenter'          " Comment toggle
+Plug 'tomtom/tcomment_vim'              " Comment toggle
 Plug 'Yggdroot/indentLine'              " Indent guide
 Plug 'tpope/vim-fugitive'               " For git
 Plug 'mbbill/undotree'                  " Visualize undo history
@@ -167,9 +167,6 @@ let g:UltiSnipsEditSplit="vertical"
 let g:airline#extensions#tabline#enabled = 1 " turn on buffer list
 let g:airline_theme='minimalist'
 set laststatus=2 " turn on bottom bar
-
-" ----- Nerd commenter -----
-noremap <silent> <leader>gc <Plug>NERDCommenterToggle
 
 " ----- Indent guide -----
 let g:indentLine_enabled = 1
