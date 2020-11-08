@@ -11,6 +11,7 @@ set number                      " line numbers
 set history=1000                " store :cmd history
 set hlsearch                    " highlight searching result
 set ignorecase                  " ignore Case sensitive when searching
+set smartcase                   " Override the 'ignorecase' option if the seach pattern contains upper case characters.
 set showmatch                   " highlight matched bracket ()
 set nowrap                      " display long lines as just on line
 set cmdheight=2                 " Give more space for displaying messages
@@ -192,7 +193,7 @@ nmap ga <Plug>(EasyAlign)
 " ----- FZF -----
 nnoremap <silent> <C-p> :Files<CR>
 nnoremap <silent> <leader>p :Buffers<CR>
-nnoremap <C-f> :Rg<CR>
+nnoremap <silent> <leader>f :Rg<CR>
 
 " ----- COC -----
 " GoTo code navigation.
