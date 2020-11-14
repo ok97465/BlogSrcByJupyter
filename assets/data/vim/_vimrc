@@ -66,14 +66,14 @@ call plug#begin('~/.vim/plugged')
 Plug 'w0rp/ale'                         " Lint engine
 Plug 'nightsense/simplifysimplify'      " Theme
 Plug 'jiangmiao/auto-pairs'             " Auto pair for ',), }, ]...
-Plug 'ctrlpvim/ctrlp.vim'               " Ctrl + P for search file
 Plug 'mhinz/vim-startify'               " Fancy start page for empty vim
+Plug 'ctrlpvim/ctrlp.vim'               " Ctrl + P for search file
 Plug 'tmhedberg/matchit'                " Extended % matching
 Plug 'SirVer/ultisnips'                 " Snippets engine
 Plug 'honza/vim-snippets'               " Snippets
 Plug 'vim-airline/vim-airline'          " Statusbar
 Plug 'vim-airline/vim-airline-themes'   " Statusbar theme
-Plug 'preservim/nerdcommenter'          " Comment toggle
+Plug 'tomtom/tcomment_vim'              " Comment toggle
 Plug 'Yggdroot/indentLine'              " Indent guide
 Plug 'tpope/vim-fugitive'               " For git
 Plug 'mbbill/undotree'                  " Visualize undo history
@@ -82,6 +82,7 @@ Plug 'jremmen/vim-ripgrep'              " Recursive search for regex
 Plug 'junegunn/vim-easy-align'          " vim alignment
 Plug 'fisadev/vim-isort'                " Sort import statements of python
 Plug 'heavenshell/vim-pydocstring', { 'do': 'make install' }  " Autodocstring
+Plug 'machakann/vim-highlightedyank'    " highlight after yank
 
 call plug#end()
 
@@ -173,7 +174,7 @@ let g:ctrlp_custom_ignore = {
   \ 'file': '\v\.(pyc|so|dll)$',
   \ }
 
-nnoremap <silent> <leader>. :CtrlPTag<cr>
+nnoremap <silent> <leader>p :CtrlPBuffer<cr>
 
 " ---- UltiSnips ----
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -185,9 +186,6 @@ let g:UltiSnipsEditSplit="vertical"
 let g:airline#extensions#tabline#enabled = 1  " turn on buffer list
 let g:airline_theme='minimalist'
 set laststatus=2                              " turn on bottom bar
-
-" ----- Nerd commenter ----
-map <silent> <Leader>t <Plug>NERDCommenterToggle
 
 " ----- NeoSolarized -----
 colorscheme simplifysimplify-dark
@@ -206,7 +204,7 @@ nmap <silent> <leader>u :UndotreeShow<CR>
 if executable('rg')
     let g:rg_derive_root='true'
 endif
-nnoremap <leader>f :Rg -i 
+nnoremap <C-f> :Rg -i 
 
 " ----- Vim-easy-align -----
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -229,6 +227,9 @@ nmap <silent> <leader>d <Plug>(pydocstring)
 let g:pydocstring_doq_path = 'C:\Anaconda3\Scripts\doq.exe'
 let g:pydocstring_formatter = 'numpy'
 
+" ----- vim-highlightedyank -----
+let g:highlightedyank_highlight_duration = 400
+
 "============================ Key binding ===========================================
 
 " ESC키를 누르면 한글모드가 해제
@@ -240,6 +241,12 @@ nnoremap a :set noimd<CR>a
 nnoremap A :set noimd<CR>A
 nnoremap o :set noimd<CR>o
 nnoremap O :set noimd<CR>O
+
+" ----- pip install . -----
+nnoremap <silent> <Leader>in :w<CR>:!pip install .<CR>
+
+" ----- Change working directory -----
+nnoremap <silent> <Leader>cd :cd %:h<CR>
 
 " ----- 창이동 단축키 -----
 noremap <C-h> <C-w>h

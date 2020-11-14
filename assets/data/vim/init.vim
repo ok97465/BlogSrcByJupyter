@@ -71,6 +71,7 @@ Plug 'junegunn/fzf.vim'                 " fzf plugin
 Plug 'neoclide/coc.nvim', {'branch': 'release'} " Completion
 Plug 'fisadev/vim-isort'                " Sort import statements of python
 Plug 'heavenshell/vim-pydocstring', { 'do': 'make install' }  " Autodocstring
+Plug 'machakann/vim-highlightedyank'    " highlight after yank
 
 call plug#end()
 
@@ -228,6 +229,9 @@ let g:vim_isort_config_overrides = {
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 nmap <silent> <leader>d <Plug>(pydocstring)
 let g:pydocstring_formatter = 'numpy'
+
+" ----- vim-highlightedyank -----
+let g:highlightedyank_highlight_duration = 400
 
 "================================= Key binding ==================================
 " ----- pip install . -----
