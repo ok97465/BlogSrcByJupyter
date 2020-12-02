@@ -204,7 +204,7 @@ nmap <silent> <leader>u :UndotreeShow<CR>
 if executable('rg')
     let g:rg_derive_root='true'
 endif
-nnoremap <C-f> :Rg -i 
+nnoremap <leader>f :Rg -i 
 
 " ----- Vim-easy-align -----
 " Start interactive EasyAlign in visual mode (e.g. vipga)
