@@ -7,7 +7,6 @@ filetype on         " 파일 종류를 자동으로 인식
 let mapleader=" "
 
 set nocompatible                " vi와 호환하지 않음
-set number                      " line numbers
 set history=1000                " store :cmd history
 set hlsearch                    " highlight searching result
 set ignorecase                  " ignore Case sensitive when searching
@@ -19,11 +18,16 @@ set updatetime=300              " Set updatetime
 set shortmess+=c                " Don't pass message to ins-completion-menu
 
 "================================= Optional setting =================================
-set relativenumber              " show relative number from current line
 set title                       " change the terminal title
 set cursorline                  " highlight cursor line
 set mouse=h                     " Enable mouse in help mode
                                 " 'a' to all mode, n, v, i, c to Normal, Visual, Insert, Command mode
+
+"============================= Smart relative line number ===========================
+set number                      " line numbers
+set relativenumber              " show relative number from current line
+autocmd InsertEnter * :set norelativenumber
+autocmd InsertLeave * :set relativenumber 
 
 syntax sync minlines=200        " speed-up vim
 set colorcolumn=80              " ruler

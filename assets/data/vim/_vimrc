@@ -9,8 +9,6 @@ set sc                          " 완성중인 명령을 표시
 set sm                          " 함수 닫기 표시
 set vb                          " 키를 잘못눌렀을 때 삑 소리를 내는 대신 번쩍임
 set hls                         " 검색된 스트링의 하이라이트
-set nu                          " 라인수를 표시
-set rnu                         " 상대적인 라인수를 표시
 set scs                         " 똑똑한 대소문자 구별 기능
 set hi=50                       " 명령어를 기록에 날길 개수 지정
 set cul                         " 커서가 있는 라인 하이라이트
@@ -28,6 +26,12 @@ set shortmess+=c                " Don't pass message to ins-completion-menu
 
 syntax sync minlines=200        " speed-up vim
 set colorcolumn=80              " ruler
+
+"============================= Smart relative line number ===========================
+set number                      " line numbers
+set relativenumber              " show relative number from current line
+autocmd InsertEnter * :set norelativenumber
+autocmd InsertLeave * :set relativenumber 
 
 "================================= Turn of swap =====================================
 set noswapfile
