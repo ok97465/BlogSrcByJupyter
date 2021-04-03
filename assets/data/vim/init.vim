@@ -76,6 +76,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'} " Completion
 Plug 'fisadev/vim-isort'                " Sort import statements of python
 Plug 'heavenshell/vim-pydocstring', { 'do': 'make install' }  " Autodocstring
 Plug 'machakann/vim-highlightedyank'    " highlight after yank
+Plug 'easymotion/vim-easymotion'    " easy motion
 
 call plug#end()
 
