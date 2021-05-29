@@ -1,6 +1,7 @@
 {
   "alias": {
     "np": "numpy",
+    "ne": "numexpr3",
     "plt": "matplotlib.pyplot",
     "osp": "os.path",
     "sp": "scipy",
@@ -21,6 +22,12 @@
     ],
     "dataclasses": [
       "dataclass"
+    ],
+    "dataslots": [
+      "dataslots"
+    ],
+    "collections": [
+      "defaultdict"
     ],
     "time": [
       "sleep"
@@ -43,11 +50,20 @@
       "get_ipython"
     ],
     "multiprocessing.pool": [
-      "ThreadPool"
+      "ThreadPool",
+      "Pool"
     ],
     "typing": [
       "List",
-      "Tuple"
+      "Tuple",
+      "NamedTuple"
+    ],
+    "numexpr3": [
+      "evaluate"
+    ],
+    "numba": [
+      "njit",
+      "prange"
     ],
     "numpy": [
       "linspace",
@@ -65,7 +81,7 @@
     "numpy.lib.npyio": [
       "savez"
     ],
-    "numpy.random": [
+    "mkl_random": [
       "binomial",
       "chisquare",
       "choice",
@@ -93,13 +109,15 @@
       "zipf"
     ],
     "numpy.fft": [
-      "fft",
-      "ifft",
-      "fft2",
-      "ifft2",
       "fftshift",
       "ifftshift",
       "fftfreq"
+    ],
+    "mkl_fft": [
+      "fft",
+      "ifft",
+      "fft2",
+      "ifft2"
     ],
     "numpy.core.numerictypes": [
       "int8",
@@ -271,7 +289,8 @@
       "periodogram",
       "argrelmax",
       "argrelmin",
-      "firls"
+      "firls",
+      "freqz"
     ],
     "scipy.linalg": [
       "lu"
@@ -282,6 +301,9 @@
     "scipy.io": [
       "loadmat",
       "savemat"
+    ],
+    "mayavi": [
+      "mlab"
     ],
     "mpl_toolkits.mplot3d": [
       "Axes3D"
