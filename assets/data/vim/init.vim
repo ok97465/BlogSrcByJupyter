@@ -265,8 +265,11 @@ if has("nvim")
 endif
 
 " ------ Run python ------
-autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
-autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
+autocmd FileType python map <buffer> <s-F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
+autocmd FileType python imap <buffer> <s-F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
+" run module
+autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), 1)<CR>
+autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), 1)<CR>
 
 " ------ Edit vimrc  -----
 nnoremap <silent> <Leader>, :e $MYVIMRC<CR>
