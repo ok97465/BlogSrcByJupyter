@@ -7,102 +7,107 @@ filetype on                                                  " 파일 종류를 
 let mapleader=" "
 
 set nocompatible                                             " vi와 호환하지 않음
-set ru                                                       " 화면 우측 한단에 현재 커서의 위치(줄,칸)
-set sc                                                       " 완성중인 명령을 표시
-set sm                                                       " 함수 닫기 표시
-set vb                                                       " 키를 잘못눌렀을 때 삑 소리를 내는 대신 번쩍임
-set hls                                                      " 검색된 스트링의 하이라이트
-set scs                                                      " 똑똑한 대소문자 구별 기능
-set hi=50                                                    " 명령어를 기록에 날길 개수 지정
-set cul                                                      " 커서가 있는 라인 하이라이트
-set ic                                                       " 검색시 대소문자 무시
-set incsearch                                                " 키워드 입력시 점진적 검색
 set title                                                    " change the terminal title
 set mousehide                                                " 타이핑시 마우스 커서 감추기
-set scrolloff=2                                              " 최소한 2줄이하로는 자동 스크롤
+set ru                                                       " 화면 우측 한단에 현재 커서의 위치(줄,칸)
+set cul                                                      " 커서가 있는 라인 하이라이트
+set sc                                                       " 완성중인 명령을 표시
+set sm                                                       " 괄호를 닫을때 짝이 맞는 괄호를 표시
+set vb                                                       " 키를 잘못눌렀을 때 삑 소리를 내는 대신 번쩍임
+set hi=50                                                    " 명령어를 기록에 날길 개수 지정
+set scrolloff=8                                              " Vim cursor가 화면 마지막 8줄 밑으로 내려가면 화면을 스크롤 한다.
 set backspace=eol,start,indent                               " 줄 끝, 시작, 들여쓰기의 백스페이스시 이전줄로
 set nowrap                                                   " display long lines as just on line
 set cmdheight=2                                              " Give more space for displaying messages
-set updatetime=300                                           " Set updatetime
-set shortmess+=c                                             " Don't pass message to ins-completion-menu
+set updatetime=300                                           " 입력이 중단된 후 얼마 후에 swap 파일에 쓸 것인지 결정 [ms]
+set shortmess+=c                                             " Avoid showing message extra message when using completion
+set hidden                                                   " buffer가 수정되었어도 다른 buffer을 불러온다.
+set signcolumn=yes                                           " Lint 결과를 표시할 column을 항상 표시한다.
 
 syntax sync minlines=200                                     " speed-up vim
-set colorcolumn=79                                           " ruler
-highlight colorcolumn ctermbg=0 guibg=darkgreen  " color of ruler
+set colorcolumn=80                                           " ruler
+highlight colorcolumn ctermbg=0 guibg=darkgreen              " color of ruler
 
-" ============================= Smart relative line number ===========================
+" =================================== Search ==================================
+set ic                                                       " 검색시 대소문자 무시
+set scs                                                      " 똑똑한 대소문자 구별 기능
+set incsearch                                                " 키워드 입력시 점진적 검색
+" set hls                                                      " 검색된 스트링의 하이라이트
+set nohlsearch                                               " 검색 완료후 highlight 삭제
+
+" ================================= line number ===============================
 set number                                                   " line numbers
 set relativenumber                                           " show relative number from current line
-autocmd InsertEnter * :set norelativenumber
-autocmd InsertLeave * :set relativenumber 
+set nuw=5                                                    " 줄번호 표시 너비 설정
 
-" ================================= Turn of swap =====================================
+" ================================= Turn of swap ==============================
 set noswapfile
 set nobackup
 set nowb
 
 " ================================= Turn of undo ==============================
-set undodir=~/undo                                           " Undo Folder
+set undodir=~/undo                                            " Undo Folder
 set undofile
 
-" ================================= Indentation ======================================
-set si                                                       " 좀더 똑똑한 들여 쓰기
-set ts=4                                                     " TAB 간격을 4칸으로 설정
-set sw=4                                                     " 자동 들여쓰기를 4칸으로 설정
-set et                                                       " TAB을 Space로 대체
-set ai                                                       " 자동 들여쓰기
-set ci                                                       " C 형태의 들여쓰기
+" ================================= Indentation ===============================
+set si                                                        " 좀더 똑똑한 들여 쓰기
+set ts=4                                                      " TAB 간격을 4칸으로 설정
+set sw=4                                                      " 자동 들여쓰기를 4칸으로 설정
+set et                                                        " TAB을 Space로 대체
+set ai                                                        " 자동 들여쓰기
+set ci                                                        " C 형태의 들여쓰기
 
-" ================================ 폰트 지정 =========================================
+" ================================= 폰트 지정 =================================
 set fileencodings=utf-8,cp949
-set fencs=ucs-bom,utf-8,euc-kr.latin1                        " 한글 파일은 euc-kr로, 유니코드는 유니코드로
-set tenc=cp949                                               " 터미널 인코딩
+set fencs=ucs-bom,utf-8,euc-kr.latin1                         " 한글 파일은 euc-kr로, 유니코드는 유니코드로
+set tenc=cp949                                                " 터미널 인코딩
 set guifont=D2Coding\ Ligature:h12:cHANGEUL
 
-" ============================== GUI 초기 윈도우 크기 지정 ===========================
+" =========================== GUI 초기 윈도우 크기 지정 =======================
 au GUIEnter * winsize 128 40
 
-" ============================= Plugin ===============================================
+" =================================== Plugin ==================================
 call plug#begin('~/.vim/plugged')
 
-Plug 'jiangmiao/auto-pairs'                                  " Auto pair for ',), }, ]...
-Plug 'mhinz/vim-startify'                                    " Fancy start page for empty vim
-Plug 'tmhedberg/matchit'                                     " Extended % matching
-Plug 'SirVer/ultisnips'                                      " Snippets engine
-Plug 'honza/vim-snippets'                                    " Snippets
-Plug 'tomtom/tcomment_vim'                                   " Comment toggle
-Plug 'Yggdroot/indentLine'                                   " Indent guide
-Plug 'tpope/vim-fugitive'                                    " For git
-Plug 'mbbill/undotree'                                       " Visualize undo history
-Plug 'alfredodeza/pytest.vim'                                " Pytest
-Plug 'ThePrimeagen/vim-be-good'                              " Vim Game
-Plug 'junegunn/vim-easy-align'                               " Vim alignment
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }          " Install fzf
-Plug 'junegunn/fzf.vim'                                      " FZF plugin
-Plug 'fisadev/vim-isort'                                     " Sort import statements of python
-Plug 'heavenshell/vim-pydocstring', { 'do': 'make install' } " Autodocstring
-Plug 'machakann/vim-highlightedyank'                         " Highlight after yank
-Plug 'easymotion/vim-easymotion'                             " Easy motion
-Plug 'kyazdani42/nvim-web-devicons'                          " File icons for nvim-tree, lualine
-Plug 'kyazdani42/nvim-tree.lua'                              " File explorer
-Plug 'nvim-lua/popup.nvim'                                   " Dependency of telescope
-Plug 'nvim-lua/plenary.nvim'                                 " Dependency of telescope
+Plug 'jiangmiao/auto-pairs'                                   " Auto pair for ',), }, ]...
+Plug 'mhinz/vim-startify'                                     " Fancy start page for empty vim
+Plug 'tmhedberg/matchit'                                      " Extended % matching
+Plug 'SirVer/ultisnips'                                       " Snippets engine
+Plug 'honza/vim-snippets'                                     " Snippets
+Plug 'tomtom/tcomment_vim'                                    " Comment toggle
+Plug 'Yggdroot/indentLine'                                    " Indent guide
+Plug 'tpope/vim-fugitive'                                     " For git
+Plug 'mbbill/undotree'                                        " Visualize undo history
+Plug 'alfredodeza/pytest.vim'                                 " Pytest
+Plug 'ThePrimeagen/vim-be-good'                               " Vim Game
+Plug 'junegunn/vim-easy-align'                                " Vim alignment
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }           " Install fzf
+Plug 'junegunn/fzf.vim'                                       " FZF plugin
+Plug 'fisadev/vim-isort'                                      " Sort import statements of python
+Plug 'heavenshell/vim-pydocstring', { 'do': 'make install' }  " Autodocstring
+Plug 'machakann/vim-highlightedyank'                          " Highlight after yank
+Plug 'easymotion/vim-easymotion'                              " Easy motion
+Plug 'kyazdani42/nvim-web-devicons'                           " File icons for nvim-tree, lualine
+Plug 'kyazdani42/nvim-tree.lua'                               " File explorer
+Plug 'nvim-lua/popup.nvim'                                    " Dependency of telescope
+Plug 'nvim-lua/plenary.nvim'                                  " Dependency of telescope
 Plug 'nvim-telescope/telescope.nvim'                          " Fuzzy finder
 Plug 'ryanoasis/vim-devicons'                                 " Icons for lualine
 Plug 'hoob3rt/lualine.nvim'                                   " Status bar
 Plug 'neovim/nvim-lspconfig'                                  " Language server
 Plug 'nvim-lua/completion-nvim'                               " Code Completion
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
-Plug 'navarasu/onedark.nvim'
+Plug 'simrat39/symbols-outline.nvim'                          " Outline
+Plug 'navarasu/onedark.nvim'                                  " Theme
 
 call plug#end()
 
 " ================================= Plugins setting ==================================
-                                                              " ----- Theme -----
+" ----- Theme -----
 let g:onedark_style = 'warmer'                                " We need add the configs before colorscheme line
 colorscheme onedark
 
-                                                              " ----- nvim-tree -----
+" ----- nvim-tree -----
 let g:nvim_tree_side = 'left'                                 " left by default
 let g:nvim_tree_width = 30                                    " 30 by default, can be width_in_columns or 'width_in_percent%'
 let g:nvim_tree_ignore = [ '.git', 'node_modules', '.cache' ] " empty by default
@@ -325,9 +330,6 @@ imap <silent> <c-p> <Plug>(completion_trigger)
 set completeopt=menuone,noinsert,noselect
 let g:completion_enable_snippet = 'UltiSnips'
 
-" Avoid showing message extra message when using completion
-set shortmess+=c
-
 " lint 수행시 attach를 추가
 " lua require'lspconfig'.pyls.setup{on_attach=require'completion'.on_attach}
 " 키 입력 시 마다 completion window 생성
@@ -347,6 +349,29 @@ require'nvim-treesitter.configs'.setup {
     -- Instead of true it can also be a list of languages
     additional_vim_regex_highlighting = false,
   },
+}
+EOF
+
+" ---- outline ----
+nnoremap <silent> <leader>s <cmd>SymbolsOutline<CR>
+lua <<EOF
+vim.g.symbols_outline = {
+    highlight_hovered_item = true,
+    show_guides = true,
+    auto_preview = true,
+    position = 'left',
+    show_numbers = false,
+    show_relative_numbers = false,
+    show_symbol_details = false,
+    keymaps = {
+        close = "<Esc>",
+        goto_location = "<Cr>",
+        focus_location = "o",
+        hover_symbol = "<C-space>",
+        rename_symbol = "r",
+        code_actions = "a",
+    },
+    lsp_blacklist = {},
 }
 EOF
 
