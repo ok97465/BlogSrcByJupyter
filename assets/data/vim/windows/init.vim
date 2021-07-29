@@ -25,7 +25,7 @@ set hidden                                                   " buffer가 수정�
 set signcolumn=yes                                           " Lint 결과를 표시할 column을 항상 표시한다.
 
 syntax sync minlines=200                                     " speed-up vim
-set colorcolumn=80                                           " ruler
+set colorcolumn=89                                           " ruler
 highlight colorcolumn ctermbg=0 guibg=darkgreen              " color of ruler
 
 " =================================== Search ==================================
@@ -99,6 +99,7 @@ Plug 'nvim-lua/completion-nvim'                               " Code Completion
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
 Plug 'simrat39/symbols-outline.nvim'                          " Outline
 Plug 'navarasu/onedark.nvim'                                  " Theme
+Plug 'psf/black', { 'branch': 'stable' }                      " python formatter
 
 call plug#end()
 
@@ -154,7 +155,7 @@ set termguicolors " this variable must be enabled for colors to be applied prope
 
 " a list of groups can be found at `:help nvim_tree_highlight`
 " highlight NvimTreeFolderIcon guibg=black
-nnoremap <silent> <C-e> <cmd>NvimTreeToggle<CR>
+nnoremap <silent> <Leader>e <cmd>NvimTreeToggle<CR>
 
 " ----- UltiSnips -----
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -197,14 +198,14 @@ cnoremap <silent> <C-f> History:<CR>
 
 " ----- telescope ----
 nnoremap <silent> <C-p> <cmd>Telescope find_files<cr>
-nnoremap <silent> <C-S-f> <cmd>Telescope live_grep<cr>
+nnoremap <silent> <c-s-f> <cmd>Telescope live_grep<cr>
 nnoremap <silent> <leader>p <cmd>Telescope buffers<cr>
+nnoremap <silent> <leader>q <cmd>lua require('telescope.builtin').lsp_document_diagnostics()<cr>
 
 " ----- isort -----
 nnoremap <silent> <leader>i <cmd>Isort<cr>
 let g:vim_isort_config_overrides = {
-  \ 'line_length': 79, 'include_trailing_comma': 1,
-  \ 'use_parentheses': 1, 'atomic': 0, 'multi_line_output': 4,
+  \ 'profile': 'black', 'multi_line_output': 3,
   \ 'import_heading_stdlib': 'Standard library imports',
   \ 'import_heading_firstparty' : 'Local imports',
   \ 'import_heading_thirdparty': 'Third party imports'}
@@ -219,7 +220,6 @@ let g:pydocstring_formatter = 'google'
 let g:highlightedyank_highlight_duration = 400
 
 " ----- lualine -----
-" autocmd VimEnter * lua require('lualine').setup()
 lua << EOF
 require'lualine'.setup {
   options = {
@@ -271,19 +271,19 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
   buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  -- buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  -- buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  -- buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  -- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  -- buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  -- buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  -- buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  -- buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  -- buf_set_keymap('n', '<space>l', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
   buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+  -- buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  -- buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 
 end
 
@@ -309,8 +309,8 @@ nvim_lsp.pyls.setup{
         pydocstyle = { enabled = true,
                        convention = "google" },
         pycodestyle = { enabled = true,
-                        maxLineLength = 79,
-                        ignore = {"W503", "E221"}
+                        maxLineLength = 88,
+                        ignore = {"W503", "E221", "E203"}
                       },
         pylint =  { enabled = false }
       }
@@ -371,9 +371,40 @@ vim.g.symbols_outline = {
         rename_symbol = "r",
         code_actions = "a",
     },
-    lsp_blacklist = {},
+    lsp_blacklist = {"pyls"},
+    symbol_blacklist = {
+        "File",
+        "Module",
+        "Namespace",
+        "Package",
+        -- "Class",
+        -- "Method",
+        "Property",
+        "Field",
+        "Constructor",
+        "Enum",
+        "Interface",
+        -- "Function",
+        "Variable",
+        -- "Constant",
+        "String", 
+        "Number",
+        "Boolean",
+        "Array",
+        "Object",
+        "Key",
+        "Null",
+        "EnumMember",
+        "Struct",
+        "Event",
+        "Operator",
+        "TypeParameter"
+    }
 }
 EOF
+
+" ----- black formatter -----
+nnoremap <silent> <Leader>f <cmd>Black<CR>
 
 "================================= Key binding ==================================
 
