@@ -343,7 +343,7 @@ EOF
 au VimEnter * GuiPopupmenu 0
 
 " map <c-p> to manually trigger completion
-imap <silent> <c-p> <Plug>(completion_trigger)
+imap <silent> <c-space> <Plug>(completion_trigger)
 
 " Set completeopt to have a better completion experience
 set completeopt=menuone,noinsert,noselect

@@ -224,7 +224,7 @@ let g:vim_isort_config_overrides = {
 " ----- vim-pydocstring -----
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 nnoremap <silent> <leader>d <cmd>Pydocstring<cr>
-let g:pydocstring_doq_path = 'C:\Users\ok974\Anaconda3\Scripts\doq.exe'
+" let g:pydocstring_doq_path = 'C:\Users\ok974\Anaconda3\Scripts\doq.exe'
 let g:pydocstring_formatter = 'google'
 
 " ----- vim-highlightedyank -----
@@ -335,7 +335,7 @@ EOF
 " au VimEnter * GuiPopupmenu 0
 
 " map <c-p> to manually trigger completion
-imap <silent> <c-p> <Plug>(completion_trigger)
+imap <silent> <c-space> <Plug>(completion_trigger)
 
 " Set completeopt to have a better completion experience
 set completeopt=menuone,noinsert,noselect
