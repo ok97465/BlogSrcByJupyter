@@ -98,20 +98,19 @@ Plug 'neovim/nvim-lspconfig'                                  " Language server
 Plug 'nvim-lua/completion-nvim'                               " Code Completion
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
 Plug 'simrat39/symbols-outline.nvim'                          " Outline
-Plug 'navarasu/onedark.nvim'                                  " Theme
+Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
 Plug 'psf/black', { 'branch': 'stable' }                      " python formatter
 
 call plug#end()
 
 " ================================= Plugins setting ==================================
 " ----- Theme -----
-let g:onedark_style = 'warmer'                                " We need add the configs before colorscheme line
-colorscheme onedark
+lua vim.cmd[[colorscheme tokyonight]]
 
 " ----- nvim-tree -----
 let g:nvim_tree_side = 'left'                                 " left by default
 let g:nvim_tree_width = 30                                    " 30 by default, can be width_in_columns or 'width_in_percent%'
-let g:nvim_tree_ignore = [ '.git', 'node_modules', '.cache' ] " empty by default
+let g:nvim_tree_ignore = [ '.git', 'node_modules', '.cache', '__pycache__' ] " empty by default
 let g:nvim_tree_gitignore = 0                                 " 0 by default
 let g:nvim_tree_auto_open = 0                                 " 0 by default, opens the tree when typing `vim $DIR` or `vim`
 let g:nvim_tree_auto_close = 1                                " 0 by default, closes the tree when it's the last window
@@ -132,7 +131,7 @@ let g:nvim_tree_group_empty = 0                               " 0 by default, co
 let g:nvim_tree_lsp_diagnostics = 0                           " 0 by default, will show lsp diagnostics in the signcolumn. See :help nvim_tree_lsp_diagnostics
 let g:nvim_tree_disable_window_picker = 0                     " 0 by default, will disable the window picker.
 let g:nvim_tree_hijack_cursor = 1                             " 1 by default, when moving cursor in the tree, will position the cursor at the start of the file on the current line
-let g:nvim_tree_icon_padding = ' '                            " one space by default, used for rendering the space between the icon and the filename. Use with caution, it could break rendering if you set an empty string depending on your font.
+" let g:nvim_tree_icon_padding = ' '                            " one space by default, used for rendering the space between the icon and the filename. Use with caution, it could break rendering if you set an empty string depending on your font.
 let g:nvim_tree_update_cwd = 0                                " 0 by default, will update the tree cwd when changing nvim's directory (DirChanged event). Behaves strangely with autochdir set.
 let g:nvim_tree_window_picker_exclude = {
     \   'filetype': [
@@ -143,6 +142,11 @@ let g:nvim_tree_window_picker_exclude = {
     \     'terminal'
     \   ]
     \ }
+
+" Icon이 없는 파일도 Icon 있는 파일과 같은 들여쓰기가 되도록 deafult를 하나의 빈칸으로 설정한다.
+let g:nvim_tree_icons = {
+      \ 'default': ' ',
+      \}
 
 let g:nvim_tree_show_icons = {
     \ 'git': 0,
@@ -213,7 +217,7 @@ let g:vim_isort_config_overrides = {
 " ----- vim-pydocstring -----
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 nnoremap <silent> <leader>d <cmd>Pydocstring<cr>
-let g:pydocstring_doq_path = 'C:\Users\Nex1\Anaconda3\Scripts\doq.exe'
+let g:pydocstring_doq_path = 'C:\Users\ok974\Anaconda3\Scripts\doq.exe'
 let g:pydocstring_formatter = 'google'
 
 " ----- vim-highlightedyank -----
@@ -224,7 +228,7 @@ lua << EOF
 require'lualine'.setup {
   options = {
     icons_enabled = true,
-    theme = 'codedark',
+    theme = 'tokyonight',
     component_separators = {'', ''},
     section_separators = {'', ''},
     disabled_filetypes = {}
