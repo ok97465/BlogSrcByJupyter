@@ -201,11 +201,14 @@ nnoremap <silent> <leader>q <cmd>lua require('telescope.builtin').lsp_document_d
 lua << EOF
 require('telescope').setup{
   defaults = {
-    file_ignore_patterns = {'.gif', '.ico', '.jpg', '.jpeg', '.png', '.vsd', '.vsdx',
-    '.doc', '.docx', '.ppt', '.pptx', 'xls', 'xlsx', '.hwp', '.ipynb', '.pdf', '.pyc',
-    '.zip', '.dll', '.7z', '.exe', '.tar.*', '.mp3', '.mp4', '.m4a', '.svg', '.tif',
-    '.tiff', '.wav', '.spydata', '.npy', '.npz', '.mat', '.otf', '.ttf', '.ogg', '.pcx',
-    '.pyi', '.icns', '.bdf', '.pyd', '.pkg', '.pyz', '.dfw', '.msu'},
+    file_ignore_patterns = {
+        '%.gif', '%.ico', '%.jpg', '%.jpeg', '%.png', '%.icns', '%.svg', '%.tif',
+        '%.tiff', '%.vsd', '%.vsdx', '%.doc', '%.docx', '%.ppt', '%.pptx', '%.xls',
+        '%.xlsx', '%.hwp', '%.pdf', '%.dfw', '%.ipynb','%.pyc', '%.pyi', '%.pyd',
+        '%.pyz', '%.spydata', '%.npy', '%.npz', '%.mat', '%.zip', '%.dll', '%.7z',
+        '%.exe', '%.tar', '%.mp3', '%.mp4', '%.m4a', '%.wav', '%.ogg', '%.pcx',
+        '%.bdf', '%.pkg', '%.msu', '%.otf', '%.ttf', 'build/.*', '.git/.*',
+        '__pycache__/.*', '.ipynb_checkpoints/.*', '.spyproject/.*', '.idea/.*'},
   }
 }
 EOF
