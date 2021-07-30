@@ -202,11 +202,14 @@ lua << EOF
 require('telescope').setup{
   defaults = {
     file_ignore_patterns = {'.gif', '.ico', '.jpg', '.jpeg', '.png', '.vsd', '.vsdx',
-    '.doc', '.docx', '.ppt', '.pptx', '.hwp', '.ipynb', '.pdf', '.pyc',
-    '.zip', '.dll', '.7z', '.exe', '.tar.*', '.mp3', '.mp4', '.m4a'},
+    '.doc', '.docx', '.ppt', '.pptx', 'xls', 'xlsx', '.hwp', '.ipynb', '.pdf', '.pyc',
+    '.zip', '.dll', '.7z', '.exe', '.tar.*', '.mp3', '.mp4', '.m4a', '.svg', '.tif',
+    '.tiff', '.wav', '.spydata', '.npy', '.npz', '.mat', '.otf', '.ttf', '.ogg', '.pcx',
+    '.pyi', '.icns', '.bdf', '.pyd'},
   }
 }
 EOF
+
 
 " ----- isort -----
 nnoremap <silent> <leader>i <cmd>Isort<cr>
