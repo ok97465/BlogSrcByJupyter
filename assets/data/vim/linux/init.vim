@@ -198,6 +198,16 @@ nnoremap <silent> <c-s-f> <cmd>Telescope live_grep<cr>
 nnoremap <silent> <leader>p <cmd>Telescope buffers<cr>
 nnoremap <silent> <leader>q <cmd>lua require('telescope.builtin').lsp_document_diagnostics()<cr>
 
+lua << EOF
+require('telescope').setup{
+  defaults = {
+    file_ignore_patterns = {'.gif', '.ico', '.jpg', '.jpeg', '.png', '.vsd', '.vsdx',
+    '.doc', '.docx', '.ppt', '.pptx', '.hwp', '.ipynb', '.pdf', '.pyc',
+    '.zip', '.dll', '.7z', '.exe', '.tar.*', '.mp3', '.mp4', '.m4a'},
+  }
+}
+EOF
+
 " ----- isort -----
 nnoremap <silent> <leader>i <cmd>Isort<cr>
 let g:vim_isort_config_overrides = {
