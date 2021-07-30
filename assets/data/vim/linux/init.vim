@@ -205,11 +205,10 @@ require('telescope').setup{
     '.doc', '.docx', '.ppt', '.pptx', 'xls', 'xlsx', '.hwp', '.ipynb', '.pdf', '.pyc',
     '.zip', '.dll', '.7z', '.exe', '.tar.*', '.mp3', '.mp4', '.m4a', '.svg', '.tif',
     '.tiff', '.wav', '.spydata', '.npy', '.npz', '.mat', '.otf', '.ttf', '.ogg', '.pcx',
-    '.pyi', '.icns', '.bdf', '.pyd'},
+    '.pyi', '.icns', '.bdf', '.pyd', '.pkg', '.pyz', '.dfw', '.msu'},
   }
 }
 EOF
-
 
 " ----- isort -----
 nnoremap <silent> <leader>i <cmd>Isort<cr>
