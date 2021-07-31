@@ -92,6 +92,8 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
 Plug 'simrat39/symbols-outline.nvim'                          " Outline
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
 Plug 'psf/black', { 'branch': 'stable' }                      " python formatter
+Plug 'mfussenegger/nvim-dap'                                  " debugger
+Plug 'rcarriga/nvim-dap-ui'                                   " debugger ui
 
 call plug#end()
 
@@ -226,6 +228,7 @@ autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 nnoremap <silent> <leader>d <cmd>Pydocstring<cr>
 " let g:pydocstring_doq_path = 'C:\Users\ok974\Anaconda3\Scripts\doq.exe'
 let g:pydocstring_formatter = 'google'
+let g:pydocstring_enable_mapping=0  " Disable default keymap of pydocstring
 
 " ----- vim-highlightedyank -----
 let g:highlightedyank_highlight_duration = 400
@@ -416,6 +419,97 @@ EOF
 
 " ----- black formatter -----
 nnoremap <silent> <Leader>f <cmd>Black<CR>
+
+" ----- dap -----
+nnoremap <silent> <Leader>b <cmd>lua require'dap'.toggle_breakpoint()<CR>
+nnoremap <silent> <c-f5> <cmd>lua require'dap'.continue()<CR>
+nnoremap <silent> <c-f10> <cmd>lua require'dap'.step_over()<CR>
+nnoremap <silent> <c-f11> <cmd>lua require'dap'.step_into()<CR>
+
+lua <<EOF
+local dap = require('dap')
+dap.adapters.python = {
+  type = 'executable';
+  command = 'python';
+  args = { '-m', 'debugpy.adapter'};
+}
+
+local dap = require('dap')
+dap.configurations.python = {
+  {
+    -- The first three options are required by nvim-dap
+    type = 'python'; -- the type here established the link to the adapter definition: `dap.adapters.python`
+    request = 'launch';
+    name = "Launch file";
+
+    -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
+
+    -- program ='${workspaceFolder}';
+    module =function()
+      local substitute = vim.fn.substitute 
+      local fnamemodify = vim.fn.fnamemodify 
+      local expand = vim.fn.expand 
+      return substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g")
+    end;
+
+    pythonPath = function()
+      -- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
+      -- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
+      -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
+      local cwd = vim.fn.getcwd()
+      if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
+        return cwd .. '/venv/bin/python'
+      elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
+        return cwd .. '/.venv/bin/python'
+      else
+        return 'python'
+      end
+    end;
+  },
+}
+EOF
+
+" ----- dap-ui -----
+lua <<EOF
+require("dapui").setup({
+  icons = {
+    expanded = "▾",
+    collapsed = "▸"
+  },
+  mappings = {
+    -- Use a table to apply multiple mappings
+    expand = {"<CR>", "<2-LeftMouse>"},
+    open = "o",
+    remove = "d",
+    edit = "e",
+    repl = "r",
+  },
+  sidebar = {
+    open_on_start = true,
+    elements = {
+      -- You can change the order of elements in the sidebar
+      "scopes",
+      "breakpoints",
+      "stacks",
+      "watches"
+    },
+    width = 40,
+    position = "left" -- Can be "left" or "right"
+  },
+  tray = {
+    open_on_start = true,
+    elements = {
+      "repl"
+    },
+    height = 10,
+    position = "bottom" -- Can be "bottom" or "top"
+  },
+  floating = {
+    max_height = nil, -- These can be integers or a float between 0 and 1.
+    max_width = nil   -- Floats will be treated as percentage of your screen.
+  }
+})
+EOF
 
 "================================= Key binding ==================================
 " ----- pip install . -----
