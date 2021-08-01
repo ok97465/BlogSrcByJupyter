@@ -17,6 +17,7 @@ set vb                                                       " 키를 잘못눌�
 set hi=50                                                    " 명령어를 기록에 날길 개수 지정
 set scrolloff=8                                              " Vim cursor가 화면 마지막 8줄 밑으로 내려가면 화면을 스크롤 한다.
 set backspace=eol,start,indent                               " 줄 끝, 시작, 들여쓰기의 백스페이스시 이전줄로
+set textwidth=88                                             " vim script 편집 시 88번째 글자를 넘어가면 자동 줄바꿈된다.
 set nowrap                                                   " display long lines as just on line
 set cmdheight=2                                              " Give more space for displaying messages
 set updatetime=300                                           " 입력이 중단된 후 얼마 후에 swap 파일에 쓸 것인지 결정 [ms]
@@ -273,6 +274,9 @@ require'lualine'.setup {
 EOF
 
 " ----- nvim-lspconfig -----
+" 아래 명령을 이용하여 lspconfig의 상태를 확인할 수 있다.
+" lua require 'lspconfig/health'.check_health()
+
 lua << EOF
 local nvim_lsp = require('lspconfig')
 
@@ -311,7 +315,7 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { "pyright" }
+local servers = { "pyright", "cmake", 'ccls' }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     on_attach = on_attach,
@@ -434,6 +438,43 @@ nnoremap <silent> <c-f5> <cmd>lua require'dap'.continue()<CR>
 nnoremap <silent> <c-f10> <cmd>lua require'dap'.step_over()<CR>
 nnoremap <silent> <c-f11> <cmd>lua require'dap'.step_into()<CR>
 
+" ----- dap for cpp -----
+lua <<EOF
+local dap = require('dap')
+dap.adapters.cppdbg = {
+  type = 'executable',
+  command = 'c:\\code_c\\00_debugger\\cpptools\\extension\\debugAdapters\\OpenDebugAD7',
+}
+
+dap.configurations.cpp = {
+  {
+    name = "Launch file",
+    type = "cppdbg",
+    request = "launch",
+    program = function()
+      -- return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/build', 'hello.x')
+      return '/home/ok97465/code_c/hello/build/hello.x'
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = true,
+  },
+  {
+    name = 'Attach to gdbserver :1234',
+    type = 'cppdbg',
+    request = 'launch',
+    MIMode = 'gdb',
+    miDebuggerServerAddress = 'localhost:1234',
+    miDebuggerPath = '/usr/bin/gdb',
+    cwd = '${workspaceFolder}',
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+  },
+}
+dap.configurations.c = dap.configurations.cpp
+EOF
+
+" ----- dap for python -----
 lua <<EOF
 local dap = require('dap')
 dap.adapters.python = {
