@@ -66,7 +66,7 @@ Plug 'jiangmiao/auto-pairs'                                   " Auto pair for ',
 Plug 'mhinz/vim-startify'                                     " Fancy start page for empty vim
 Plug 'tmhedberg/matchit'                                      " Extended % matching
 Plug 'SirVer/ultisnips'                                       " Snippets engine
-Plug 'honza/vim-snippets'                                     " Snippets
+" Plug 'honza/vim-snippets'                                     " Snippets (이것을 사용하면 telescope에서 연 파일이 수정이 안되는 경우가 발생)
 Plug 'tomtom/tcomment_vim'                                    " Comment toggle
 Plug 'Yggdroot/indentLine'                                    " Indent guide
 Plug 'tpope/vim-fugitive'                                     " For git
@@ -95,11 +95,14 @@ Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
 Plug 'psf/black', { 'branch': 'stable' }                      " python formatter
 Plug 'mfussenegger/nvim-dap'                                  " debugger
 Plug 'rcarriga/nvim-dap-ui'                                   " debugger ui
+Plug 'rhysd/vim-clang-format'                                 " c++ formatter
+
 
 call plug#end()
 
 " ================================= Plugins setting ==================================
 " ----- Theme -----
+lua vim.g.tokyonight_style = "night"
 lua vim.cmd[[colorscheme tokyonight]]
 
 " ----- nvim-tree -----
@@ -211,7 +214,8 @@ require('telescope').setup{
         '%.pyz', '%.spydata', '%.npy', '%.npz', '%.mat', '%.zip', '%.dll', '%.7z',
         '%.exe', '%.tar', '%.mp3', '%.mp4', '%.m4a', '%.wav', '%.ogg', '%.pcx',
         '%.bdf', '%.pkg', '%.msu', '%.otf', '%.ttf', 'build/.*', '.git/.*',
-        '__pycache__/.*', '.ipynb_checkpoints/.*', '.spyproject/.*', '.idea/.*'},
+        '__pycache__/.*', '.ipynb_checkpoints/.*', '.spyproject/.*', '.idea/.*',
+        '.ccls_cache/.*'},
   }
 }
 EOF
@@ -341,7 +345,7 @@ EOF
 " "  fix color of Popup window
 " au VimEnter * GuiPopupmenu 0
 
-" map <c-p> to manually trigger completion
+" map <c-space> to manually trigger completion
 imap <silent> <c-space> <Plug>(completion_trigger)
 
 " Set completeopt to have a better completion experience
@@ -422,7 +426,7 @@ vim.g.symbols_outline = {
 EOF
 
 " ----- black formatter -----
-nnoremap <silent> <Leader>f <cmd>Black<CR>
+autocmd FileType python nnoremap <buffer> <Leader>f <cmd>Black<CR>
 
 " ----- dap -----
 nnoremap <silent> <Leader>b <cmd>lua require'dap'.toggle_breakpoint()<CR>
@@ -444,24 +448,11 @@ dap.configurations.cpp = {
     type = "cppdbg",
     request = "launch",
     program = function()
-      -- return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/build', 'hello.x')
       return '/home/ok97465/code_c/hello/build/hello.x'
     end,
     cwd = '${workspaceFolder}',
     stopOnEntry = true,
-  },
-  {
-    name = 'Attach to gdbserver :1234',
-    type = 'cppdbg',
-    request = 'launch',
-    MIMode = 'gdb',
-    miDebuggerServerAddress = 'localhost:1234',
-    miDebuggerPath = '/usr/bin/gdb',
-    cwd = '${workspaceFolder}',
-    program = function()
-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-    end,
-  },
+  }
 }
 dap.configurations.c = dap.configurations.cpp
 EOF
@@ -552,6 +543,11 @@ require("dapui").setup({
 })
 EOF
 
+" ----- clang formatter -----
+let g:clang_format#detect_style_file=1
+autocmd FileType c,cpp,objc nnoremap <buffer><Leader>f :<C-u>ClangFormat<CR>
+autocmd FileType c,cpp,objc vnoremap <buffer><Leader>f :ClangFormat<CR>
+
 "================================= Key binding ==================================
 " ----- pip install . -----
 nnoremap <silent> <Leader>in :w<CR>:!pip install .<CR>
@@ -577,9 +573,12 @@ if has("nvim")
   tnoremap <Esc> <c-\><c-n>
 endif
 
+" ------ Build C language -----
+
 " ------ Run python ------
 autocmd FileType python map <buffer> <s-F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <s-F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
+
 " run module
 autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), 1)<CR>
 autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), 1)<CR>
@@ -589,3 +588,29 @@ nnoremap <silent> <Leader>, :e $MYVIMRC<CR>
 
 " ------ tabout ------
 inoremap <s-tab> <esc>la
+
+" ----- Terminal -----
+function! OpenIpython()
+    if filereadable("import_in_console.py")
+        botright vsplit term://ipython -i -c \"from import_in_console import *;plt.ion()\"
+    else
+        botright vsplit term://ipython -i -c \"
+                    \import numpy as np;
+                    \import matplotlib.pyplot as plt;
+                    \from scipy.special import sindg, cosdg, tandg;
+                    \from matplotlib.pyplot import plot, hist, figure, subplots;
+                    \from numpy import (
+                    \pi, deg2rad, rad2deg, unwrap, angle, zeros, array, ones, linspace, cumsum,
+                    \diff, arange, interp, conj, exp, sqrt, vstack, hstack, dot, cross, newaxis);
+                    \from numpy import cos, sin, tan, arcsin, arccos, arctan;
+                    \from numpy import amin, amax, argmin, argmax, mean;
+                    \from numpy.linalg import svd, norm;
+                    \from numpy.fft import fftshift, ifftshift, fft, ifft, fft2, ifft2;
+                    \from numpy.random import randn, standard_normal, randint, choice, uniform;
+                    \plt.ion();
+                    \\"
+    endif
+endfunction
+
+nnoremap <silent> <leader>ti <cmd>call OpenIpython()<CR>
+nnoremap <silent> <leader>tt <cmd>botright vsplit term://zsh<CR>
