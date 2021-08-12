@@ -96,6 +96,7 @@ Plug 'psf/black', { 'branch': 'stable' }                      " python formatter
 Plug 'mfussenegger/nvim-dap'                                  " debugger
 Plug 'rcarriga/nvim-dap-ui'                                   " debugger ui
 Plug 'rhysd/vim-clang-format'                                 " c++ formatter
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " preview for markdown
 
 
 call plug#end()
@@ -200,7 +201,7 @@ cnoremap <silent> <C-f> History:<CR>
 
 " ----- telescope ----
 nnoremap <silent> <C-p> <cmd>Telescope find_files<cr>
-nnoremap <silent> <c-s-f> <cmd>Telescope live_grep<cr>
+nnoremap <silent> <C-S-f> <cmd>Telescope live_grep<cr>
 nnoremap <silent> <leader>p <cmd>Telescope buffers<cr>
 nnoremap <silent> <leader>q <cmd>lua require('telescope.builtin').lsp_document_diagnostics()<cr>
 
@@ -215,7 +216,7 @@ require('telescope').setup{
         '%.exe', '%.tar', '%.mp3', '%.mp4', '%.m4a', '%.wav', '%.ogg', '%.pcx',
         '%.bdf', '%.pkg', '%.msu', '%.otf', '%.ttf', 'build/.*', '.git/.*',
         '__pycache__/.*', '.ipynb_checkpoints/.*', '.spyproject/.*', '.idea/.*',
-        '.ccls_cache/.*'},
+        'Doxygen/.*', 'MSVC/.*', 'make/.*', '.ccls_cache/.*'},
   }
 }
 EOF
@@ -300,7 +301,7 @@ local on_attach = function(client, bufnr)
   -- buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   -- buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   -- buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-  -- buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   -- buf_set_keymap('n', '<space>l', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
   buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
@@ -311,7 +312,7 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { "pyright", "cmake", 'ccls' }
+local servers = { "pyright", "cmake", "ccls"}
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     on_attach = on_attach,
@@ -321,6 +322,7 @@ for _, lsp in ipairs(servers) do
   }
 end
 
+------ pyls -----
 -- Window에서는 관리자 권한에서만 수행하여야 한다.
 nvim_lsp.pyls.setup{
   --on_attach=require'completion'.on_attach
@@ -342,7 +344,7 @@ nvim_lsp.pyls.setup{
 EOF
 
 " ----- completion -----
-" "  fix color of Popup window
+" fix color of Popup window
 " au VimEnter * GuiPopupmenu 0
 
 " map <c-space> to manually trigger completion
@@ -429,12 +431,18 @@ EOF
 autocmd FileType python nnoremap <buffer> <Leader>f <cmd>Black<CR>
 
 " ----- dap -----
-nnoremap <silent> <Leader>b <cmd>lua require'dap'.toggle_breakpoint()<CR>
-nnoremap <silent> <c-f5> <cmd>lua require'dap'.continue()<CR>
-nnoremap <silent> <c-f10> <cmd>lua require'dap'.step_over()<CR>
-nnoremap <silent> <c-f11> <cmd>lua require'dap'.step_into()<CR>
+autocmd FileType c,cpp,objc,python nnoremap <buffer><Leader>b <cmd>lua require'dap'.toggle_breakpoint()<CR>
+autocmd FileType c,cpp,objc,python inoremap <buffer><Leader>b <cmd>lua require'dap'.toggle_breakpoint()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl nnoremap <buffer><c-f5> <cmd>lua require'dap'.continue()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl inoremap <buffer><c-f5> <cmd>lua require'dap'.continue()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl nnoremap <buffer><f10> <cmd>lua require'dap'.step_over()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl inoremap <buffer><f10> <cmd>lua require'dap'.step_over()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl nnoremap <buffer><f11> <cmd>lua require'dap'.step_into()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl inoremap <buffer><f11> <cmd>lua require'dap'.step_into()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl nnoremap <buffer><f12> <cmd>lua require'dap'.step_out()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl inoremap <buffer><f12> <cmd>lua require'dap'.step_out()<CR>
 
-" ----- dap for cpp -----
+" ----- dap for c language ----
 lua <<EOF
 local dap = require('dap')
 dap.adapters.cppdbg = {
@@ -504,13 +512,10 @@ EOF
 " ----- dap-ui -----
 lua <<EOF
 require("dapui").setup({
-  icons = {
-    expanded = "▾",
-    collapsed = "▸"
-  },
+  icons = { expanded = "▾", collapsed = "▸" },
   mappings = {
     -- Use a table to apply multiple mappings
-    expand = {"<CR>", "<2-LeftMouse>"},
+    expand = { "<CR>", "<2-LeftMouse>" },
     open = "o",
     remove = "d",
     edit = "e",
@@ -518,28 +523,34 @@ require("dapui").setup({
   },
   sidebar = {
     open_on_start = true,
+    -- You can change the order of elements in the sidebar
     elements = {
-      -- You can change the order of elements in the sidebar
-      "scopes",
-      "breakpoints",
-      "stacks",
-      "watches"
+      -- Provide as ID strings or tables with "id" and "size" keys
+      {
+        id = "scopes",
+        size = 0.5, -- Can be float or integer > 1
+      },
+      { id = "watches", size = 0.5 },
+      -- { id = "breakpoints", size = 0.25 },
+      -- { id = "stacks", size = 0.25 },
     },
-    width = 40,
-    position = "left" -- Can be "left" or "right"
+    width = 100,
+    position = "left", -- Can be "left" or "right"
   },
   tray = {
     open_on_start = true,
-    elements = {
-      "repl"
-    },
-    height = 10,
-    position = "bottom" -- Can be "bottom" or "top"
+    elements = { "repl" },
+    height = 15,
+    position = "bottom", -- Can be "bottom" or "top"
   },
   floating = {
     max_height = nil, -- These can be integers or a float between 0 and 1.
-    max_width = nil   -- Floats will be treated as percentage of your screen.
-  }
+    max_width = nil, -- Floats will be treated as percentage of your screen.
+    mappings = {
+      close = { "q", "<Esc>" },
+    },
+  },
+  windows = { indent = 1 },
 })
 EOF
 
@@ -547,6 +558,16 @@ EOF
 let g:clang_format#detect_style_file=1
 autocmd FileType c,cpp,objc nnoremap <buffer><Leader>f :<C-u>ClangFormat<CR>
 autocmd FileType c,cpp,objc vnoremap <buffer><Leader>f :ClangFormat<CR>
+
+" ----- Markdown preview ----
+autocmd FileType markdown nnoremap <buffer><leader>b <cmd>MarkdownPreview<CR>
+" use a custom markdown style must be absolute path
+" like '/Users/username/markdown.css' or expand('~/markdown.css')
+" let g:mkdp_markdown_css = '/home/ok97465/.vim/github-dark.css'
+
+" use a custom highlight style must absolute path
+" like '/Users/username/highlight.css' or expand('~/highlight.css')
+" let g:mkdp_highlight_css = '/home/ok97465/.vim/github_ok97465_code.css'
 
 "================================= Key binding ==================================
 " ----- pip install . -----
@@ -614,3 +635,4 @@ endfunction
 
 nnoremap <silent> <leader>ti <cmd>call OpenIpython()<CR>
 nnoremap <silent> <leader>tt <cmd>botright vsplit term://zsh<CR>
+
