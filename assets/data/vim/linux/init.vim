@@ -73,6 +73,8 @@ Plug 'tpope/vim-fugitive'                                     " For git
 Plug 'mbbill/undotree'                                        " Visualize undo history
 Plug 'alfredodeza/pytest.vim'                                 " Pytest
 Plug 'ThePrimeagen/vim-be-good'                               " Vim Game
+Plug 'kana/vim-textobj-user'                                  " Engine Textobj
+Plug 'coachshea/vim-textobj-markdown'                         " Textobj for markdown
 Plug 'junegunn/vim-easy-align'                                " Vim alignment
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }           " Install fzf
 Plug 'junegunn/fzf.vim'                                       " FZF plugin
@@ -180,9 +182,20 @@ nnoremap <silent> <leader>u <cmd>UndotreeShow<CR>
 nnoremap <silent> <leader>tp :w<CR>:Pytest project<CR>
 nnoremap <silent> <leader>tf :w<CR>:Pytest function<CR>
 
+" ----- vim-textobj-markdown -----
+" remove default mappings
+let g:textobj_markdown_no_default_key_mappings=1
+autocmd FileType markdown omap <buffer>if <plug>(textobj-markdown-chunk-i)
+autocmd FileType markdown vmap <buffer>if <plug>(textobj-markdown-chunk-i)
+
 " ----- Vim-easy-align -----
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
+" formatting table of markdown
+autocmd FileType markdown nnoremap <buffer><leader>ft <cmd>normal gaip*<bar><CR>
+" formatting fenced code block
+autocmd FileType markdown nnoremap <buffer><leader>ff <cmd>normal gaif:<CR><cmd>normal gaif*,<CR><cmd>normal gaif*=<CR>
 
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
