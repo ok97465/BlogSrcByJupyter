@@ -446,8 +446,8 @@ autocmd FileType python nnoremap <buffer> <Leader>f <cmd>Black<CR>
 " ----- dap -----
 autocmd FileType c,cpp,objc,python nnoremap <buffer><Leader>b <cmd>lua require'dap'.toggle_breakpoint()<CR>
 autocmd FileType c,cpp,objc,python inoremap <buffer><Leader>b <cmd>lua require'dap'.toggle_breakpoint()<CR>
-autocmd FileType c,cpp,objc,python,dap-repl nnoremap <buffer><c-f5> <cmd>lua require'dap'.continue()<CR>
-autocmd FileType c,cpp,objc,python,dap-repl inoremap <buffer><c-f5> <cmd>lua require'dap'.continue()<CR>
+autocmd FileType python,dap-repl nnoremap <buffer><c-f5> <cmd>w<CR><cmd>lua require'dap'.continue()<CR>
+autocmd FileType python,dap-repl inoremap <buffer><c-f5> <cmd>w<CR><cmd>lua require'dap'.continue()<CR>
 autocmd FileType c,cpp,objc,python,dap-repl nnoremap <buffer><f10> <cmd>lua require'dap'.step_over()<CR>
 autocmd FileType c,cpp,objc,python,dap-repl inoremap <buffer><f10> <cmd>lua require'dap'.step_over()<CR>
 autocmd FileType c,cpp,objc,python,dap-repl nnoremap <buffer><f11> <cmd>lua require'dap'.step_into()<CR>
@@ -475,6 +475,7 @@ dap.configurations.cpp = {
     stopOnEntry = true,
   }
 }
+dap.set_log_level('TRACE')
 dap.configurations.c = dap.configurations.cpp
 EOF
 
@@ -601,22 +602,6 @@ noremap <silent> <Leader>] :set columns-=30<CR><C-w>=
 noremap <silent> <Leader>= :set lines+=4<CR><C-w>=
 noremap <silent> <Leader>- :set lines-=4<CR><C-w>=
 
-" ------ terminal mode --------
-" use Esc to enter Terminal Normal mode
-if has("nvim")
-  tnoremap <Esc> <c-\><c-n>
-endif
-
-" ------ Build C language -----
-
-" ------ Run python ------
-autocmd FileType python map <buffer> <s-F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
-autocmd FileType python imap <buffer> <s-F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
-
-" run module
-autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), 1)<CR>
-autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), 1)<CR>
-
 " ------ Edit vimrc  -----
 nnoremap <silent> <Leader>, :e $MYVIMRC<CR>
 
@@ -624,6 +609,7 @@ nnoremap <silent> <Leader>, :e $MYVIMRC<CR>
 inoremap <s-tab> <esc>la
 
 " ----- Terminal -----
+let g:ipython_terminal_job_id = 0
 function! OpenIpython()
     if filereadable("import_in_console.py")
         botright vsplit term://ipython -i -c \"from import_in_console import *;plt.ion()\"
@@ -644,8 +630,80 @@ function! OpenIpython()
                     \plt.ion();
                     \\"
     endif
+    let g:ipython_terminal_job_id = b:terminal_job_id
+endfunction
+
+function! OpenTerminal()
+    botright split term://zsh
+    resize 20
+    let g:cmd_terminal_job_id = b:terminal_job_id
+endfunction
+
+function! SendCmd2Terminal(cmd)
+    try
+        call chansend(g:cmd_terminal_job_id, '')
+    catch
+        call OpenTerminal()
+        sleep 500m
+    endtry
+    call chansend(g:cmd_terminal_job_id, a:cmd)
+    call chansend(g:cmd_terminal_job_id, "\<CR>")
 endfunction
 
 nnoremap <silent> <leader>ti <cmd>call OpenIpython()<CR>
-nnoremap <silent> <leader>tt <cmd>botright vsplit term://zsh<CR>
+nnoremap <silent> <leader>tt <cmd>call OpenTerminal()<CR>
+
+" ------ Run C language -----
+autocmd FileType c,cpp,objc nnoremap <buffer> <F7> <cmd>w<CR><cmd>call SendCmd2Terminal("cmake --build build/Release/CMakefiles")<CR>
+autocmd FileType c,cpp,objc nnoremap <buffer> <S-F7> <cmd>w<CR><cmd>call SendCmd2Terminal("cmake --build build/Debug/CMakefiles")<CR>
+autocmd FileType c,cpp,objc nnoremap <buffer><c-f5> <cmd>w<CR><cmd>call SendCmd2Terminal("cmake --build build/Debug/CMakefiles")<CR><cmd>lua require'dap'.continue()<CR>
+autocmd FileType c,cpp,objc inoremap <buffer><c-f5> <cmd>w<CR><cmd>call SendCmd2Terminal("cmake --build build/Debug/CMakefiles")<CR><cmd>lua require'dap'.continue()<CR>
+
+" ------ Run python ------
+function! SendCmd2Ipython(cmd)
+    try
+        call chansend(g:ipython_terminal_job_id, '')
+    catch
+        call OpenIpython()
+        sleep 2000m
+    endtry
+    call chansend(g:ipython_terminal_job_id, a:cmd)
+endfunction
+
+function! VisualSelection()
+    if mode()=="v"
+        let [line_start, column_start] = getpos("v")[1:2]
+        let [line_end, column_end] = getpos(".")[1:2]
+    else
+        let [line_start, column_start] = getpos("'<")[1:2]
+        let [line_end, column_end] = getpos("'>")[1:2]
+    end
+    if (line2byte(line_start)+column_start) > (line2byte(line_end)+column_end)
+        let [line_start, column_start, line_end, column_end] =
+        \   [line_end, column_end, line_start, column_start]
+    end
+    let lines = getline(line_start, line_end)
+    if len(lines) == 0
+            return ''
+    endif
+    let lines[-1] = lines[-1][: column_end - 1]
+    let lines[0] = lines[0][column_start - 1:]
+    return join(lines, "\n")
+endfunction
+
+" Send line to ipython
+autocmd FileType python nnoremap <buffer><leader>r <cmd>call SendCmd2Ipython(getline(".")."\n")<CR>
+autocmd FileType python inoremap <buffer><f9> <cmd>call SendCmd2Ipython(getline(".")."\n")<CR>
+autocmd FileType python vnoremap <buffer><leader>r <cmd>call SendCmd2Ipython(VisualSelection()."\n")<CR>
+autocmd FileType python vnoremap <buffer><f9> <cmd>call SendCmd2Ipython(VisualSelection()."\n")<CR>
+
+" send module to ipython
+autocmd FileType python nnoremap <buffer> <F4> <cmd>call SendCmd2Ipython("%run ".expand("%:r")."\n")<CR>
+" run module
+autocmd FileType python nnoremap <buffer> <F5> :w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), "\\", ".", "g"), 1)<CR>
+autocmd FileType python inoremap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), "\\", ".", "g"), 1)<CR>
+
+" run python file
+autocmd FileType python nnoremap <buffer> <s-F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
+autocmd FileType python inoremap <buffer> <s-F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
 
