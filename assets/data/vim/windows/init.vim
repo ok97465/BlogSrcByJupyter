@@ -653,6 +653,8 @@ function! OpenIpython()
                     \\"
     endif
     let g:ipython_terminal_job_id = b:terminal_job_id
+    below split ipython_cmd_window.py
+    resize 10
 endfunction
 
 function! OpenTerminal()
@@ -720,7 +722,7 @@ autocmd FileType python vnoremap <buffer><leader>r <cmd>call SendCmd2Ipython(Vis
 autocmd FileType python vnoremap <buffer><f9> <cmd>call SendCmd2Ipython(VisualSelection()."\n")<CR>
 
 " send module to ipython
-autocmd FileType python nnoremap <buffer> <F4> <cmd>call SendCmd2Ipython("%run ".expand("%:r")."\n")<CR>
+autocmd FileType python nnoremap <buffer> <F4> <cmd>w<CR><cmd>call SendCmd2Ipython("%run ".expand("%:r")."\n")<CR>
 " run module
 autocmd FileType python nnoremap <buffer> <F5> :w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), "\\", ".", "g"), 1)<CR>
 autocmd FileType python inoremap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), "\\", ".", "g"), 1)<CR>
