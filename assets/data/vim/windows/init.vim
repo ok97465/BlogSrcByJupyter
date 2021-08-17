@@ -453,7 +453,6 @@ autocmd FileType python nnoremap <buffer> <Leader>f <cmd>Black<CR>
 " ----- dap -----
 " C language c-f5는 run c language에서 저의함 
 autocmd FileType c,cpp,objc,python nnoremap <buffer><Leader>b <cmd>lua require'dap'.toggle_breakpoint()<CR>
-autocmd FileType c,cpp,objc,python inoremap <buffer><Leader>b <cmd>lua require'dap'.toggle_breakpoint()<CR>
 autocmd FileType python,dap-repl nnoremap <buffer><c-f5> <cmd>w<CR><cmd>lua require'dap'.continue()<CR>
 autocmd FileType python,dap-repl inoremap <buffer><c-f5> <cmd>w<CR><cmd>lua require'dap'.continue()<CR>
 autocmd FileType c,cpp,objc,python,dap-repl nnoremap <buffer><f10> <cmd>lua require'dap'.step_over()<CR>
@@ -630,7 +629,12 @@ nnoremap <silent> <Leader>, :e $MYVIMRC<CR>
 " ------ tabout ------
 inoremap <s-tab> <esc>la
 
+" ------ Reload buffer -----
+nnoremap <silent> <f2> <cmd>e!<CR>
+
 " ----- Terminal -----
+tnoremap <c-space> <C-\><C-n>
+
 let g:ipython_terminal_job_id = 0
 function! OpenIpython()
     if filereadable("import_in_console.py")
