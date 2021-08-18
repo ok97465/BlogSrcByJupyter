@@ -639,7 +639,7 @@ tnoremap <c-space> <C-\><C-n>
 let g:ipython_terminal_job_id = 0
 function! OpenIpython()
     if filereadable("import_in_console.py")
-        botright vsplit term://ipython -i import_in_console.py
+        botright vsplit term://ipython -i import_in_console.py --matplotlib --profile=autoreload
     else
         botright vsplit term://ipython -i -c \"
                     \import numpy as np;
@@ -654,8 +654,7 @@ function! OpenIpython()
                     \from numpy.linalg import svd, norm;
                     \from numpy.fft import fftshift, ifftshift, fft, ifft, fft2, ifft2;
                     \from numpy.random import randn, standard_normal, randint, choice, uniform;
-                    \plt.ion();
-                    \\"
+                    \\" --matplotlib --profile=autoreload
     endif
     let g:ipython_terminal_job_id = b:terminal_job_id
     below split ipython_cmd_window.py
