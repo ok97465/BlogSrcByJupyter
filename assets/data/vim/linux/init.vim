@@ -24,6 +24,7 @@ set updatetime=300                                           " 입력이 중단�
 set shortmess+=c                                             " Avoid showing message extra message when using completion
 set hidden                                                   " buffer가 수정되었어도 다른 buffer을 불러온다.
 set signcolumn=yes                                           " Lint 결과를 표시할 column을 항상 표시한다.
+set mouse=nv                                                 " Enable mouse scroll.
 
 syntax sync minlines=200                                     " speed-up vim
 set colorcolumn=89                                           " ruler
