@@ -225,6 +225,7 @@ nnoremap <silent> <C-p> <cmd>Telescope find_files<cr>
 nnoremap <silent> <C-S-f> <cmd>Telescope live_grep<cr>
 nnoremap <silent> <leader>p <cmd>Telescope buffers<cr>
 nnoremap <silent> <leader>q <cmd>lua require('telescope.builtin').lsp_document_diagnostics()<cr>
+nnoremap <silent> <leader>Q <cmd>lua require('telescope.builtin').lsp_workspace_diagnostics()<cr>
 
 lua << EOF
 require('telescope').setup{
@@ -456,12 +457,12 @@ autocmd FileType python nnoremap <buffer> <Leader>f <cmd>Black<CR>
 autocmd FileType c,cpp,objc,python nnoremap <buffer><Leader>b <cmd>lua require'dap'.toggle_breakpoint()<CR>
 autocmd FileType python,dap-repl nnoremap <buffer><c-f5> <cmd>w<CR><cmd>lua require'dap'.continue()<CR>
 autocmd FileType python,dap-repl inoremap <buffer><c-f5> <cmd>w<CR><cmd>lua require'dap'.continue()<CR>
-autocmd FileType c,cpp,objc,python,dap-repl nnoremap <buffer><f10> <cmd>lua require'dap'.step_over()<CR>
-autocmd FileType c,cpp,objc,python,dap-repl inoremap <buffer><f10> <cmd>lua require'dap'.step_over()<CR>
-autocmd FileType c,cpp,objc,python,dap-repl nnoremap <buffer><f11> <cmd>lua require'dap'.step_into()<CR>
-autocmd FileType c,cpp,objc,python,dap-repl inoremap <buffer><f11> <cmd>lua require'dap'.step_into()<CR>
-autocmd FileType c,cpp,objc,python,dap-repl nnoremap <buffer><f12> <cmd>lua require'dap'.step_out()<CR>
-autocmd FileType c,cpp,objc,python,dap-repl inoremap <buffer><f12> <cmd>lua require'dap'.step_out()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl,dapui_watches nnoremap <buffer><f10> <cmd>lua require'dap'.step_over()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl,dapui_watches inoremap <buffer><f10> <cmd>lua require'dap'.step_over()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl,dapui_watches nnoremap <buffer><f11> <cmd>lua require'dap'.step_into()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl,dapui_watches inoremap <buffer><f11> <cmd>lua require'dap'.step_into()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl,dapui_watches nnoremap <buffer><f12> <cmd>lua require'dap'.step_out()<CR>
+autocmd FileType c,cpp,objc,python,dap-repl,dapui_watches inoremap <buffer><f12> <cmd>lua require'dap'.step_out()<CR>
 
 " ----- dap for c language ----
 lua <<EOF
@@ -639,7 +640,7 @@ tnoremap <c-space> <C-\><C-n>
 let g:ipython_terminal_job_id = 0
 function! OpenIpython()
     if filereadable("import_in_console.py")
-        botright vsplit term://ipython -i import_in_console.py --matplotlib --profile=autoreload
+        botright vsplit term://ipython -i import_in_console.py --profile=vim
     else
         botright vsplit term://ipython -i -c \"
                     \import numpy as np;
@@ -654,7 +655,7 @@ function! OpenIpython()
                     \from numpy.linalg import svd, norm;
                     \from numpy.fft import fftshift, ifftshift, fft, ifft, fft2, ifft2;
                     \from numpy.random import randn, standard_normal, randint, choice, uniform;
-                    \\" --matplotlib --profile=autoreload
+                    \\" --profile=vim
     endif
     let g:ipython_terminal_job_id = b:terminal_job_id
     below split ipython_cmd_window.py
