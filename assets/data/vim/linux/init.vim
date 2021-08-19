@@ -89,7 +89,7 @@ Plug 'nvim-lua/popup.nvim'                                    " Dependency of te
 Plug 'nvim-lua/plenary.nvim'                                  " Dependency of telescope
 Plug 'nvim-telescope/telescope.nvim'                          " Fuzzy finder
 Plug 'ryanoasis/vim-devicons'                                 " Icons for lualine
-Plug 'hoob3rt/lualine.nvim'                                   " Status bar
+Plug 'shadmansaleh/lualine.nvim'                              " Status bar
 Plug 'neovim/nvim-lspconfig'                                  " Language server
 Plug 'nvim-lua/completion-nvim'                               " Code Completion
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
