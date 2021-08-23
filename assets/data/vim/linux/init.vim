@@ -24,7 +24,7 @@ set updatetime=300                                           " 입력이 중단�
 set shortmess+=c                                             " Avoid showing message extra message when using completion
 set hidden                                                   " buffer가 수정되었어도 다른 buffer을 불러온다.
 set signcolumn=yes                                           " Lint 결과를 표시할 column을 항상 표시한다.
-set mouse=nv                                                 " Enable mouse scroll.
+set mouse=a                                                  " Enable mouse scroll.
 
 syntax sync minlines=200                                     " speed-up vim
 set colorcolumn=89                                           " ruler
@@ -88,6 +88,7 @@ Plug 'kyazdani42/nvim-tree.lua'                               " File explorer
 Plug 'nvim-lua/popup.nvim'                                    " Dependency of telescope
 Plug 'nvim-lua/plenary.nvim'                                  " Dependency of telescope
 Plug 'nvim-telescope/telescope.nvim'                          " Fuzzy finder
+Plug 'nvim-telescope/telescope-project.nvim'                  " project manager
 Plug 'ryanoasis/vim-devicons'                                 " Icons for lualine
 Plug 'shadmansaleh/lualine.nvim'                              " Status bar
 Plug 'neovim/nvim-lspconfig'                                  " Language server
@@ -215,7 +216,7 @@ cnoremap <silent> <C-f> History:<CR>
 
 " ----- telescope ----
 nnoremap <silent> <C-p> <cmd>Telescope find_files<cr>
-nnoremap <silent> <C-S-f> <cmd>Telescope live_grep<cr>
+nnoremap <silent> <S-home>f <cmd>Telescope live_grep<cr>
 nnoremap <silent> <leader>p <cmd>Telescope buffers<cr>
 nnoremap <silent> <leader>q <cmd>lua require('telescope.builtin').lsp_document_diagnostics()<cr>
 nnoremap <silent> <leader>Q <cmd>lua require('telescope.builtin').lsp_workspace_diagnostics()<cr>
@@ -231,10 +232,31 @@ require('telescope').setup{
         '%.exe', '%.tar', '%.mp3', '%.mp4', '%.m4a', '%.wav', '%.ogg', '%.pcx',
         '%.bdf', '%.pkg', '%.msu', '%.otf', '%.ttf', 'build/.*', '.git/.*',
         '__pycache__/.*', '.ipynb_checkpoints/.*', '.spyproject/.*', '.idea/.*',
-        'Doxygen/.*', 'MSVC/.*', 'make/.*', '.ccls_cache/.*'},
+        'Doxygen/.*', 'MSVC/.*', 'make/.*', '.ccls_cache/.*', 'import_in_console.py'}
   }
 }
 EOF
+
+" ----- telescope-project ----
+nnoremap <silent> <S-home>p <cmd>lua require'telescope'.extensions.project.project{}<CR>
+if filereadable(expand("~/project_info.vim"))
+    source ~/project_info.vim
+else
+lua << EOF
+require('telescope').setup {
+  extensions = {
+    project = {
+      base_dirs = {
+          '/home/ok97465/codepy/spyder_okvim',
+          '/home/ok97465/codepy/BlogSrcByJupyter',
+          '/home/ok97465/codepy/spyder_ok97465',
+      },
+      hidden_files = false
+    }
+  }
+}
+EOF
+endif
 
 " ----- isort -----
 nnoremap <silent> <leader>i <cmd>Isort<cr>
