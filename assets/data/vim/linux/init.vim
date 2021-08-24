@@ -700,7 +700,7 @@ function! SendCmd2Ipython(cmd)
     call chansend(g:ipython_terminal_job_id, a:cmd)
 endfunction
 
-function! VisualSelection()
+function! VisualSelection(use_cr)
     if mode()=="v"
         let [line_start, column_start] = getpos("v")[1:2]
         let [line_end, column_end] = getpos(".")[1:2]
@@ -718,14 +718,18 @@ function! VisualSelection()
     endif
     let lines[-1] = lines[-1][: column_end - 1]
     let lines[0] = lines[0][column_start - 1:]
-    return join(lines, "\n")
+    if a:use_cr == 1
+        return join(lines, "\x0D")
+    else
+        return join(lines, "\n")
+    endif
 endfunction
 
 " Send line to ipython
-autocmd FileType python nnoremap <buffer><leader>r <cmd>call SendCmd2Ipython(getline(".")."\n")<CR>
-autocmd FileType python inoremap <buffer><f9> <cmd>call SendCmd2Ipython(getline(".")."\n")<CR>
-autocmd FileType python vnoremap <buffer><leader>r <cmd>call SendCmd2Ipython(VisualSelection()."\n")<CR>
-autocmd FileType python vnoremap <buffer><f9> <cmd>call SendCmd2Ipython(VisualSelection()."\n")<CR>
+autocmd FileType python nnoremap <buffer><leader>r <cmd>call SendCmd2Ipython(getline(".")."\x0D")<CR>
+autocmd FileType python inoremap <buffer><f9> <cmd>call SendCmd2Ipython(getline(".")."\x0D")<CR>
+autocmd FileType python vnoremap <buffer><leader>r <cmd>call SendCmd2Ipython(VisualSelection(1))<CR><cmd>sleep 100m<CR><cmd>call SendCmd2Ipython("\x0D")<cr>
+autocmd FileType python vnoremap <buffer><f9> <cmd>call SendCmd2Ipython(VisualSelection(1))<CR><cmd>sleep 100m<CR><cmd>call SendCmd2Ipython("\x0D")<cr>
 
 " send module to ipython
 autocmd FileType python nnoremap <buffer> <F4> <cmd>w<CR><cmd>call SendCmd2Ipython("%run ".expand("%:r")."\n")<CR>
