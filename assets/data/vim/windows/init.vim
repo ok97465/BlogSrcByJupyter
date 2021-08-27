@@ -98,6 +98,8 @@ Plug 'nvim-telescope/telescope.nvim'                          " Fuzzy finder
 Plug 'nvim-telescope/telescope-project.nvim'                  " project manager
 Plug 'ryanoasis/vim-devicons'                                 " Icons for lualine
 Plug 'shadmansaleh/lualine.nvim'                              " Status bar
+Plug 'akinsho/bufferline.nvim'                                " Buffer line
+Plug 'Pocco81/TrueZen.nvim'                                   " Zen mode
 Plug 'neovim/nvim-lspconfig'                                  " Language server
 Plug 'nvim-lua/completion-nvim'                               " Code Completion
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
@@ -340,6 +342,29 @@ require'lualine'.setup {
 }
 EOF
 
+" ----- bufferline -----
+lua << EOF
+require("bufferline").setup{}
+EOF
+" unmap gt
+" unmap gT
+nnoremap <silent>gt :BufferLineCycleNext<CR>
+nnoremap <silent>gT :BufferLineCyclePrev<CR>
+nnoremap <silent>gt :BufferLineCycleNext<CR>
+nnoremap <silent>gT :BufferLineCyclePrev<CR>
+nnoremap <silent><leader>1 <Cmd>BufferLineGoToBuffer 1<CR>
+nnoremap <silent><leader>2 <Cmd>BufferLineGoToBuffer 2<CR>
+nnoremap <silent><leader>3 <Cmd>BufferLineGoToBuffer 3<CR>
+nnoremap <silent><leader>4 <Cmd>BufferLineGoToBuffer 4<CR>
+nnoremap <silent><leader>5 <Cmd>BufferLineGoToBuffer 5<CR>
+nnoremap <silent><leader>6 <Cmd>BufferLineGoToBuffer 6<CR>
+nnoremap <silent><leader>7 <Cmd>BufferLineGoToBuffer 7<CR>
+nnoremap <silent><leader>8 <Cmd>BufferLineGoToBuffer 8<CR>
+nnoremap <silent><leader>9 <Cmd>BufferLineGoToBuffer 9<CR>
+
+" ----- Zen mode -----
+nnoremap <silent><F3> <cmd>TZAtaraxis<CR>
+
 " ----- nvim-lspconfig -----
 " 아래 명령을 이용하여 lspconfig의 상태를 확인할 수 있다.
 " lua require 'lspconfig/health'.check_health()
@@ -414,9 +439,6 @@ nvim_lsp.pyls.setup{
 EOF
 
 " ----- completion -----
-"  fix color of Popup window
-au VimEnter * GuiPopupmenu 0
-
 " map <c-space> to manually trigger completion
 imap <silent> <c-space> <Plug>(completion_trigger)
 
