@@ -59,14 +59,6 @@ set et                                                        " TAB을 Space로 
 set ai                                                        " 자동 들여쓰기
 set ci                                                        " C 형태의 들여쓰기
 
-" ================================= 폰트 지정 =================================
-set fileencodings=utf-8,cp949
-set fencs=ucs-bom,utf-8,euc-kr.latin1                         " 한글 파일은 euc-kr로, 유니코드는 유니코드로
-set tenc=cp949                                                " 터미널 인코딩
-
-" =========================== GUI 초기 윈도우 크기 지정 =======================
-au GUIEnter * winsize 128 40
-
 " =================================== Plugin ==================================
 call plug#begin('~/.vim/plugged')
 
@@ -112,7 +104,6 @@ Plug 'rhysd/vim-clang-format'                                 " c++ formatter
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " preview for markdown
 Plug 'p00f/nvim-ts-rainbow'                                   " color for parantheses
 Plug 'norcalli/nvim-colorizer.lua'                            " colorizer for hex code
-
 
 call plug#end()
 
@@ -727,6 +718,11 @@ inoremap <s-tab> <esc>la
 
 " ------ Reload buffer -----
 nnoremap <silent> <f2> <cmd>e!<CR>
+
+" ----- Replace quit with buffer delete -----
+" 열린 buffer가 1보다 큰경우에는 q 명령을 bd로 변환한다.
+cnoreabbrev <expr> wq getcmdtype() == ":" && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 && getcmdline() == 'wq' ? 'w<bar>bd' : 'wq'
+cnoreabbrev <expr> q getcmdtype() == ":" && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 && getcmdline() == 'q' ? 'bd' : 'q'
 
 " ----- Terminal -----
 tnoremap <c-space> <C-\><C-n>

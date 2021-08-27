@@ -106,7 +106,6 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " previ
 Plug 'p00f/nvim-ts-rainbow'                                   " color for parantheses
 Plug 'norcalli/nvim-colorizer.lua'                            " colorizer for hex code
 
-
 call plug#end()
 
 " ================================= Plugins setting ==================================
@@ -705,6 +704,11 @@ inoremap <s-tab> <esc>la
 
 " ------ Reload buffer -----
 nnoremap <silent> <f2> <cmd>e!<CR>
+
+" ----- Replace quit with buffer delete -----
+" 열린 buffer가 1보다 큰경우에는 q 명령을 bd로 변환한다.
+cnoreabbrev <expr> wq getcmdtype() == ":" && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 && getcmdline() == 'wq' ? 'w<bar>bd' : 'wq'
+cnoreabbrev <expr> q getcmdtype() == ":" && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 && getcmdline() == 'q' ? 'bd' : 'q'
 
 " ----- Terminal -----
 tnoremap <c-space> <C-\><C-n>
