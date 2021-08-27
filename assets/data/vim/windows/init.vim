@@ -108,6 +108,8 @@ Plug 'mfussenegger/nvim-dap'                                  " debugger
 Plug 'rcarriga/nvim-dap-ui'                                   " debugger ui
 Plug 'rhysd/vim-clang-format'                                 " c++ formatter
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " preview for markdown
+Plug 'p00f/nvim-ts-rainbow'                                   " color for parantheses
+Plug 'norcalli/nvim-colorizer.lua'                            " colorizer for hex code
 
 
 call plug#end()
@@ -257,6 +259,7 @@ require('telescope').setup {
           '/home/ok97465/codepy/spyder_okvim',
           '/home/ok97465/codepy/BlogSrcByJupyter',
           '/home/ok97465/codepy/spyder_ok97465',
+          '/home/ok97465/codepy/scientific',
       },
       hidden_files = false
     }
@@ -629,6 +632,30 @@ nnoremap A :set noimd<CR>A
 nnoremap o :set noimd<CR>o
 nnoremap O :set noimd<CR>O
 
+" ----- rainbow(color paranthesis) -----
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  rainbow = {
+    enable = true,
+    extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
+    max_file_lines = nil, -- Do not enable for files with more than n lines, int
+    colors = {
+      "#88352d",                                                                             
+      "#879984",                                                                             
+      "#816286",                                                                             
+      "#a79921",                                                                             
+      "#689d6a",                                                                             
+      "#a65d0e",                                                                             
+      "#346466"
+    } -- table of hex strings
+  }
+}
+EOF
+
+" ----- Colorizer for hex code -----
+lua require'colorizer'.setup()
+
+"================================= Key binding ==================================
 " ----- pip install . -----
 nnoremap <silent> <Leader>in :w<CR>:!pip install .<CR>
 
