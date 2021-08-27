@@ -69,7 +69,7 @@ Plug 'tmhedberg/matchit'                                      " Extended % match
 Plug 'SirVer/ultisnips'                                       " Snippets engine
 " Plug 'honza/vim-snippets'                                     " Snippets (이것을 사용하면 telescope에서 연 파일이 수정이 안되는 경우가 발생)
 Plug 'tomtom/tcomment_vim'                                    " Comment toggle
-Plug 'Yggdroot/indentLine'                                    " Indent guide
+Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
 Plug 'tpope/vim-fugitive'                                     " For git
 Plug 'mbbill/undotree'                                        " Visualize undo history
 Plug 'alfredodeza/pytest.vim'                                 " Pytest
@@ -82,7 +82,7 @@ Plug 'junegunn/fzf.vim'                                       " FZF plugin
 Plug 'fisadev/vim-isort'                                      " Sort import statements of python
 Plug 'heavenshell/vim-pydocstring', { 'do': 'make install' }  " Autodocstring
 Plug 'machakann/vim-highlightedyank'                          " Highlight after yank
-Plug 'easymotion/vim-easymotion'                              " Easy motion
+Plug 'phaazon/hop.nvim'                                       " easymotion for nvim
 Plug 'kyazdani42/nvim-web-devicons'                           " File icons for nvim-tree, lualine
 Plug 'kyazdani42/nvim-tree.lua'                               " File explorer
 Plug 'nvim-lua/popup.nvim'                                    " Dependency of telescope
@@ -173,8 +173,16 @@ let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 let g:UltiSnipsEditSplit="vertical"
 
 " ----- Indent guide -----
-let g:indentLine_enabled = 1
-set list listchars=trail:.
+lua << EOF
+vim.opt.listchars = {
+    space = "⋅",
+    eol = "↴",
+}
+require("indent_blankline").setup {
+    show_end_of_line = false,
+    space_char_blankline = " ",
+}
+EOF
 
 " ----- Fugitive ----- 
 nnoremap <silent> <leader>gs <cmd>G<CR>
@@ -278,6 +286,21 @@ let g:pydocstring_enable_mapping=0  " Disable default keymap of pydocstring
 
 " ----- vim-highlightedyank -----
 let g:highlightedyank_highlight_duration = 400
+
+" ----- hop.nvim (easymotion) -----
+lua require'hop'.setup()
+nnoremap <silent> <leader><leader>w <cmd>HopWord<cr>
+nnoremap <silent> <leader><leader>f <cmd>HopChar1<cr>
+nnoremap <silent> <leader><leader>j <cmd>HopLine<cr>
+nnoremap <silent> <leader><leader>k <cmd>HopLine<cr>
+xnoremap <silent> <leader><leader>w <cmd>HopWord<cr>
+xnoremap <silent> <leader><leader>f <cmd>HopChar1<cr>
+xnoremap <silent> <leader><leader>j <cmd>HopLine<cr>
+xnoremap <silent> <leader><leader>k <cmd>HopLine<cr>
+onoremap <silent> <leader>w <cmd>HopWord<cr>
+onoremap <silent> <leader>f <cmd>HopChar1<cr>
+onoremap <silent> <leader>j <cmd>HopLine<cr>
+onoremap <silent> <leader>k <cmd>HopLine<cr>
 
 " ----- lualine -----
 lua << EOF
@@ -759,6 +782,7 @@ autocmd FileType python vnoremap <buffer><f9> <cmd>call SendCmd2Ipython(VisualSe
 
 " send module to ipython
 autocmd FileType python nnoremap <buffer> <F4> <cmd>w<CR><cmd>call SendCmd2Ipython("%run ".expand("%:r")."\n")<CR>
+autocmd FileType python inoremap <buffer> <F4> <cmd>w<CR><cmd>call SendCmd2Ipython("%run ".expand("%:r")."\n")<CR>
 " run module
 autocmd FileType python nnoremap <buffer> <F5> :w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), "\\", ".", "g"), 1)<CR>
 autocmd FileType python inoremap <buffer> <F5> <esc>:w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), "\\", ".", "g"), 1)<CR>
