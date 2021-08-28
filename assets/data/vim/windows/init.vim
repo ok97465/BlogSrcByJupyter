@@ -76,8 +76,6 @@ Plug 'ThePrimeagen/vim-be-good'                               " Vim Game
 Plug 'kana/vim-textobj-user'                                  " Engine Textobj
 Plug 'coachshea/vim-textobj-markdown'                         " Textobj for markdown
 Plug 'junegunn/vim-easy-align'                                " Vim alignment
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }           " Install fzf
-Plug 'junegunn/fzf.vim'                                       " FZF plugin
 Plug 'fisadev/vim-isort'                                      " Sort import statements of python
 Plug 'heavenshell/vim-pydocstring', { 'do': 'make install' }  " Autodocstring
 Plug 'machakann/vim-highlightedyank'                          " Highlight after yank
@@ -219,12 +217,6 @@ if !exists('g:easy_align_delimiters')
     let g:easy_align_delimiters = {}
 endif
 let g:easy_align_delimiters['#'] = {'pattern': '#', 'ignore_groups': ['String'], 'left_margin': 2}
-
-" ----- FZF -----
-" nnoremap <silent> <C-p> :Files<CR>
-" nnoremap <silent> <leader>p :Buffers<CR>
-" nnoremap <silent> <C-S-f> :Rg<CR>
-cnoremap <silent> <C-f> History:<CR>
 
 " ----- telescope ----
 nnoremap <silent> <C-p> <cmd>Telescope find_files<cr>
@@ -707,7 +699,7 @@ call wilder#set_option('pipeline', [
       \       wilder#check({_, x -> empty(x)}),
       \       wilder#history(),
       \       wilder#result({
-      \         'draw': [{_, x -> '' . x}],
+      \         'draw': [{_, x -> '  ' . x}],
       \       }),
       \     ],
       \     wilder#substitute_pipeline({
