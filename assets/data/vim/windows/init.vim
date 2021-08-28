@@ -104,6 +104,8 @@ Plug 'rhysd/vim-clang-format'                                 " c++ formatter
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " preview for markdown
 Plug 'p00f/nvim-ts-rainbow'                                   " color for parantheses
 Plug 'norcalli/nvim-colorizer.lua'                            " colorizer for hex code
+Plug 'romgrk/fzy-lua-native'                                  " fuzzy for lua
+Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }   " Autocompletion in command line
 
 call plug#end()
 
@@ -261,6 +263,7 @@ require('telescope').setup {
           '/home/ok97465/codepy/BlogSrcByJupyter',
           '/home/ok97465/codepy/spyder_ok97465',
           '/home/ok97465/codepy/scientific',
+          '/home/ok97465/codepy/send2telegram_py3_gae',
       },
       hidden_files = false
     }
@@ -545,8 +548,6 @@ dap.configurations.cpp = {
     end,
     cwd = '${workspaceFolder}',
     stopOnEntry = true,
-    args = {},
-    runInTerminal = false,
   }
 }
 dap.set_log_level('TRACE')
@@ -676,13 +677,13 @@ require'nvim-treesitter.configs'.setup {
     extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
     max_file_lines = nil, -- Do not enable for files with more than n lines, int
     colors = {
-      "#88352d",                                                                             
-      "#879984",                                                                             
-      "#816286",                                                                             
-      "#a79921",                                                                             
-      "#689d6a",                                                                             
-      "#a65d0e",                                                                             
-      "#346466"
+      "#823c41", -------
+      "#e0af68", -------
+      "#7dcfff", -------
+      "#c0caf5", -------
+      "#9ece6a", -------
+      "#41a6b5", -------
+      "#9d7cd8"
     } -- table of hex strings
   }
 }
@@ -690,6 +691,74 @@ EOF
 
 " ----- Colorizer for hex code -----
 lua require'colorizer'.setup()
+
+" ----- wilder -----
+call wilder#setup({
+      \ 'modes': [':', '/', '?'],
+      \ 'next_key': '<C-n>',
+      \ 'previous_key': '<C-p>',
+      \ 'accept_key': '<Tab>',
+      \ 'reject_key': '<Up>',
+      \ })
+
+call wilder#set_option('pipeline', [
+      \   wilder#branch(
+      \     [
+      \       wilder#check({_, x -> empty(x)}),
+      \       wilder#history(),
+      \       wilder#result({
+      \         'draw': [{_, x -> '' . x}],
+      \       }),
+      \     ],
+      \     wilder#substitute_pipeline({
+      \       'pipeline': wilder#python_search_pipeline({
+      \         'skip_cmdtype_check': 1,
+      \         'pattern': wilder#python_fuzzy_pattern({
+      \           'start_at_boundary': 0,
+      \         }),
+      \       }),
+      \     }),
+      \     wilder#cmdline_pipeline({
+      \       'fuzzy': 1,
+      \       'fuzzy_filter': has('nvim') ? wilder#lua_fzy_filter() : wilder#vim_fuzzy_filter(),
+      \     }),
+      \     wilder#python_search_pipeline({
+      \       'pattern': wilder#python_fuzzy_pattern({
+      \         'start_at_boundary': 0,
+      \       }),
+      \     }),
+      \   ),
+      \ ])
+
+let s:highlighters = [
+      \ wilder#pcre2_highlighter(),
+      \ has('nvim') ? wilder#lua_fzy_highlighter() : wilder#cpsm_highlighter(),
+      \ ]
+
+let s:popupmenu_renderer = wilder#popupmenu_renderer({
+      \ 'highlighter': s:highlighters,
+      \ 'left': [
+      \   wilder#popupmenu_devicons(),
+      \   wilder#popupmenu_buffer_flags(),
+      \ ],
+      \ 'right': [
+      \   ' ',
+      \   wilder#popupmenu_scrollbar(),
+      \ ],
+      \ })
+
+let s:wildmenu_renderer = wilder#wildmenu_renderer({
+      \ 'highlighter': s:highlighters,
+      \ 'separator': ' · ',
+      \ 'left': [' ', wilder#wildmenu_spinner(), ' '],
+      \ 'right': [' ', wilder#wildmenu_index()],
+      \ })
+
+call wilder#set_option('renderer', wilder#renderer_mux({
+      \ ':': s:popupmenu_renderer,
+      \ '/': s:wildmenu_renderer,
+      \ 'substitute': s:wildmenu_renderer,
+      \ }))
 
 "================================= Key binding ==================================
 " ----- pip install . -----
