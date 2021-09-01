@@ -9,5 +9,5 @@ au GUIEnter * winsize 128 40
 
 " =========================== Disable Qt gui =======================
 GuiTabline 0
-au VimEnter * GuiPopupmenu 0
+GuiPopupmenu 0
 

@@ -879,8 +879,8 @@ nnoremap <silent> <f2> <cmd>e!<CR>
 
 " ----- Replace quit with buffer delete -----
 " 열린 buffer가 1보다 큰경우에는 q 명령을 bd로 변환한다.
-cnoreabbrev <expr> wq getcmdtype() == ":" && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 && getcmdline() == 'wq' ? 'w<bar>bd' : 'wq'
-cnoreabbrev <expr> q getcmdtype() == ":" && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 && getcmdline() == 'q' ? 'bd' : 'q'
+cnoreabbrev <expr> wq getcmdtype() == ":" && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 && getcmdline() == 'wq' ? 'w<bar>bn<bar>bd#' : 'wq'
+cnoreabbrev <expr> q getcmdtype() == ":" && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 && getcmdline() == 'q' ? 'bn<bar>bd#' : 'q'
 
 " ----- Terminal -----
 tnoremap <c-space> <C-\><C-n>
@@ -906,8 +906,10 @@ function! OpenIpython()
                     \\" --profile=vim
     endif
     let g:ipython_terminal_job_id = b:terminal_job_id
-    below split ipython_cmd_window.py
-    resize 10
+    if a:b_open_cmd_window == 1
+        below split ipython_cmd_window.py
+        resize 10
+    endif
 endfunction
 
 function! OpenTerminal()
@@ -927,7 +929,7 @@ function! SendCmd2Terminal(cmd)
     call chansend(g:cmd_terminal_job_id, "\<CR>")
 endfunction
 
-nnoremap <silent> <leader>ti <cmd>call OpenIpython()<CR>
+nnoremap <silent> <leader>ti <cmd>call OpenIpython(0)<CR>
 nnoremap <silent> <leader>tt <cmd>call OpenTerminal()<CR>
 
 " ------ Run C language -----
@@ -941,7 +943,7 @@ function! SendCmd2Ipython(cmd)
     try
         call chansend(g:ipython_terminal_job_id, '')
     catch
-        call OpenIpython()
+        call OpenIpython(0)
         sleep 2000m
     endtry
     call chansend(g:ipython_terminal_job_id, a:cmd)
