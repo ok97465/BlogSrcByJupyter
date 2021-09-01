@@ -110,6 +110,7 @@ Plug 'p00f/nvim-ts-rainbow'                                   " color for parant
 Plug 'norcalli/nvim-colorizer.lua'                            " colorizer for hex code
 Plug 'romgrk/fzy-lua-native'                                  " fuzzy for lua
 Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }   " Autocompletion in command line
+Plug 'folke/which-key.nvim'                                   " Which key
 
 call plug#end()
 
@@ -184,9 +185,6 @@ require("indent_blankline").setup {
 }
 EOF
 
-" ----- Fugitive ----- 
-nnoremap <silent> <leader>gs <cmd>G<CR>
-
 " ----- Undotreee -----
 nnoremap <silent> <leader>u <cmd>UndotreeShow<CR>
 
@@ -208,9 +206,6 @@ nmap ga <Plug>(EasyAlign)
 autocmd FileType markdown nnoremap <buffer><leader>ft <cmd>normal gaip*<bar><CR>
 " formatting fenced code block
 autocmd FileType markdown nnoremap <buffer><leader>ff <cmd>normal gaif:<CR><cmd>normal gaif*,<CR><cmd>normal gaif*=<CR>
-
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
 
 " Setting for python comment
 if !exists('g:easy_align_delimiters')
@@ -837,6 +832,56 @@ call wilder#set_option('renderer', wilder#renderer_mux({
       \ 'substitute': s:popupmenu_renderer,
       \ }))
 
+" ----- which-key -----
+set timeoutlen=500
+lua << EOF
+
+local wk = require("which-key")
+  wk.setup {
+    -- your configuration comes here
+    -- or leave it empty to use the default settings
+    -- refer to the configuration section below
+  }
+
+wk.register({
+  t = {
+    name = "Telescope", -- optional group name
+    p = { "<cmd>Telescope find_files<cr>", "Find File" },
+    o = { "<cmd>Telescope oldfiles<cr>", "Open Recent File" },
+    g = { "<cmd>Telescope live_grep<cr>", "Search for a String" },
+    b = { "<cmd>Telescope buffers<cr>", "Open Buffers" },
+    r = { "<cmd>Telescope registers<cr>", "Registers" },
+    c = { "<cmd>Telescope git_commits<cr>", "Git Commits" },
+    C = { "<cmd>Telescope git_bcommits<cr>", "Git Commits of This" },
+    a = { "<cmd>Telescope git_branches<cr>", "Git Branches" },
+    s = { "<cmd>Telescope git_status<cr>", "Git Status" },
+    S = { "<cmd>Telescope git_status<cr>", "Git Stash" },
+  },
+}, { prefix = "<leader>" })
+
+wk.register({
+  g = {
+    name = "Fugitive", -- optional group name
+    s = { "<cmd>Git<cr>", "Git status" },
+    b = { "<cmd>Git blame<cr>", "Git blame" },
+    d = { "<cmd>Git difftool<cr>", "Git difftool" },
+    l = { "<cmd>Git log<cr>", "Git log" },
+    c = { "<cmd>Git commit<cr>", "Git commit" },
+  },
+}, { prefix = "<leader>" })
+
+wk.register({
+  ["<c-w>"] = {
+    name = "Manipulate window", -- optional group name
+    ["<c-l>"] = { "<cmd>exe \"vertical resize \" . (winwidth(0) * 3/2)<cr>", "Strech window to right" },
+    ["<c-h>"] = { "<cmd>exe \"vertical resize \" . (winwidth(0) * 2/3)<cr>", "Reduce window to left" },
+    ["<c-k>"] = { "<cmd>exe \"resize \" . (winheight(0) * 3/2)<cr>", "Strech window" },
+    ["<c-j>"] = { "<cmd>exe \"resize \" . (winheight(0) * 2/3)<cr>", "Reduce window" },
+  },
+})
+
+EOF
+
 "================================= Key binding ==================================
 " ----- pip install . -----
 nnoremap <silent> <Leader>in :w<CR>:!pip install .<CR>
@@ -849,12 +894,6 @@ noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
-
-" ----- 창 크기 조절 -----
-noremap <silent> <Leader>[ :set columns+=30<CR><C-w>=
-noremap <silent> <Leader>] :set columns-=30<CR><C-w>=
-noremap <silent> <Leader>= :set lines+=4<CR><C-w>=
-noremap <silent> <Leader>- :set lines-=4<CR><C-w>=
 
 " ------ Edit vimrc  -----
 nnoremap <silent> <Leader>, :e $MYVIMRC<CR>
