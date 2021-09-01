@@ -1,0 +1,199 @@
+{
+    "docstring_module": {
+        "prefix": [
+            "doc_module"
+        ],
+        "body": [
+            "r\"\"\"$1.",
+            "",
+            "Todo:",
+            "    None",
+            "",
+            "References:",
+            "    .. [] 책: 저자명. (년). 챕터명. In 편집자명 (역할), 책명 (쪽). 발행지 : 발행사",
+            "    .. [] 학위 논문: 학위자명, \"논문제목\", 대학원 이름 석사 학위논문, 1990",
+            "    .. [] 저널 논문: 저자. \"논문제목\". 저널명, . pp.",
+            "",
+            ":auther: ok97465",
+            ":Date created: $CURRENT_YEAR_SHORT.$CURRENT_MONTH.$CURRENT_DATE $CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND",
+            "\"\"\"",
+            "# %% Import",
+            "$0"],
+        "description": "Module을 위한 docstring"
+    },
+    "figure_plot": {
+        "prefix": [
+            "fig_plot"
+        ],
+        "body": [
+            "fig = figure()",
+            "ax1 = fig.add_subplot(1, 1, 1)",
+            "ax1.plot($1)",
+            "ax1.set_xlabel(\"$2\")",
+            "ax1.set_ylabel(\"$3\")",
+            "ax1.set_title(\"$4\")",
+            "ax1.grid(True)",
+            "fig.tight_layout()",
+            "$0"
+        ],
+        "description": "Plot을 위한 새로운 figure를 생성한다."
+    },
+    "figure_imagesc": {
+        "prefix": [
+            "fig_imagesc"
+        ],
+        "body": [
+            "fig = figure()",
+            "ax1 = fig.add_subplot(1, 1, 1)",
+            "ax1.imshow($1, origin=\"upper\", aspect=\"equal\", cmap=\"${2:viridis}\")",
+            "ax1.set_xlabel(\"$3\")",
+            "ax1.set_ylabel(\"$4\")",
+            "ax1.set_title(\"$5\")",
+            "ax1.grid(False)",
+            "fig.tight_layout()",
+            "$0"
+        ],
+        "description": "imshow를 위한 새로운 figure를 생성한다."
+    },
+    "figure_plot3d": {
+        "prefix": [
+            "fig_plot3d"
+        ],
+        "body": [
+            "fig = figure()",
+            "ax1 = fig.add_subplot(111, projection=\"3d\")",
+            "ax1.plot($1)",
+            "ax1.set_xlabel(\"$2\")",
+            "ax1.set_ylabel(\"$3\")",
+            "ax1.set_zlabel(\"$4\")",
+            "ax1.set_title(\"$5\")",
+            "ax1.grid(True)",
+            "ax1.xaxis.labelpad = 10",
+            "ax1.yaxis.labelpad = 10",
+            "ax1.zaxis.labelpad = 10",
+            "ax1.dist = 11",
+            "ax1.view_init(elev=27, azim=-37)",
+            "ax1.set_box_aspect(",
+            "    [ub - lb for lb, ub in (getattr(ax1, f\"get_{a}lim\")() for a in \"xyz\")])",
+            "fig.tight_layout()",
+            "$0"
+        ],
+        "description": "3d plot를 위한 새로운 figure를 생성한다."
+    },
+    "mayavi_surf": {
+        "prefix": [
+            "mayavi_surf"
+        ],
+        "body": [
+            "axe_color = (0.3, 0.3, 0.3)",
+            "f_color = (0, 0, 0)",
+            "f_size = 25",
+            "fig = mlab.figure(bgcolor=(1, 1, 1), size=(600, 500))",
+            "mlab.surf($1, colormap=\"viridis\", warp_scale=\"auto\")",
+            "mlab.outline(figure=fig, color=axe_color)",
+            "mlab.title(\"$2\", figure=fig, size=0.2, color=f_color)",
+            "cb = mlab.colorbar(title=\"${3:[dB]}\", orientation=\"vertical\", nb_labels=2, label_fmt=\"%0.f\")",
+            "cb.scalar_bar.unconstrained_font_size = True",
+            "cb.label_text_property.font_size = f_size",
+            "axes = mlab.axes(",
+            "    figure=fig,",
+            "    color=axe_color,",
+            "    nb_labels=1,",
+            "    x_axis_visibility=False,",
+            "    xlabel=\"$4\",",
+            "    y_axis_visibility=True,",
+            "    ylabel=\"$5\",",
+            "    z_axis_visibility=False,",
+            "    zlabel=\"$6\",",
+            ")",
+            "axes.title_text_property.color = f_color",
+            "axes.title_text_property.font_size = f_size",
+            "axes.label_text_property.color = f_color",
+            "axes.label_text_property.font_size = f_size",
+            "mlab.gcf().scene.parallel_projection = True",
+            "$0"
+        ],
+        "description": "Surf를 위한 mayavi snippet"
+    },
+    "theme_plot": {
+        "prefix": [
+            "theme_plot"
+        ],
+        "body": [
+            "# %% Theme of matplotlib",
+            "if 1:  # Dark Style",
+            "    jtstyle = \"monokai\"",
+            "    colormap = \"mako\"",
+            "else:",
+            "    jtstyle = \"grade3\"",
+            "    colormap = \"turbo\"",
+            "jtplot.style(jtstyle)",
+            "${1:figsize_2col = get_figsize(1, 2)}",
+            "$0"
+        ],
+        "description": "Plot을 위한 theme를 선택하는 snippet"
+    },
+    "if_for_main": {
+        "prefix": [
+            "__name__main__"
+        ],
+        "body": [
+            "__name__ == \"__main__\":",
+            "    $0"
+        ],
+        "description": "__main__을 위한 if문을 생성한다."
+    },
+    "trange":{
+        "prefix": [
+            "trange("
+        ],
+        "body":[
+    		"trange($1, desc='$2', ncols=80):$0"
+        ],
+        "description": "trange를 위한 snippet"
+    },
+    "sympy_commands":{
+        "prefix": [
+            "sympy_commands"
+        ],
+        "body":
+        [
+            "import sympy",
+            "from IPython.display import display",
+            "from sympy import (",
+            "    symbols, init_printing, pi, exp, sqrt, cos, sin, tan, atan,",
+            "    diff, integrate, solve, Abs, Eq, simplify)",
+            "from sympy.integrals.transforms import fourier_transform",
+            "init_printing(forecolor='White')",
+            "$0",
+            "x, y, th1 = symbols('x y theta_1')",
+            "",
+            "# Simultaneous Equation",
+            "eq1 = Eq(lhs=x + sqrt(y) + th1**2, rhs=1)",
+            "eq2 = Eq(lhs=x + y, rhs=0.5)",
+            "eq3 = Eq(lhs=th1, rhs=0.8)",
+            "display(eq1)",
+            "display(eq2)",
+            "display(eq3)",
+            "answer = solve([eq1, eq2, eq3], x, y, th1)",
+            "display(answer)",
+            "",
+            "# derviation",
+            "fx = x**2",
+            "dfx = diff(fx, x)",
+            "display(dfx)",
+            "",
+            "# Integral",
+            "Fx = integrate(fx, x)",
+            "display(Fx)",
+            "",
+            "# Substitute",
+            "expr = x ** 3 + 4 * x * y - th1",
+            "display(expr.subs([(x, 3), (y, 7), (th1, 30)]))",
+            "",
+            "# Fourier transform",
+            "Fourier_y = fourier_transform(exp(1j * pi * x ** 2), x, y)",
+            "display(Fourier_y)"],
+        "description": "Sympy를 위한 import"
+    }
+}

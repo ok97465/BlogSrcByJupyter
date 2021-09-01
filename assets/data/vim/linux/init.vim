@@ -66,8 +66,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'jiangmiao/auto-pairs'                                   " Auto pair for ',), }, ]...
 Plug 'mhinz/vim-startify'                                     " Fancy start page for empty vim
 Plug 'tmhedberg/matchit'                                      " Extended % matching
-Plug 'SirVer/ultisnips'                                       " Snippets engine
-" Plug 'honza/vim-snippets'                                     " Snippets (이것을 사용하면 telescope에서 연 파일이 수정이 안되는 경우가 발생)
 Plug 'tomtom/tcomment_vim'                                    " Comment toggle
 Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
 Plug 'tpope/vim-fugitive'                                     " For git
@@ -86,13 +84,20 @@ Plug 'kyazdani42/nvim-tree.lua'                               " File explorer
 Plug 'nvim-lua/popup.nvim'                                    " Dependency of telescope
 Plug 'nvim-lua/plenary.nvim'                                  " Dependency of telescope
 Plug 'nvim-telescope/telescope.nvim'                          " Fuzzy finder
+Plug 'nvim-telescope/telescope-fzy-native.nvim'               " Fzy for fuzzy finder
 Plug 'nvim-telescope/telescope-project.nvim'                  " project manager
 Plug 'ryanoasis/vim-devicons'                                 " Icons for lualine
 Plug 'shadmansaleh/lualine.nvim'                              " Status bar
 Plug 'akinsho/bufferline.nvim'                                " Buffer line
 Plug 'Pocco81/TrueZen.nvim'                                   " Zen mode
 Plug 'neovim/nvim-lspconfig'                                  " Language server
-Plug 'nvim-lua/completion-nvim'                               " Code Completion
+Plug 'onsails/lspkind-nvim'                                   " add icon to nvim-cmp
+Plug 'hrsh7th/vim-vsnip'                                      " vim-vsnip
+Plug 'hrsh7th/cmp-path'                                       " Integrate filsystem info with nvim-cmp
+Plug 'hrsh7th/cmp-buffer'                                     " Integrate buffer info with nvim-cmp
+Plug 'hrsh7th/cmp-nvim-lsp'                                   " Integrate nvim-lsp info with nvim-cmp
+Plug 'hrsh7th/cmp-vsnip'                                      " Integrate vim-vsnip info with nvim-cmp   
+Plug 'hrsh7th/nvim-cmp'                                       " Code Comepletion
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
 Plug 'simrat39/symbols-outline.nvim'                          " Outline
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
@@ -167,12 +172,6 @@ set termguicolors " this variable must be enabled for colors to be applied prope
 " highlight NvimTreeFolderIcon guibg=black
 nnoremap <silent> <Leader>e <cmd>NvimTreeToggle<CR>
 
-" ----- UltiSnips -----
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-let g:UltiSnipsEditSplit="vertical"
-
 " ----- Indent guide -----
 lua << EOF
 vim.opt.listchars = {
@@ -242,6 +241,9 @@ require('telescope').setup{
 }
 EOF
 
+" ----- telescopte-fzy -----
+lua require('telescope').load_extension('fzy_native')
+
 " ----- telescope-project ----
 nnoremap <silent> <S-home>p <cmd>lua require'telescope'.extensions.project.project{}<CR>
 if filereadable(expand("~/project_info.vim"))
@@ -267,6 +269,7 @@ endif
 
 " ----- isort -----
 nnoremap <silent> <leader>i <cmd>Isort<cr>
+let g:vim_isort_map = ''
 let g:vim_isort_config_overrides = {
   \ 'profile': 'black', 'multi_line_output': 3,
   \ 'import_heading_stdlib': 'Standard library imports',
@@ -404,6 +407,17 @@ for _, lsp in ipairs(servers) do
   }
 end
 
+------ json -----
+nvim_lsp.jsonls.setup {
+    commands = {
+      Format = {
+        function()
+          vim.lsp.buf.range_formatting({},{0,0},{vim.fn.line("$"),0})
+        end
+      }
+    }
+}
+
 ------ pyls -----
 -- Window에서는 관리자 권한에서만 수행하여야 한다.
 nvim_lsp.pyls.setup{
@@ -425,18 +439,101 @@ nvim_lsp.pyls.setup{
 }
 EOF
 
-" ----- completion -----
-" map <c-space> to manually trigger completion
-imap <silent> <c-space> <Plug>(completion_trigger)
+" ----- vsnip -----
+" Jump forward or backward for snippets
+imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
 
-" Set completeopt to have a better completion experience
-set completeopt=menuone,noinsert,noselect
-let g:completion_enable_snippet = 'UltiSnips'
+" ----- lspkind -----
+lua << EOF
+require('lspkind').init({
+    -- enables text annotations
+    --
+    -- default: true
+    with_text = false,
 
-" lint 수행시 attach를 추가
-" lua require'lspconfig'.pyls.setup{on_attach=require'completion'.on_attach}
-" 키 입력 시 마다 completion window 생성
-autocmd BufEnter * lua require'completion'.on_attach()
+    -- default symbol map
+    -- can be either 'default' (requires nerd-fonts font) or
+    -- 'codicons' for codicon preset (requires vscode-codicons font)
+    --
+    -- default: 'default'
+    preset = 'codicons',
+
+    -- override preset symbols
+    --
+    -- default: {}
+    symbol_map = {
+      Text = "",
+      Method = "",
+      Function = "",
+      Constructor = "",
+      Field = "ﰠ  ",
+      Variable = "",
+      Class = "ﴯ  ",
+      Interface = "",
+      Module = "",
+      Property = "ﰠ  ",
+      Unit = "塞",
+      Value = "",
+      Enum = "",
+      Keyword = "",
+      Snippet = "",
+      Color = "",
+      File = "",
+      Reference = "",
+      Folder = "",
+      EnumMember = " ",
+      Constant = "",
+      Struct = "פּ",
+      Event = "",
+      Operator = "",
+      TypeParameter = ""
+    },
+})
+EOF
+
+" ----- nvim-cmp -----
+lua << EOF
+local cmp = require "cmp"
+cmp.setup {
+  snippet = {
+    expand = function(args)
+      vim.fn["vsnip#anonymous"](args.body)
+    end,
+  },
+
+  mapping = {
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4)
+  },
+
+sources = {
+    { name = 'vsnip'},
+    { name = "nvim_lsp" },
+    { name = "buffer" },
+    { name = "path" },
+  },
+
+  formatting = {
+    format = function(entry, vim_item)
+      -- fancy icons and a name of kind
+      vim_item.kind = require("lspkind").presets.default[vim_item.kind] .. " " .. vim_item.kind
+
+      -- set a name for each source
+      vim_item.menu = ({
+        buffer = "[Buffer]",
+        path = "[Path]",
+        nvim_lsp = "[LSP]",
+        vsnip = "[Vsnip]",
+      })[entry.source.name]
+      return vim_item
+    end,
+  },
+}
+EOF
 
 " ---- treesitter ----
 lua <<EOF
@@ -736,8 +833,8 @@ let s:wildmenu_renderer = wilder#wildmenu_renderer({
 
 call wilder#set_option('renderer', wilder#renderer_mux({
       \ ':': s:popupmenu_renderer,
-      \ '/': s:wildmenu_renderer,
-      \ 'substitute': s:wildmenu_renderer,
+      \ '/': s:popupmenu_renderer,
+      \ 'substitute': s:popupmenu_renderer,
       \ }))
 
 "================================= Key binding ==================================
