@@ -97,6 +97,7 @@ Plug 'hrsh7th/cmp-buffer'                                     " Integrate buffer
 Plug 'hrsh7th/cmp-nvim-lsp'                                   " Integrate nvim-lsp info with nvim-cmp
 Plug 'hrsh7th/cmp-vsnip'                                      " Integrate vim-vsnip info with nvim-cmp   
 Plug 'hrsh7th/nvim-cmp'                                       " Code Comepletion
+Plug 'ray-x/lsp_signature.nvim'                               " Show function signature when you type
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
 Plug 'simrat39/symbols-outline.nvim'                          " Outline
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
@@ -379,7 +380,7 @@ local on_attach = function(client, bufnr)
   -- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   -- buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   -- buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  -- buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   -- buf_set_keymap('n', '<space>l', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
   buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
@@ -530,6 +531,9 @@ sources = {
 }
 EOF
 
+" ----- lsp_signature -----
+lua require "lsp_signature".setup()
+
 " ---- treesitter ----
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
@@ -600,6 +604,9 @@ EOF
 
 " ----- black formatter -----
 autocmd FileType python nnoremap <buffer> <Leader>f <cmd>Black<CR>
+
+" ----- json format -----
+autocmd FileType json nnoremap <buffer> <Leader>f <cmd>%!python -m json.tool<CR>
 
 " ----- dap -----
 " C language c-f5는 run c language에서 저의함 
@@ -926,7 +933,7 @@ cnoreabbrev <expr> q getcmdtype() == ":" && len(filter(range(1, bufnr('$')), 'bu
 tnoremap <c-space> <C-\><C-n>
 
 let g:ipython_terminal_job_id = 0
-function! OpenIpython()
+function! OpenIpython(b_open_cmd_window)
     if filereadable("import_in_console.py")
         botright vsplit term://ipython -i import_in_console.py --profile=vim
     else
