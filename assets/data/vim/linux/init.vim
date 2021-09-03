@@ -90,6 +90,7 @@ Plug 'ryanoasis/vim-devicons'                                 " Icons for lualin
 Plug 'shadmansaleh/lualine.nvim'                              " Status bar
 Plug 'akinsho/bufferline.nvim'                                " Buffer line
 Plug 'Pocco81/TrueZen.nvim'                                   " Zen mode
+Plug 'mfussenegger/nvim-lint'                                 " lint language that lspconfig doesn't support
 Plug 'neovim/nvim-lspconfig'                                  " Language server
 Plug 'onsails/lspkind-nvim'                                   " add icon to nvim-cmp
 Plug 'hrsh7th/vim-vsnip'                                      " vim-vsnip
@@ -183,6 +184,7 @@ vim.opt.listchars = {
 require("indent_blankline").setup {
     show_end_of_line = false,
     space_char_blankline = " ",
+    show_current_context = false,
 }
 EOF
 
@@ -350,6 +352,18 @@ nnoremap <silent><leader>9 <Cmd>BufferLineGoToBuffer 9<CR>
 
 " ----- Zen mode -----
 nnoremap <silent><F3> <cmd>TZAtaraxis<CR>
+
+" ----- nvim lint -----
+Plug 'mfussenegger/nvim-lint'
+
+lua << EOF
+require('lint').linters_by_ft = {
+  markdown = {'markdownlint'},
+}
+EOF
+
+au BufWritePost *.md lua require('lint').try_lint()
+au BufEnter *.md lua require('lint').try_lint()
 
 " ----- nvim-lspconfig -----
 " 아래 명령을 이용하여 lspconfig의 상태를 확인할 수 있다.
@@ -532,7 +546,15 @@ sources = {
 EOF
 
 " ----- lsp_signature -----
-lua require "lsp_signature".setup()
+lua <<EOF
+require "lsp_signature".setup({
+    floating_window_above_first = true,
+    zindex = 99,
+    fix_pos = true,
+    -- floating_window=true,
+    -- floating_window_off_y = 1
+})
+EOF
 
 " ---- treesitter ----
 lua <<EOF
