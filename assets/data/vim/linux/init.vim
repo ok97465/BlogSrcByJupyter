@@ -354,16 +354,14 @@ nnoremap <silent><leader>9 <Cmd>BufferLineGoToBuffer 9<CR>
 nnoremap <silent><F3> <cmd>TZAtaraxis<CR>
 
 " ----- nvim lint -----
-Plug 'mfussenegger/nvim-lint'
-
-lua << EOF
-require('lint').linters_by_ft = {
-  markdown = {'markdownlint'},
-}
-EOF
-
-au BufWritePost *.md lua require('lint').try_lint()
-au BufEnter *.md lua require('lint').try_lint()
+" lua << EOF
+" require('lint').linters_by_ft = {
+"   markdown = {'markdownlint'},
+" }
+" EOF
+"
+" au BufWritePost *.md lua require('lint').try_lint()
+" au BufEnter *.md lua require('lint').try_lint()
 
 " ----- nvim-lspconfig -----
 " 아래 명령을 이용하여 lspconfig의 상태를 확인할 수 있다.
@@ -548,7 +546,7 @@ EOF
 " ----- lsp_signature -----
 lua <<EOF
 require "lsp_signature".setup({
-    floating_window_above_first = true,
+    floating_window_above_cur_line = true,
     zindex = 99,
     fix_pos = true,
     -- floating_window=true,
@@ -735,13 +733,13 @@ require("dapui").setup({
       -- { id = "breakpoints", size = 0.25 },
       -- { id = "stacks", size = 0.25 },
     },
-    width = 100,
+    size = 100,
     position = "left", -- Can be "left" or "right"
   },
   tray = {
     open_on_start = true,
     elements = { "repl" },
-    height = 15,
+    size = 15,
     position = "bottom", -- Can be "bottom" or "top"
   },
   floating = {
@@ -885,6 +883,7 @@ wk.register({
     a = { "<cmd>Telescope git_branches<cr>", "Git Branches" },
     s = { "<cmd>Telescope git_status<cr>", "Git Status" },
     S = { "<cmd>Telescope git_status<cr>", "Git Stash" },
+    h = { "<cmd>Telescope command_history<cr>", "command history" },
   },
 }, { prefix = "<leader>" })
 
@@ -935,14 +934,34 @@ nnoremap <silent> <f2> <cmd>e!<CR>
 
 " ----- Replace quit with buffer delete -----
 " 열린 buffer가 1보다 큰경우에는 q 명령을 bd로 변환한다.
-cnoreabbrev <expr> wq getcmdtype() == ":" && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 && getcmdline() == 'wq' ? 'w<bar>bn<bar>bd#' : 'wq'
-cnoreabbrev <expr> q getcmdtype() == ":" && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 && getcmdline() == 'q' ? 'bn<bar>bd#' : 'q'
+cnoreabbrev <expr> wq getcmdtype() == ":"
+            \&& len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1
+            \&& getcmdline() == 'wq'
+            \&& &filetype != 'fugitive'
+            \&& &filetype != 'help'
+            \&& &buftype != 'terminal'
+            \&& &buftype != 'quickfix'
+            \? 'w<bar>bn<bar>bd#' : 'wq'
+cnoreabbrev <expr> q getcmdtype() == ":" 
+            \&& len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 
+            \&& getcmdline() == 'q' 
+            \&& &filetype != 'fugitive'
+            \&& &filetype != 'help'
+            \&& &buftype != 'terminal'
+            \&& &buftype != 'quickfix'
+            \? 'bn<bar>bd#' : 'q'
 
 " ----- Terminal -----
-tnoremap <c-space> <C-\><C-n>
+tnoremap <c-space> <C-\><C-n>G<C-w>h
 
 let g:ipython_terminal_job_id = 0
 function! OpenIpython(b_open_cmd_window)
+    for buf in getbufinfo({'buflisted':1})
+        if buf.name =~ "term" && buf.name =~ "ipython"
+            execute "bd! ".buf.bufnr
+            return
+        endif
+    endfor
     if filereadable("import_in_console.py")
         botright vsplit term://ipython -i import_in_console.py --profile=vim
     else
@@ -966,6 +985,7 @@ function! OpenIpython(b_open_cmd_window)
         below split ipython_cmd_window.py
         resize 10
     endif
+    norm G    " For autoscroll
 endfunction
 
 function! OpenTerminal()
