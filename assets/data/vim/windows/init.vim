@@ -105,6 +105,7 @@ Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
 Plug 'psf/black', { 'branch': 'stable' }                      " python formatter
 Plug 'mfussenegger/nvim-dap'                                  " debugger
 Plug 'rcarriga/nvim-dap-ui'                                   " debugger ui
+Plug 'theHamsta/nvim-dap-virtual-text'                        " text for debugger
 Plug 'rhysd/vim-clang-format'                                 " c++ formatter
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " preview for markdown
 Plug 'p00f/nvim-ts-rainbow'                                   " color for parantheses
@@ -112,6 +113,7 @@ Plug 'norcalli/nvim-colorizer.lua'                            " colorizer for he
 Plug 'romgrk/fzy-lua-native'                                  " fuzzy for lua
 Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }   " Autocompletion in command line
 Plug 'folke/which-key.nvim'                                   " Which key
+Plug 'abecodes/tabout.nvim'                                   " tabout
 
 call plug#end()
 
@@ -268,7 +270,7 @@ endif
 nnoremap <silent> <leader>i <cmd>Isort<cr>
 let g:vim_isort_map = ''
 let g:vim_isort_config_overrides = {
-  \ 'profile': 'black', 'multi_line_output': 3,
+  \ 'profile': 'black', 'multi_line_output': 3, 'float_to_top': 1,
   \ 'import_heading_stdlib': 'Standard library imports',
   \ 'import_heading_firstparty' : 'Local imports',
   \ 'import_heading_thirdparty': 'Third party imports'}
@@ -304,8 +306,8 @@ require'lualine'.setup {
   options = {
     icons_enabled = true,
     theme = 'tokyonight',
-    component_separators = {'', ''},
-    section_separators = {'', ''},
+    component_separators = {left='', right=''},
+    section_separators = {left='', right=''},
     disabled_filetypes = {}
   },
   sections = {
@@ -513,7 +515,8 @@ cmp.setup {
   },
 
   mapping = {
-    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    ['<Tab>'] = cmp.mapping.confirm({ select = true }),
+    ['<Cr>'] = cmp.mapping.confirm({ select = true }),
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4)
   },
@@ -755,6 +758,9 @@ require("dapui").setup({
 })
 EOF
 
+" ----- nvim-dap-virtual-text -----
+let g:dap_virtual_text = v:true
+
 " ----- clang formatter -----
 let g:clang_format#detect_style_file=1
 autocmd FileType c,cpp,objc nnoremap <buffer><Leader>f :<C-u>ClangFormat<CR>
@@ -908,6 +914,7 @@ wk.register({
     d = { "<cmd>Git difftool<cr>", "Git difftool" },
     l = { "<cmd>Git log<cr>", "Git log" },
     c = { "<cmd>Git commit<cr>", "Git commit" },
+    p = { "<cmd>Git push<cr>", "Git push" },
   },
 }, { prefix = "<leader>" })
 
@@ -920,7 +927,55 @@ wk.register({
     ["<c-j>"] = { "<cmd>exe \"resize \" . (winheight(0) * 2/3)<cr>", "Reduce window" },
   },
 })
+EOF
 
+" ----- tabout -----
+lua << EOF
+require('tabout').setup {
+    tabkey = '<Tab>', -- key to trigger tabout, set to an empty string to disable
+    backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout, set to an empty string to disable
+    act_as_tab = true, -- shift content if tab out is not possible
+    act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+    enable_backwards = true, -- well ...
+    completion = true, -- if the tabkey is used in a completion pum
+    tabouts = {
+      {open = "'", close = "'"},
+      {open = '"', close = '"'},
+      {open = '`', close = '`'},
+      {open = '(', close = ')'},
+      {open = '[', close = ']'},
+      {open = '{', close = '}'}
+    },
+    ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
+    exclude = {} -- tabout will ignore these filetypes
+}
+
+local function replace_keycodes(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+function _G.tab_binding()
+  if vim.fn.pumvisible() ~= 0 then
+    return replace_keycodes("<C-n>")
+  elseif vim.fn["vsnip#available"](1) ~= 0 then
+    return replace_keycodes("<Plug>(vsnip-expand-or-jump)")
+  else
+    return replace_keycodes("<Plug>(Tabout)")
+  end
+end
+
+function _G.s_tab_binding()
+  if vim.fn.pumvisible() ~= 0 then
+    return replace_keycodes("<C-p>")
+  elseif vim.fn["vsnip#jumpable"](-1) ~= 0 then
+    return replace_keycodes("<Plug>(vsnip-jump-prev)")
+  else
+    return replace_keycodes("<Plug>(TaboutBack)")
+  end
+end
+
+vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_binding()", {expr = true})
+vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_binding()", {expr = true})
 EOF
 
 "================================= Key binding ==================================
@@ -939,9 +994,6 @@ noremap <C-l> <C-w>l
 " ------ Edit vimrc  -----
 nnoremap <silent> <Leader>, :e $MYVIMRC<CR>
 
-" ------ tabout ------
-inoremap <s-tab> <esc>la
-
 " ------ Reload buffer -----
 nnoremap <silent> <f2> <cmd>e!<CR>
 
@@ -951,6 +1003,7 @@ cnoreabbrev <expr> wq getcmdtype() == ":"
             \&& len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1
             \&& getcmdline() == 'wq'
             \&& &filetype != 'fugitive'
+            \&& &filetype != 'gitcommit'
             \&& &filetype != 'help'
             \&& &buftype != 'terminal'
             \&& &buftype != 'quickfix'
@@ -959,6 +1012,7 @@ cnoreabbrev <expr> q getcmdtype() == ":"
             \&& len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 
             \&& getcmdline() == 'q' 
             \&& &filetype != 'fugitive'
+            \&& &filetype != 'gitcommit'
             \&& &filetype != 'help'
             \&& &buftype != 'terminal'
             \&& &buftype != 'quickfix'
