@@ -114,6 +114,7 @@ Plug 'romgrk/fzy-lua-native'                                  " fuzzy for lua
 Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }   " Autocompletion in command line
 Plug 'folke/which-key.nvim'                                   " Which key
 Plug 'abecodes/tabout.nvim'                                   " tabout
+Plug 'ok97465/ok97465.nvim', { 'do': ':UpdateRemotePlugins' } " Import from list
 
 call plug#end()
 
@@ -267,10 +268,10 @@ EOF
 endif
 
 " ----- isort -----
-nnoremap <silent> <leader>i <cmd>Isort<cr>
+nnoremap <silent> <leader>i <cmd>ImportFromJson<cr><cmd>Isort<cr>
 let g:vim_isort_map = ''
 let g:vim_isort_config_overrides = {
-  \ 'profile': 'black', 'multi_line_output': 3, 'float_to_top': 1,
+  \ 'profile': 'black', 'multi_line_output': 3,
   \ 'import_heading_stdlib': 'Standard library imports',
   \ 'import_heading_firstparty' : 'Local imports',
   \ 'import_heading_thirdparty': 'Third party imports'}
