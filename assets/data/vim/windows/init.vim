@@ -85,6 +85,7 @@ Plug 'nvim-lua/plenary.nvim'                                  " Dependency of te
 Plug 'nvim-telescope/telescope.nvim'                          " Fuzzy finder
 Plug 'nvim-telescope/telescope-fzy-native.nvim'               " Fzy for fuzzy finder
 Plug 'nvim-telescope/telescope-project.nvim'                  " project manager
+Plug 'ok97465/telescope-py-importer.nvim'                     " python import in workspace
 Plug 'ryanoasis/vim-devicons'                                 " Icons for lualine
 Plug 'shadmansaleh/lualine.nvim'                              " Status bar
 Plug 'akinsho/bufferline.nvim'                                " Buffer line
@@ -114,7 +115,7 @@ Plug 'romgrk/fzy-lua-native'                                  " fuzzy for lua
 Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }   " Autocompletion in command line
 Plug 'folke/which-key.nvim'                                   " Which key
 Plug 'abecodes/tabout.nvim'                                   " tabout
-Plug 'ok97465/ok97465.nvim', { 'do': ':UpdateRemotePlugins' } " Import from list
+Plug 'ok97465/ok97465.nvim', { 'do': ':UpdateRemotePlugins' } " python import from list
 
 call plug#end()
 
@@ -266,6 +267,10 @@ require('telescope').setup {
 }
 EOF
 endif
+
+" ----- telescope-py-importer ----
+lua require('telescope').load_extension('py_importer')
+nnoremap <silent> <leader>I <cmd>Telescope py_importer workspace<cr><cmd>Isort<cr>
 
 " ----- isort -----
 nnoremap <silent> <leader>i <cmd>ImportFromJson<cr><cmd>Isort<cr>
