@@ -339,6 +339,8 @@ require'lualine'.setup {
 EOF
 
 " ----- bufferline -----
+autocmd TermOpen * set nobuflisted
+autocmd FileType dap-repl set nobuflisted
 lua << EOF
 require("bufferline").setup{}
 EOF
@@ -1016,37 +1018,39 @@ cnoreabbrev <expr> bn<bar>bd#! getcmdtype() == ":" ? 'bn<bar>bd!#' : 'bn<bar>bd#
 tnoremap <c-space> <C-\><C-n>G<C-w>h
 
 let g:ipython_terminal_job_id = 0
+let g:ipython_terminal_buf_id = 0
 function! OpenIpython(b_open_cmd_window)
-    for buf in getbufinfo({'buflisted':1})
-        if buf.name =~ "term" && buf.name =~ "ipython"
-            execute "bd! ".buf.bufnr
-            return
+    try
+        call chansend(g:ipython_terminal_job_id, '')
+        call jobstop(g:ipython_terminal_job_id)
+        exec "bd! ".g:ipython_terminal_buf_id
+    catch
+        if filereadable("import_in_console.py")
+            botright vsplit term://ipython -i import_in_console.py --profile=vim
+        else
+            botright vsplit term://ipython -i -c \"
+                        \import numpy as np;
+                        \import matplotlib.pyplot as plt;
+                        \from scipy.special import sindg, cosdg, tandg;
+                        \from matplotlib.pyplot import plot, hist, figure, subplots;
+                        \from numpy import (
+                        \pi, deg2rad, rad2deg, unwrap, angle, zeros, array, ones, linspace, cumsum,
+                        \diff, arange, interp, conj, exp, sqrt, vstack, hstack, dot, cross, newaxis);
+                        \from numpy import cos, sin, tan, arcsin, arccos, arctan;
+                        \from numpy import amin, amax, argmin, argmax, mean;
+                        \from numpy.linalg import svd, norm;
+                        \from numpy.fft import fftshift, ifftshift, fft, ifft, fft2, ifft2;
+                        \from numpy.random import randn, standard_normal, randint, choice, uniform;
+                        \\" --profile=vim
         endif
-    endfor
-    if filereadable("import_in_console.py")
-        botright vsplit term://ipython -i import_in_console.py --profile=vim
-    else
-        botright vsplit term://ipython -i -c \"
-                    \import numpy as np;
-                    \import matplotlib.pyplot as plt;
-                    \from scipy.special import sindg, cosdg, tandg;
-                    \from matplotlib.pyplot import plot, hist, figure, subplots;
-                    \from numpy import (
-                    \pi, deg2rad, rad2deg, unwrap, angle, zeros, array, ones, linspace, cumsum,
-                    \diff, arange, interp, conj, exp, sqrt, vstack, hstack, dot, cross, newaxis);
-                    \from numpy import cos, sin, tan, arcsin, arccos, arctan;
-                    \from numpy import amin, amax, argmin, argmax, mean;
-                    \from numpy.linalg import svd, norm;
-                    \from numpy.fft import fftshift, ifftshift, fft, ifft, fft2, ifft2;
-                    \from numpy.random import randn, standard_normal, randint, choice, uniform;
-                    \\" --profile=vim
-    endif
-    let g:ipython_terminal_job_id = b:terminal_job_id
-    if a:b_open_cmd_window == 1
-        below split ipython_cmd_window.py
-        resize 10
-    endif
-    norm G    " For autoscroll
+        let g:ipython_terminal_job_id = b:terminal_job_id
+        let g:ipython_terminal_buf_id = bufnr("%")
+        if a:b_open_cmd_window == 1
+            below split ipython_cmd_window.py
+            resize 10
+        endif
+        norm G    " For autoscroll
+    endtry
 endfunction
 
 function! OpenTerminal()
