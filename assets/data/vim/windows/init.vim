@@ -270,10 +270,10 @@ endif
 
 " ----- telescope-py-importer ----
 lua require('telescope').load_extension('py_importer')
-nnoremap <silent> <leader>I <cmd>Telescope py_importer workspace<cr><cmd>Isort<cr>
+autocmd FileType python nnoremap <silent> <leader>I <cmd>Telescope py_importer workspace<cr><cmd>Isort<cr>
 
 " ----- isort -----
-nnoremap <silent> <leader>i <cmd>ImportFromJson<cr><cmd>Isort<cr>
+autocmd FileType python nnoremap <silent> <leader>i <cmd>ImportFromJson<cr><cmd>Isort<cr>
 let g:vim_isort_map = ''
 let g:vim_isort_config_overrides = {
   \ 'profile': 'black', 'multi_line_output': 3,
@@ -1023,6 +1023,7 @@ cnoreabbrev <expr> q getcmdtype() == ":"
             \&& &buftype != 'terminal'
             \&& &buftype != 'quickfix'
             \? 'bn<bar>bd#' : 'q'
+cnoreabbrev <expr> bn<bar>bd#! getcmdtype() == ":" ? 'bn<bar>bd!#' : 'bn<bar>bd#!'
 
 " ----- Terminal -----
 tnoremap <c-space> <C-\><C-n>G<C-w>h
