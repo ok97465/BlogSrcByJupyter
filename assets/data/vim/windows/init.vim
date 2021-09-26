@@ -67,10 +67,12 @@ Plug 'mhinz/vim-startify'                                     " Fancy start page
 Plug 'tmhedberg/matchit'                                      " Extended % matching
 Plug 'tomtom/tcomment_vim'                                    " Comment toggle
 Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
+Plug 'RRethy/vim-illuminate'                                  " Highlight word under cursor
 Plug 'tpope/vim-fugitive'                                     " For git
 Plug 'mbbill/undotree'                                        " Visualize undo history
 Plug 'alfredodeza/pytest.vim'                                 " Pytest
 Plug 'ThePrimeagen/vim-be-good'                               " Vim Game
+Plug 'seandewar/nvimesweeper'                                 " minesweeper
 Plug 'kana/vim-textobj-user'                                  " Engine Textobj
 Plug 'coachshea/vim-textobj-markdown'                         " Textobj for markdown
 Plug 'junegunn/vim-easy-align'                                " Vim alignment
@@ -93,20 +95,20 @@ Plug 'Pocco81/TrueZen.nvim'                                   " Zen mode
 Plug 'mfussenegger/nvim-lint'                                 " lint language that lspconfig doesn't support
 Plug 'neovim/nvim-lspconfig'                                  " Language server
 Plug 'onsails/lspkind-nvim'                                   " add icon to nvim-cmp
-Plug 'hrsh7th/vim-vsnip'                                      " vim-vsnip
 Plug 'hrsh7th/cmp-path'                                       " Integrate filsystem info with nvim-cmp
-Plug 'hrsh7th/cmp-buffer'                                     " Integrate buffer info with nvim-cmp
 Plug 'hrsh7th/cmp-nvim-lsp'                                   " Integrate nvim-lsp info with nvim-cmp
-Plug 'hrsh7th/cmp-vsnip'                                      " Integrate vim-vsnip info with nvim-cmp   
+Plug 'hrsh7th/cmp-buffer'                                     " Integrate buffer info with nvim-cmp
 Plug 'hrsh7th/nvim-cmp'                                       " Code Comepletion
+Plug 'hrsh7th/cmp-vsnip'                                      " Integrate vim-vsnip info with nvim-cmp   
+Plug 'hrsh7th/vim-vsnip'                                      " vim-vsnip
 Plug 'ray-x/lsp_signature.nvim'                               " Show function signature when you type
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
 Plug 'simrat39/symbols-outline.nvim'                          " Outline
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
-Plug 'psf/black', { 'branch': 'stable' }                      " python formatter
 Plug 'mfussenegger/nvim-dap'                                  " debugger
 Plug 'rcarriga/nvim-dap-ui'                                   " debugger ui
 Plug 'theHamsta/nvim-dap-virtual-text'                        " text for debugger
+Plug 'averms/black-nvim', {'do': ':UpdateRemotePlugins'}      " python formatter
 Plug 'rhysd/vim-clang-format'                                 " c++ formatter
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " preview for markdown
 Plug 'p00f/nvim-ts-rainbow'                                   " color for parantheses
@@ -270,10 +272,10 @@ endif
 
 " ----- telescope-py-importer ----
 lua require('telescope').load_extension('py_importer')
-autocmd FileType python nnoremap <silent> <leader>I <cmd>Telescope py_importer workspace<cr><cmd>Isort<cr>
+autocmd FileType python nnoremap <silent> <leader>I <cmd>Telescope py_importer workspace<cr>
 
 " ----- isort -----
-autocmd FileType python nnoremap <silent> <leader>i <cmd>ImportFromJson<cr><cmd>Isort<cr>
+autocmd FileType python nnoremap <silent> <leader>i <cmd>ImportFromJson<cr>
 let g:vim_isort_map = ''
 let g:vim_isort_config_overrides = {
   \ 'profile': 'black', 'multi_line_output': 3,
@@ -450,7 +452,14 @@ nvim_lsp.pyls.setup{
                         maxLineLength = 88,
                         ignore = {"W503", "E221", "E203"}
                       },
-        pylint =  { enabled = false }
+        pylint =  { enabled = false },
+        pyls_spyder = { enable_block_comments = false,
+                        group_cells = false},
+        jedi_symbols = {
+            enabled = true,
+            all_scopes = true,
+            include_import_symbols = false
+        },
       }
     }
   }
@@ -552,6 +561,12 @@ sources = {
     end,
   },
 }
+local servers = { "pyright", "cmake", "ccls"}
+for _, lsp in ipairs(servers) do
+require('lspconfig')[lsp].setup {
+  capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+}
+end
 EOF
 
 " ----- lsp_signature -----
@@ -634,7 +649,7 @@ vim.g.symbols_outline = {
 EOF
 
 " ----- black formatter -----
-autocmd FileType python nnoremap <buffer> <Leader>f <cmd>Black<CR>
+autocmd FileType python nnoremap <buffer> <Leader>f <cmd>call Black()<CR>
 
 " ----- json format -----
 autocmd FileType json nnoremap <buffer> <Leader>f <cmd>%!python -m json.tool<CR>
@@ -723,6 +738,13 @@ EOF
 
 " ----- dap-ui -----
 lua <<EOF
+
+-- Automatically dap ui open
+local dap, dapui = require('dap'), require('dapui')
+dap.listeners.after.event_initialized['dapui_config'] = function() dapui.open() end
+dap.listeners.before.event_terminated['dapui_config'] = function() dapui.close() end
+dap.listeners.before.event_exited['dapui_config'] = function() dapui.close() end
+
 require("dapui").setup({
   icons = { expanded = "▾", collapsed = "▸" },
   mappings = {
@@ -734,7 +756,6 @@ require("dapui").setup({
     repl = "r",
   },
   sidebar = {
-    open_on_start = true,
     -- You can change the order of elements in the sidebar
     elements = {
       -- Provide as ID strings or tables with "id" and "size" keys
@@ -750,7 +771,6 @@ require("dapui").setup({
     position = "left", -- Can be "left" or "right"
   },
   tray = {
-    open_on_start = true,
     elements = { "repl" },
     size = 15,
     position = "bottom", -- Can be "bottom" or "top"
