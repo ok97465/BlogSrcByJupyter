@@ -92,6 +92,7 @@ Plug 'ryanoasis/vim-devicons'                                 " Icons for lualin
 Plug 'shadmansaleh/lualine.nvim'                              " Status bar
 Plug 'akinsho/bufferline.nvim'                                " Buffer line
 Plug 'Pocco81/TrueZen.nvim'                                   " Zen mode
+Plug 'simeji/winresizer'                                      " window resizer
 Plug 'mfussenegger/nvim-lint'                                 " lint language that lspconfig doesn't support
 Plug 'neovim/nvim-lspconfig'                                  " Language server
 Plug 'onsails/lspkind-nvim'                                   " add icon to nvim-cmp
@@ -127,31 +128,7 @@ lua vim.g.tokyonight_style = "night"
 lua vim.cmd[[colorscheme tokyonight]]
 
 " ----- nvim-tree -----
-let g:nvim_tree_side = 'left'                                 " left by default
-let g:nvim_tree_width = 30                                    " 30 by default, can be width_in_columns or 'width_in_percent%'
-let g:nvim_tree_ignore = [ '.git', 'node_modules', '.cache', '__pycache__' ] " empty by default
-let g:nvim_tree_gitignore = 0                                 " 0 by default
-let g:nvim_tree_auto_open = 0                                 " 0 by default, opens the tree when typing `vim $DIR` or `vim`
-let g:nvim_tree_auto_close = 1                                " 0 by default, closes the tree when it's the last window
-let g:nvim_tree_auto_ignore_ft = [ 'startify', 'dashboard' ]  " empty by default, don't auto open tree on specific filetypes.
-let g:nvim_tree_quit_on_open = 0                              " 0 by default, closes the tree when you open a file
-let g:nvim_tree_follow = 0                                    " 0 by default, this option allows the cursor to be updated when entering a buffer
-let g:nvim_tree_indent_markers = 1                            " 0 by default, this option shows indent markers when folders are open
-let g:nvim_tree_hide_dotfiles = 1                             " 0 by default, this option hides files and folders starting with a dot `.`
-let g:nvim_tree_git_hl = 0                                    " 0 by default, will enable file highlight for git attributes (can be used without the icons).
-let g:nvim_tree_highlight_opened_files = 0                    " 0 by default, will enable folder and file icon highlight for opened files/directories.
-let g:nvim_tree_root_folder_modifier = ':~'                   " This is the default. See :help filename-modifiers for more options
-let g:nvim_tree_tab_open = 0                                  " 0 by default, will open the tree when entering a new tab and the tree was previously open
-let g:nvim_tree_auto_resize = 1                               " 1 by default, will resize the tree to its saved width when opening a file
-let g:nvim_tree_disable_netrw = 1                             " 1 by default, disables netrw
-let g:nvim_tree_hijack_netrw = 1                              " 1 by default, prevents netrw from automatically opening when opening directories (but lets you keep its other utilities)
-let g:nvim_tree_add_trailing = 0                              " 0 by default, append a trailing slash to folder names
-let g:nvim_tree_group_empty = 0                               " 0 by default, compact folders that only contain a single folder into one node in the file tree
-let g:nvim_tree_lsp_diagnostics = 0                           " 0 by default, will show lsp diagnostics in the signcolumn. See :help nvim_tree_lsp_diagnostics
-let g:nvim_tree_disable_window_picker = 0                     " 0 by default, will disable the window picker.
-let g:nvim_tree_hijack_cursor = 1                             " 1 by default, when moving cursor in the tree, will position the cursor at the start of the file on the current line
-" let g:nvim_tree_icon_padding = ' '                            " one space by default, used for rendering the space between the icon and the filename. Use with caution, it could break rendering if you set an empty string depending on your font.
-let g:nvim_tree_update_cwd = 0                                " 0 by default, will update the tree cwd when changing nvim's directory (DirChanged event). Behaves strangely with autochdir set.
+let g:nvim_tree_hide_dotfiles = 1
 let g:nvim_tree_window_picker_exclude = {
     \   'filetype': [
     \     'packer',
@@ -179,6 +156,62 @@ set termguicolors " this variable must be enabled for colors to be applied prope
 " a list of groups can be found at `:help nvim_tree_highlight`
 " highlight NvimTreeFolderIcon guibg=black
 nnoremap <silent> <Leader>e <cmd>NvimTreeToggle<CR>
+lua << EOF
+require'nvim-tree'.setup {
+  -- disables netrw completely
+  disable_netrw       = true,
+  -- hijack netrw window on startup
+  hijack_netrw        = true,
+  -- open the tree when running this setup function
+  open_on_setup       = false,
+  -- will not open on setup if the filetype is in this list
+  ignore_ft_on_setup  = {'startify', 'dashboard'},
+  -- closes neovim automatically when the tree is the last **WINDOW** in the view
+  auto_close          = true,
+  -- opens the tree when changing/opening a new tab if the tree wasn't previously opened
+  open_on_tab         = false,
+  -- hijack the cursor in the tree to put it at the start of the filename
+  hijack_cursor       = true,
+  -- updates the root directory of the tree on `DirChanged` (when your run `:cd` usually) 
+  update_cwd          = false,
+  -- show lsp diagnostics in the signcolumn
+  lsp_diagnostics     = false,
+  -- update the focused file on `BufEnter`, un-collapses the folders recursively until it finds the file
+  update_focused_file = {
+    -- enables the feature
+    enable      = false,
+    -- update the root directory of the tree to the one of the folder containing the file if the file is not under the current root directory
+    -- only relevant when `update_focused_file.enable` is true
+    update_cwd  = false,
+    -- list of buffer names / filetypes that will not update the cwd if the file isn't found under the current root directory
+    -- only relevant when `update_focused_file.update_cwd` is true and `update_focused_file.enable` is true
+    ignore_list = {'.git', 'node_modules', '.cache', '__pycache__'}
+  },
+  -- configuration options for the system open command (`s` in the tree by default)
+  system_open = {
+    -- the command to run this, leaving nil should work in most cases
+    cmd  = nil,
+    -- the command arguments as a list
+    args = {}
+  },
+
+  view = {
+    -- width of the window, can be either a number (columns) or a string in `%`
+    width = 30,
+    -- side of the tree, can be one of 'left' | 'right' | 'top' | 'bottom'
+    side = 'left',
+    -- if true the tree will resize itself after opening a file
+    auto_resize = true,
+    mappings = {
+      -- custom only false will merge the list with the default mappings
+      -- if true, it will only use your list to set the mappings
+      custom_only = false,
+      -- list of mappings to set on the tree manually
+      list = {}
+    }
+  }
+}
+EOF
 
 " ----- Indent guide -----
 lua << EOF
@@ -363,6 +396,9 @@ nnoremap <silent><leader>9 <Cmd>BufferLineGoToBuffer 9<CR>
 
 " ----- Zen mode -----
 nnoremap <silent><F3> <cmd>TZAtaraxis<CR>
+
+" ----- winresizer -----
+let g:winresizer_start_key = '<C-W>r'
 
 " ----- nvim lint -----
 lua << EOF
@@ -945,16 +981,6 @@ wk.register({
     p = { "<cmd>Git push<cr>", "Git push" },
   },
 }, { prefix = "<leader>" })
-
-wk.register({
-  ["<c-w>"] = {
-    name = "Manipulate window", -- optional group name
-    ["<c-l>"] = { "<cmd>exe \"vertical resize \" . (winwidth(0) * 3/2)<cr>", "Strech window to right" },
-    ["<c-h>"] = { "<cmd>exe \"vertical resize \" . (winwidth(0) * 2/3)<cr>", "Reduce window to left" },
-    ["<c-k>"] = { "<cmd>exe \"resize \" . (winheight(0) * 3/2)<cr>", "Strech window" },
-    ["<c-j>"] = { "<cmd>exe \"resize \" . (winheight(0) * 2/3)<cr>", "Reduce window" },
-  },
-})
 EOF
 
 " ----- tabout -----
