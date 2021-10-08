@@ -435,7 +435,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
   buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  -- buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   -- buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
   -- buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
   -- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
@@ -504,10 +504,10 @@ EOF
 
 " ----- vsnip -----
 " Jump forward or backward for snippets
-imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+" imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+" smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+" imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+" smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
 
 " ----- lspkind -----
 lua << EOF
@@ -568,11 +568,16 @@ cmp.setup {
   },
 
   mapping = {
-    ['<Tab>'] = cmp.mapping.confirm({ select = true }),
+    --['<Tab>'] = cmp.mapping.confirm({ select = true }),
     ['<Cr>'] = cmp.mapping.confirm({ select = true }),
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4)
   },
+
+  experimental = {
+      native_menu = false,
+      ghost_text = false,
+      },
 
 sources = {
     { name = 'vsnip'},
@@ -597,7 +602,7 @@ sources = {
     end,
   },
 }
-local servers = { "pyright", "cmake", "ccls"}
+local servers = { "pyls", "cmake", "ccls"}
 for _, lsp in ipairs(servers) do
 require('lspconfig')[lsp].setup {
   capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
@@ -976,9 +981,9 @@ require('tabout').setup {
     tabkey = '<Tab>', -- key to trigger tabout, set to an empty string to disable
     backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout, set to an empty string to disable
     act_as_tab = true, -- shift content if tab out is not possible
-    act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
-    enable_backwards = true, -- well ...
-    completion = true, -- if the tabkey is used in a completion pum
+    act_as_shift_tab = true, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+    enable_backwards = false, -- well ...
+    completion = false, -- if the tabkey is used in a completion pum
     tabouts = {
       {open = "'", close = "'"},
       {open = '"', close = '"'},
@@ -996,9 +1001,7 @@ local function replace_keycodes(str)
 end
 
 function _G.tab_binding()
-  if vim.fn.pumvisible() ~= 0 then
-    return replace_keycodes("<C-n>")
-  elseif vim.fn["vsnip#available"](1) ~= 0 then
+  if vim.fn["vsnip#available"](1) ~= 0 then
     return replace_keycodes("<Plug>(vsnip-expand-or-jump)")
   else
     return replace_keycodes("<Plug>(Tabout)")
@@ -1006,9 +1009,7 @@ function _G.tab_binding()
 end
 
 function _G.s_tab_binding()
-  if vim.fn.pumvisible() ~= 0 then
-    return replace_keycodes("<C-p>")
-  elseif vim.fn["vsnip#jumpable"](-1) ~= 0 then
+  if vim.fn["vsnip#jumpable"](-1) ~= 0 then
     return replace_keycodes("<Plug>(vsnip-jump-prev)")
   else
     return replace_keycodes("<Plug>(TaboutBack)")
@@ -1017,6 +1018,8 @@ end
 
 vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_binding()", {expr = true})
 vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_binding()", {expr = true})
+vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_binding()", {expr = true})
+vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_binding()", {expr = true})
 EOF
 
 "================================= Key binding ==================================
