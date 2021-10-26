@@ -89,7 +89,7 @@ Plug 'nvim-telescope/telescope-fzy-native.nvim'               " Fzy for fuzzy fi
 Plug 'nvim-telescope/telescope-project.nvim'                  " project manager
 Plug 'ok97465/telescope-py-importer.nvim'                     " python import in workspace
 Plug 'ryanoasis/vim-devicons'                                 " Icons for lualine
-Plug 'shadmansaleh/lualine.nvim'                              " Status bar
+Plug 'nvim-lualine/lualine.nvim'                              " Status bar
 Plug 'akinsho/bufferline.nvim'                                " Buffer line
 Plug 'Pocco81/TrueZen.nvim'                                   " Zen mode
 Plug 'simeji/winresizer'                                      " window resizer
@@ -124,6 +124,7 @@ call plug#end()
 
 " ================================= Plugins setting ==================================
 " ----- Theme -----
+lua vim.g.tokyonight_colors = { red = "NONE" }
 lua vim.g.tokyonight_style = "night"
 lua vim.cmd[[colorscheme tokyonight]]
 
@@ -173,9 +174,7 @@ require'nvim-tree'.setup {
   -- hijack the cursor in the tree to put it at the start of the filename
   hijack_cursor       = true,
   -- updates the root directory of the tree on `DirChanged` (when your run `:cd` usually) 
-  update_cwd          = false,
-  -- show lsp diagnostics in the signcolumn
-  lsp_diagnostics     = false,
+  update_cwd          = true,
   -- update the focused file on `BufEnter`, un-collapses the folders recursively until it finds the file
   update_focused_file = {
     -- enables the feature
@@ -434,7 +433,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
   buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  -- buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   -- buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
   -- buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
   -- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
@@ -576,7 +575,7 @@ cmp.setup {
 
   experimental = {
       native_menu = false,
-      ghost_text = false,
+      ghost_text = true,
       },
 
 sources = {
@@ -602,12 +601,12 @@ sources = {
     end,
   },
 }
-local servers = { "pyls", "cmake", "ccls"}
-for _, lsp in ipairs(servers) do
-require('lspconfig')[lsp].setup {
-  capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-}
-end
+-- local servers = { "pyls", "cmake", "ccls"}
+-- for _, lsp in ipairs(servers) do
+-- require('lspconfig')[lsp].setup {
+--   capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+-- }
+-- end
 EOF
 
 " ----- lsp_signature -----
