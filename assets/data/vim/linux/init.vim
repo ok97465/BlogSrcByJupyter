@@ -66,7 +66,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'jiangmiao/auto-pairs'                                   " Auto pair for ',), }, ]...
 Plug 'mhinz/vim-startify'                                     " Fancy start page for empty vim
 Plug 'tmhedberg/matchit'                                      " Extended % matching
-Plug 'tomtom/tcomment_vim'                                    " Comment toggle
+Plug 'b3nj5m1n/kommentary'                                    " Comment toggle
 Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
 Plug 'RRethy/vim-illuminate'                                  " Highlight word under cursor
 Plug 'tpope/vim-fugitive'                                     " For git
@@ -434,7 +434,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
   buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  -- buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   -- buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
   -- buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
   -- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
@@ -472,6 +472,8 @@ nvim_lsp.jsonls.setup {
       }
     }
 }
+
+----- pyright -----
 
 ------ pyls -----
 -- Window에서는 관리자 권한에서만 수행하여야 한다.

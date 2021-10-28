@@ -65,7 +65,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'jiangmiao/auto-pairs'                                   " Auto pair for ',), }, ]...
 Plug 'mhinz/vim-startify'                                     " Fancy start page for empty vim
 Plug 'tmhedberg/matchit'                                      " Extended % matching
-Plug 'tomtom/tcomment_vim'                                    " Comment toggle
+Plug 'b3nj5m1n/kommentary'                                    " Comment toggle
 Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
 Plug 'RRethy/vim-illuminate'                                  " Highlight word under cursor
 Plug 'tpope/vim-fugitive'                                     " For git
