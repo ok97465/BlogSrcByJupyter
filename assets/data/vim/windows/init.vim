@@ -63,8 +63,8 @@ set ci                                                        " C 형태의 들�
 call plug#begin('~/.vim/plugged')
 
 Plug 'jiangmiao/auto-pairs'                                   " Auto pair for ',), }, ]...
-Plug 'mhinz/vim-startify'                                     " Fancy start page for empty vim
 Plug 'tmhedberg/matchit'                                      " Extended % matching
+Plug 'goolord/alpha-nvim'                                     " Greeter
 Plug 'b3nj5m1n/kommentary'                                    " Comment toggle
 Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
 Plug 'RRethy/vim-illuminate'                                  " Highlight word under cursor
@@ -123,13 +123,56 @@ Plug 'ok97465/ok97465.nvim', { 'do': ':UpdateRemotePlugins' } " python import fr
 call plug#end()
 
 " ================================= Plugins setting ==================================
+" ----- Greeter -----
+lua << EOF
+local alpha = require("alpha")
+local dashboard = require("alpha.themes.dashboard")
+
+-- Set header
+-- dashboard.section.header.val = {
+--    "           /$$        /$$$$$$  /$$$$$$$$ /$$   /$$  /$$$$$$  /$$$$$$$ ",
+--    "          | $$       /$$__  $$|_____ $$/| $$  | $$ /$$__  $$| $$____/ ",
+--    "  /$$$$$$ | $$   /$$| $$  \\ $$     /$$/ | $$  | $$| $$  \\__/| $$      ",
+--    " /$$__  $$| $$  /$$/|  $$$$$$$    /$$/  | $$$$$$$$| $$$$$$$ | $$$$$$$ ",
+--    "| $$  \\ $$| $$$$$$/  \\____  $$   /$$/   |_____  $$| $$__  $$|_____  $$",
+--    "| $$  | $$| $$_  $$  /$$  \\ $$  /$$/          | $$| $$  \\ $$ /$$  \\ $$",
+--    "|  $$$$$$/| $$ \\  $$|  $$$$$$/ /$$/           | $$|  $$$$$$/|  $$$$$$/",
+--    " \\______/ |__/  \\__/ \\______/ |__/            |__/ \\______/  \\______/ ",
+--}
+dashboard.section.header.val = {
+    "░█████╗░██╗░░██╗░█████╗░███████╗░░██╗██╗░█████╗░███████╗",
+    "██╔══██╗██║░██╔╝██╔══██╗╚════██║░██╔╝██║██╔═══╝░██╔════╝",
+    "██║░░██║█████═╝░╚██████║░░░░██╔╝██╔╝░██║██████╗░██████╗░",
+    "██║░░██║██╔═██╗░░╚═══██║░░░██╔╝░███████║██╔══██╗╚════██╗",
+    "╚█████╔╝██║░╚██╗░█████╔╝░░██╔╝░░╚════██║╚█████╔╝██████╔╝",
+    "░╚════╝░╚═╝░░╚═╝░╚════╝░░░╚═╝░░░░░░░░╚═╝░╚════╝░╚═════╝░",
+}
+vim.cmd(string.format('highlight dashboard guifg=%s guibg=bg', 'SteelBlue2'))
+dashboard.section.header.opts.hl = 'dashboard'
+
+-- Set menu
+dashboard.section.buttons.val = {
+    dashboard.button( "Ctrl+Shift+p", " > Select Project", "<cmd>lua require'telescope'.extensions.project.project{}<CR>"),
+    dashboard.button( "Leader t o", "  > Recent files"   , "<cmd>lua require'telescope.builtin'.oldfiles{}<CR>"),
+    dashboard.button( "Ctrl+p", " ﯒ > Find files" , "<cmd>Telescope find_files<CR>"),
+    dashboard.button( "e", "  > New file" , ":enew <CR>"),
+    dashboard.button( "q", "  > Quit NVIM", ":qa<CR>"),
+}
+
+local fortune = require("alpha.fortune")
+dashboard.section.footer.val = fortune()
+
+alpha.setup(dashboard.opts)
+
+EOF
+
+
 " ----- Theme -----
 lua vim.g.tokyonight_colors = { red = "NONE" }
 lua vim.g.tokyonight_style = "night"
 lua vim.cmd[[colorscheme tokyonight]]
 
 " ----- nvim-tree -----
-let g:nvim_tree_hide_dotfiles = 1
 let g:nvim_tree_window_picker_exclude = {
     \   'filetype': [
     \     'packer',
@@ -166,7 +209,7 @@ require'nvim-tree'.setup {
   -- open the tree when running this setup function
   open_on_setup       = false,
   -- will not open on setup if the filetype is in this list
-  ignore_ft_on_setup  = {'startify', 'dashboard'},
+  ignore_ft_on_setup  = {'alpha', 'dashboard'},
   -- closes neovim automatically when the tree is the last **WINDOW** in the view
   auto_close          = true,
   -- opens the tree when changing/opening a new tab if the tree wasn't previously opened
@@ -194,6 +237,10 @@ require'nvim-tree'.setup {
     args = {}
   },
 
+  filters = {
+    dotfiles = true,
+    custom = {}
+  },
   view = {
     -- width of the window, can be either a number (columns) or a string in `%`
     width = 30,
@@ -222,6 +269,7 @@ require("indent_blankline").setup {
     show_end_of_line = false,
     space_char_blankline = " ",
     show_current_context = false,
+    filetype_exclude = {"alpha"}
 }
 EOF
 
@@ -433,7 +481,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
   buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  -- buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   -- buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
   -- buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
   -- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
@@ -827,7 +875,22 @@ require("dapui").setup({
 EOF
 
 " ----- nvim-dap-virtual-text -----
-let g:dap_virtual_text = v:true
+lua <<EOF
+require("nvim-dap-virtual-text").setup {
+    enabled = true,                     -- enable this plugin (the default)
+    enabled_commands = true,            -- create commands DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle, (DapVirtualTextForceRefresh for refreshing when debug adapter did not notify its termination)
+    highlight_changed_variables = true, -- highlight changed values with NvimDapVirtualTextChanged, else always NvimDapVirtualText
+    highlight_new_as_changed = false,   -- highlight new variables in the same way as changed variables (if highlight_changed_variables)
+    show_stop_reason = true,            -- show stop reason when stopped for exceptions
+    commented = false,                  -- prefix virtual text with comment string
+    -- experimental features:
+    virt_text_pos = 'eol',              -- position of virtual text, see `:h nvim_buf_set_extmark()`
+    all_frames = false,                 -- show virtual text for all stack frames not only current. Only works for debugpy on my machine.
+    virt_lines = false,                 -- show virtual lines instead of virtual text (will flicker!)
+    virt_text_win_col = nil             -- position the virtual text at a fixed window column (starting from the first text column) ,
+                                        -- e.g. 80 to position at column 80, see `:h nvim_buf_set_extmark()`
+}
+EOF
 
 " ----- clang formatter -----
 let g:clang_format#detect_style_file=1
