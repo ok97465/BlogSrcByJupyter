@@ -521,8 +521,6 @@ nvim_lsp.jsonls.setup {
     }
 }
 
------ pyright -----
-
 ------ pyls -----
 -- Window에서는 관리자 권한에서만 수행하여야 한다.
 nvim_lsp.pyls.setup{
