@@ -389,18 +389,23 @@ let g:pydocstring_enable_mapping=0  " Disable default keymap of pydocstring
 
 " ----- hop.nvim (easymotion) -----
 lua require'hop'.setup()
-nnoremap <silent> <leader><leader>w <cmd>HopWord<cr>
-nnoremap <silent> <leader><leader>f <cmd>HopChar1<cr>
-nnoremap <silent> <leader><leader>j <cmd>HopLine<cr>
-nnoremap <silent> <leader><leader>k <cmd>HopLine<cr>
-xnoremap <silent> <leader><leader>w <cmd>HopWord<cr>
-xnoremap <silent> <leader><leader>f <cmd>HopChar1<cr>
-xnoremap <silent> <leader><leader>j <cmd>HopLine<cr>
-xnoremap <silent> <leader><leader>k <cmd>HopLine<cr>
+nnoremap <silent> <leader>w <cmd>HopWord<cr>
+nnoremap <silent> <leader>j <cmd>HopLine<cr>
+nnoremap <silent> <leader>k <cmd>HopLine<cr>
+nnoremap <silent> <leader>l <cmd>HopChar1<cr>
+nnoremap <silent> <leader>h <cmd>HopChar2<cr>
+
+xnoremap <silent> <leader>w <cmd>HopWord<cr>
+xnoremap <silent> <leader>j <cmd>HopLine<cr>
+xnoremap <silent> <leader>k <cmd>HopLine<cr>
+xnoremap <silent> <leader>l <cmd>HopChar1<cr>
+xnoremap <silent> <leader>h <cmd>HopChar2<cr>
+
 onoremap <silent> <leader>w <cmd>HopWord<cr>
-onoremap <silent> <leader>f <cmd>HopChar1<cr>
 onoremap <silent> <leader>j <cmd>HopLine<cr>
 onoremap <silent> <leader>k <cmd>HopLine<cr>
+onoremap <silent> <leader>l <cmd>HopChar1<cr>
+onoremap <silent> <leader>h <cmd>HopChar2<cr>
 
 " ----- lualine -----
 lua << EOF
@@ -445,8 +450,9 @@ require("bufferline").setup{
         diagnostics_indicator = function(count, level, diagnostics_dict, context)
             local s = " "
             for e, n in pairs(diagnostics_dict) do
-                local sym = e == "error" and " "
-                or (e == "warning" and " ") or "i "
+                local sym = e == "error" and "E "
+                or (e == "warning" and "W ") or "I "
+                
               s = s .. n .. sym
             end
             return s
@@ -477,15 +483,15 @@ nnoremap <silent><F3> <cmd>TZAtaraxis<CR>
 let g:winresizer_start_key = '<C-W>r'
 
 " ----- nvim lint -----
-" lua << EOF
-" require('lint').linters_by_ft = {
-"   markdown = {'markdownlint'},
-" }
-" EOF
-"
-" au BufWritePost *.md lua require('lint').try_lint()
-" au BufEnter *.md lua require('lint').try_lint()
+lua << EOF
+require('lint').linters_by_ft = {
+  markdown = {'markdownlint'},
+}
+EOF
 
+au BufWritePost *.md lua require('lint').try_lint()
+au BufEnter *.md lua require('lint').try_lint()
+"
 " ----- nvim-lspconfig -----
 " 아래 명령을 이용하여 lspconfig의 상태를 확인할 수 있다.
 " lua require 'lspconfig/health'.check_health()
@@ -1142,7 +1148,7 @@ require('jaq-nvim').setup{
 			typescript = "deno run %",
 			javascript = "node %",
 			markdown = "glow %",
-			python = "python3 -m $moduleName",
+			python = "python -m $moduleName",
 			rust = "rustc % && ./$fileBase && rm $fileBase",
 			cpp = "g++ % -o $fileBase && ./$fileBase",
 			go = "go run %",
