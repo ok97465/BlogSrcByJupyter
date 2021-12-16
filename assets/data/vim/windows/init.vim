@@ -70,6 +70,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'windwp/nvim-autopairs'                                  " Automatically insert pair char, ex (<->)
 Plug 'numToStr/Comment.nvim'                                  " Comment toggle
+Plug 'blackCauldron7/surround.nvim'                           " Surround
 Plug 'goolord/alpha-nvim'                                     " Greeter
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
 Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
@@ -135,6 +136,23 @@ lua require('nvim-autopairs').setup{}
 
 " ---- Comment -----
 lua require('Comment').setup()
+
+" ---- Surround -----
+lua << EOF
+require('surround').setup {
+  context_offset = 100,
+  load_autogroups = false,
+  mappings_style = 'surround',
+  map_insert_mode = true,
+  quotes = {"'", '"'},
+  brackets = {"(", '{', '['},
+  space_on_closing_char = false,
+  pairs = {
+    nestable = {{"(", ")"}, {"[", "]"}, {"{", "}"}},
+    linear = {{"'", "'"}, {"`", "`"}, {'"', '"'}}
+  },
+}
+EOF
 
 " ----- Greeter -----
 lua << EOF
@@ -774,7 +792,24 @@ EOF
 autocmd FileType python nnoremap <buffer> <Leader>f <cmd>call Black()<CR>
 
 " ----- json format -----
-autocmd FileType json nnoremap <buffer> <Leader>f <cmd>%!python -m json.tool<CR>
+function! FormatJson()
+python3 << EOF
+
+import vim
+import json
+try:
+    buf = vim.current.buffer
+    json_content = '\n'.join(buf[:])
+    content = json.loads(json_content)
+    sorted_content = json.dumps(content, indent=2, sort_keys=False, ensure_ascii=False)
+    buf[:] = sorted_content.split('\n')
+except Exception as e:
+    print(e)
+
+EOF
+endfunction
+
+autocmd FileType json nnoremap <buffer> <Leader>f <cmd>call FormatJson()<CR>
 
 " ----- dap -----
 " C language c-f5는 run c language에서 저의함 
@@ -787,7 +822,7 @@ autocmd FileType c,cpp,objc,python,dap-repl,dapui_watches nnoremap <buffer><f11>
 autocmd FileType c,cpp,objc,python,dap-repl,dapui_watches inoremap <buffer><f11> <cmd>lua require'dap'.step_into()<CR>
 autocmd FileType c,cpp,objc,python,dap-repl,dapui_watches nnoremap <buffer><f12> <cmd>lua require'dap'.step_out()<CR>
 autocmd FileType c,cpp,objc,python,dap-repl,dapui_watches inoremap <buffer><f12> <cmd>lua require'dap'.step_out()<CR>
-autocmd FileType dap-repl lua require('dap.ext.autocompl').attach()
+" autocmd FileType dap-repl lua require('dap.ext.autocompl').attach()
 autocmd FileType dap-repl inoremap <buffer><tab> <c-x><c-o>
 
 " ----- dap for c language ----
