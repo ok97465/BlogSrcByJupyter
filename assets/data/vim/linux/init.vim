@@ -119,6 +119,8 @@ Plug 'theHamsta/nvim-dap-virtual-text'                        " text for debugge
 Plug 'averms/black-nvim', {'do': ':UpdateRemotePlugins'}      " python formatter
 Plug 'rhysd/vim-clang-format'                                 " c++ formatter
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " preview for markdown
+Plug 'dhruvasagar/vim-table-mode'                             " Markdown Table
+Plug 'sotte/presenting.vim'                                   " Presentation
 Plug 'p00f/nvim-ts-rainbow'                                   " color for parantheses
 Plug 'norcalli/nvim-colorizer.lua'                            " colorizer for hex code
 Plug 'romgrk/fzy-lua-native'                                  " fuzzy for lua
@@ -966,7 +968,7 @@ autocmd FileType c,cpp,objc nnoremap <buffer><Leader>f :<C-u>ClangFormat<CR>
 autocmd FileType c,cpp,objc vnoremap <buffer><Leader>f :ClangFormat<CR>
 
 " ----- Markdown preview ----
-autocmd FileType markdown nnoremap <buffer><leader>b <cmd>MarkdownPreview<CR>
+autocmd FileType markdown nnoremap <buffer><leader>b <cmd>w<cr><cmd>MarkdownPreview<CR>
 " use a custom markdown style must be absolute path
 " like '/Users/username/markdown.css' or expand('~/markdown.css')
 " let g:mkdp_markdown_css = '/home/ok97465/.vim/github-dark.css'
@@ -974,6 +976,20 @@ autocmd FileType markdown nnoremap <buffer><leader>b <cmd>MarkdownPreview<CR>
 " use a custom highlight style must absolute path
 " like '/Users/username/highlight.css' or expand('~/highlight.css')
 " let g:mkdp_highlight_css = '/home/ok97465/.vim/github_ok97465_code.css'
+
+" ----- Table mode ------
+" <leader>tm    ---> table mode toggle
+" <leader>tdd   ---> delete row
+" <leader>tdc   ---> delete col
+" <leader>tic   ---> insert col
+
+" ----- Presentation ------
+augroup presentation
+    autocmd!
+" Presentation mode
+    au Filetype markdown nnoremap <buffer> <F10> :PresentingStart<CR>
+    au Filetype markdown inoremap <buffer> <F10> <esc>:w<CR>:PresentingStart<CR>
+augroup end
 
 " ----- rainbow(color paranthesis) -----
 lua <<EOF
