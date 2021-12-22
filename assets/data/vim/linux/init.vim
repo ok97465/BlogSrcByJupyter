@@ -129,6 +129,7 @@ Plug 'folke/which-key.nvim'                                   " Which key
 Plug 'abecodes/tabout.nvim'                                   " tabout
 Plug 'ok97465/ok97465.nvim', { 'do': ':UpdateRemotePlugins' } " python import from list
 Plug 'is0n/jaq-nvim'                                          " run script in float window
+Plug 'windwp/nvim-spectre'                                    " Replace in workspace GUI
 
 call plug#end()
 
@@ -674,9 +675,9 @@ cmp.setup {
       },
 
 sources = {
-    { name = 'vsnip'},
+    { name = "vsnip"},
     { name = "nvim_lsp" },
-    { name = "buffer" },
+    { name = "buffer", keyword_length = 5},
     { name = "path" },
   },
 
@@ -1192,14 +1193,6 @@ require('jaq-nvim').setup{
 			sh = "sh %",
 		},
 
-		-- Uses external commands made for formatting code
-		format = {
-			sh = "shfmt -w %",
-
-			-- Config used for all filetypes without a config
-			["*"] = "gsed -i 's/[ \t]*$//' %"
-		},
-
 		-- Uses internal commands such as 'source' and 'luafile'
 		internal = {
 			lua = "luafile %",
@@ -1240,6 +1233,10 @@ require('jaq-nvim').setup{
 	}
 }
 EOF
+
+" ----- nvim-spectre -----
+lua require('spectre').setup({ open_cmd="botright vnew" })
+nnoremap <silent> <S-home>h <cmd>lua require('spectre').open()<CR>
 
 "================================= Key binding ==================================
 " ----- pip install . -----

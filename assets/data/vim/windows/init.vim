@@ -129,6 +129,7 @@ Plug 'folke/which-key.nvim'                                   " Which key
 Plug 'abecodes/tabout.nvim'                                   " tabout
 Plug 'ok97465/ok97465.nvim', { 'do': ':UpdateRemotePlugins' } " python import from list
 Plug 'is0n/jaq-nvim'                                          " run script in float window
+Plug 'windwp/nvim-spectre'                                    " Replace in workspace GUI
 
 call plug#end()
 
@@ -675,9 +676,9 @@ cmp.setup {
       },
 
 sources = {
-    { name = 'vsnip'},
+    { name = "vsnip"},
     { name = "nvim_lsp" },
-    { name = "buffer" },
+    { name = "buffer", keyword_length = 5},
     { name = "path" },
   },
 
@@ -994,17 +995,6 @@ augroup presentation
     au Filetype markdown inoremap <buffer> <F10> <esc>:w<CR>:PresentingStart<CR>
 augroup end
 
-"================================= Key binding ==================================
-" ESC키를 누르면 한글모드가 해제
-" 입력모드에서 이전 언어 설정 모드를 유지
-inoremap <ESC> <ESC>:set imdisable<CR>
-nnoremap i :set noimd<CR>i
-nnoremap I :set noimd<CR>I
-nnoremap a :set noimd<CR>a
-nnoremap A :set noimd<CR>A
-nnoremap o :set noimd<CR>o
-nnoremap O :set noimd<CR>O
-
 " ----- rainbow(color paranthesis) -----
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
@@ -1206,14 +1196,6 @@ require('jaq-nvim').setup{
 			sh = "sh %",
 		},
 
-		-- Uses external commands made for formatting code
-		format = {
-			sh = "shfmt -w %",
-
-			-- Config used for all filetypes without a config
-			["*"] = "gsed -i 's/[ \t]*$//' %"
-		},
-
 		-- Uses internal commands such as 'source' and 'luafile'
 		internal = {
 			lua = "luafile %",
@@ -1255,7 +1237,21 @@ require('jaq-nvim').setup{
 }
 EOF
 
+" ----- nvim-spectre -----
+lua require('spectre').setup({ open_cmd="botright vnew" })
+nnoremap <silent> <C-S-h> <cmd>lua require('spectre').open()<CR>
+
 "================================= Key binding ==================================
+" ESC키를 누르면 한글모드가 해제
+" 입력모드에서 이전 언어 설정 모드를 유지
+inoremap <ESC> <ESC>:set imdisable<CR>
+nnoremap i :set noimd<CR>i
+nnoremap I :set noimd<CR>I
+nnoremap a :set noimd<CR>a
+nnoremap A :set noimd<CR>A
+nnoremap o :set noimd<CR>o
+nnoremap O :set noimd<CR>O
+
 " ----- pip install . -----
 nnoremap <silent> <Leader>in :w<CR>:!pip install .<CR>
 
