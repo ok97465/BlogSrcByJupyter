@@ -27,7 +27,7 @@ set signcolumn=yes                                           " Lint 결과를 �
 set mouse=a                                                  " Enable mouse scroll.
 
 syntax sync minlines=200                                     " speed-up vim
-set colorcolumn=89                                           " ruler
+set colorcolumn=+1                                           " ruler
 
 " ============================ highlighted yank ==============================
 augroup highlight_yank
@@ -69,13 +69,15 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'windwp/nvim-autopairs'                                  " Automatically insert pair char, ex (<->)
 Plug 'numToStr/Comment.nvim'                                  " Comment toggle
-Plug 'blackCauldron7/surround.nvim'                           " Surround
 Plug 'goolord/alpha-nvim'                                     " Greeter
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
 Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
-Plug 'lukas-reineke/virt-column.nvim'
+Plug 'lukas-reineke/virt-column.nvim'                         " Draw max column line
+Plug 'ok97465/pycell_deco.nvim'                               " Python cell decoration
 Plug 'RRethy/vim-illuminate'                                  " Highlight word under cursor
-Plug 'lukas-reineke/headlines.nvim'                           " Headlines
+Plug 'tpope/vim-surround'                                     " replace surrounding
+Plug 'tpope/vim-speeddating'                                  " apply ^A to date string
+Plug 'tpope/vim-repeat'                                       " enhance dot command
 Plug 'tpope/vim-fugitive'                                     " For git
 Plug 'junegunn/gv.vim'                                        " Git commit browser
 Plug 'mbbill/undotree'                                        " Visualize undo history
@@ -140,23 +142,6 @@ lua require('nvim-autopairs').setup{}
 
 " ---- Comment -----
 lua require('Comment').setup()
-
-" ---- Surround -----
-lua << EOF
-require('surround').setup {
-  context_offset = 100,
-  load_autogroups = false,
-  mappings_style = 'surround',
-  map_insert_mode = true,
-  quotes = {"'", '"'},
-  brackets = {"(", '{', '['},
-  space_on_closing_char = false,
-  pairs = {
-    nestable = {{"(", ")"}, {"[", "]"}, {"{", "}"}},
-    linear = {{"'", "'"}, {"`", "`"}, {'"', '"'}}
-  },
-}
-EOF
 
 " ----- Greeter -----
 lua << EOF
@@ -312,25 +297,8 @@ EOF
 highlight VirtColumn guifg=#3b4261
 lua require("virt-column").setup()
 
-" ----- Headlines -----
-" highlight Headline ctermbg=0 guibg=#16161e     " color of cell
-highlight Headline ctermbg=0 guibg=#202038     " color of cell
-
-lua << EOF
-vim.fn.sign_define("Headline", { linehl = "Headline" })
-require("headlines").setup{
-    python = {
-        source_pattern_start = "^```",
-        source_pattern_end = "^```$",
-        dash_pattern = "^# ---$",
-        headline_pattern = "^# %%+",
-        headline_signs = { "Headline" },
-        codeblock_sign = "CodeBlock",
-        dash_highlight = "Dash",
-    },
-}
-
-EOF
+" ----- pycell_deco -----
+lua require("pycell_deco").setup{}
 
 " ----- Undotreee -----
 nnoremap <silent> <leader>u <cmd>UndotreeShow<CR>
