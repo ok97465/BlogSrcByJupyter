@@ -298,7 +298,7 @@ highlight VirtColumn guifg=#3b4261
 lua require("virt-column").setup()
 
 " ----- pycell_deco -----
-lua require("pycell_deco").setup{}
+lua require("pycell_deco").setup{cell_name_fg="#1abc9c", cell_line_bg=nil}
 
 " ----- Undotreee -----
 nnoremap <silent> <leader>u <cmd>UndotreeShow<CR>
