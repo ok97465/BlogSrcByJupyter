@@ -27,7 +27,6 @@ set mouse=a                                                  " Enable mouse scro
 
 syntax sync minlines=200                                     " speed-up vim
 set colorcolumn=89                                           " ruler
-highlight colorcolumn ctermbg=0 guibg=darkgreen              " color of ruler
 
 " ============================ highlighted yank ==============================
 augroup highlight_yank
@@ -74,7 +73,9 @@ Plug 'blackCauldron7/surround.nvim'                           " Surround
 Plug 'goolord/alpha-nvim'                                     " Greeter
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
 Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
+Plug 'lukas-reineke/virt-column.nvim'
 Plug 'RRethy/vim-illuminate'                                  " Highlight word under cursor
+Plug 'lukas-reineke/headlines.nvim'                           " Headlines
 Plug 'tpope/vim-fugitive'                                     " For git
 Plug 'junegunn/gv.vim'                                        " Git commit browser
 Plug 'mbbill/undotree'                                        " Visualize undo history
@@ -200,11 +201,11 @@ alpha.setup(dashboard.opts)
 
 EOF
 
-
 " ----- Theme -----
 lua vim.g.tokyonight_colors = { red = "NONE" }
 lua vim.g.tokyonight_style = "night"
 lua vim.cmd[[colorscheme tokyonight]]
+highlight IncSearch ctermbg=0 guibg=#5cacee               " color of yank
 
 " ----- nvim-tree -----
 let g:nvim_tree_window_picker_exclude = {
@@ -307,6 +308,30 @@ require("indent_blankline").setup {
 }
 EOF
 
+" ----- column line -----
+highlight VirtColumn guifg=#3b4261
+lua require("virt-column").setup()
+
+" ----- Headlines -----
+" highlight Headline ctermbg=0 guibg=#16161e     " color of cell
+highlight Headline ctermbg=0 guibg=#202038     " color of cell
+
+lua << EOF
+vim.fn.sign_define("Headline", { linehl = "Headline" })
+require("headlines").setup{
+    python = {
+        source_pattern_start = "^```",
+        source_pattern_end = "^```$",
+        dash_pattern = "^# ---$",
+        headline_pattern = "^# %%+",
+        headline_signs = { "Headline" },
+        codeblock_sign = "CodeBlock",
+        dash_highlight = "Dash",
+    },
+}
+
+EOF
+
 " ----- Undotreee -----
 nnoremap <silent> <leader>u <cmd>UndotreeShow<CR>
 
@@ -339,8 +364,8 @@ let g:easy_align_delimiters['#'] = {'pattern': '#', 'ignore_groups': ['String'],
 nnoremap <silent> <C-p> <cmd>Telescope find_files<cr>
 nnoremap <silent> <S-home>f <cmd>Telescope live_grep<cr>
 nnoremap <silent> <leader>p <cmd>Telescope buffers<cr>
-nnoremap <silent> <leader>q <cmd>lua require('telescope.builtin').lsp_document_diagnostics()<cr>
-nnoremap <silent> <leader>Q <cmd>lua require('telescope.builtin').lsp_workspace_diagnostics()<cr>
+nnoremap <silent> <leader>q <cmd>Telescope diagnostics bufnr=0<cr>
+nnoremap <silent> <leader>Q <cmd>Telescope diagnostics<cr>
 
 lua << EOF
 require('telescope').setup{
@@ -353,7 +378,8 @@ require('telescope').setup{
         '%.exe', '%.tar', '%.mp3', '%.mp4', '%.m4a', '%.wav', '%.ogg', '%.pcx',
         '%.bdf', '%.pkg', '%.msu', '%.otf', '%.ttf', 'build/.*', '.git/.*',
         '__pycache__/.*', '.ipynb_checkpoints/.*', '.spyproject/.*', '.idea/.*',
-        'Doxygen/.*', 'MSVC/.*', 'make/.*', '.ccls_cache/.*', 'import_in_console.py'}
+        'Doxygen/.*', 'MSVC/.*', 'make/.*', '.ccls_cache/.*', 'import_in_console.py',
+        'venv/.*', '.venv/.*'}
   }
 }
 EOF
@@ -1267,6 +1293,7 @@ cnoreabbrev <expr> wq getcmdtype() == ":"
             \&& &filetype != 'help'
             \&& &buftype != 'terminal'
             \&& &buftype != 'quickfix'
+            \&& &buftype != 'spectre_panel'
             \? 'w<bar>bn<bar>bd#' : 'wq'
 cnoreabbrev <expr> q getcmdtype() == ":" 
             \&& len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 
@@ -1276,6 +1303,7 @@ cnoreabbrev <expr> q getcmdtype() == ":"
             \&& &filetype != 'help'
             \&& &buftype != 'terminal'
             \&& &buftype != 'quickfix'
+            \&& &buftype != 'spectre_panel'
             \? 'bn<bar>bd#' : 'q'
 cnoreabbrev <expr> bn<bar>bd#! getcmdtype() == ":" ? 'bn<bar>bd!#' : 'bn<bar>bd#!'
 
