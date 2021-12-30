@@ -1232,11 +1232,10 @@ EOF
 " ---- my_ipython ---
 lua require("my_ipy").setup()
 nnoremap <silent> <leader>ti <cmd>lua require("my_ipy").toggle()<CR>
-nnoremap <silent> <S-home>i <cmd>lua require('my_ipy').goto_ipy()<CR>
-inoremap <silent> <S-home>i <cmd>lua require('my_ipy').goto_ipy()<CR>
-tnoremap <silent> <S-home>i <cmd>lua require('my_ipy').goto_ipy()<CR>
-tnoremap <silent> <S-home>e <cmd>lua require('my_ipy').goto_vi()<CR>
-noremap <silent> <S-home>e <cmd>normal! G<CR><cmd>lua require('my_ipy').goto_vi()<CR>
+nnoremap <silent> <S-home>l <cmd>lua require('my_ipy').goto_ipy()<CR>
+inoremap <silent> <S-home>l <cmd>lua require('my_ipy').goto_ipy()<CR>
+tnoremap <silent> <S-home>l <cmd>lua require('my_ipy').goto_ipy()<CR>
+tnoremap <silent> <S-home>h <cmd>lua require('my_ipy').goto_vi()<CR>
 nnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
 nnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
 
