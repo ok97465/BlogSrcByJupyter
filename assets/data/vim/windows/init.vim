@@ -27,6 +27,7 @@ set signcolumn=yes                                           " Lint 결과를 �
 set mouse=a                                                  " Enable mouse scroll.
 
 syntax sync minlines=200                                     " speed-up vim
+set termguicolors                                            " this variable must be enabled for colors to be applied properly
 set colorcolumn=+1                                           " ruler
 
 " ============================ highlighted yank ==============================
@@ -132,6 +133,7 @@ Plug 'folke/which-key.nvim'                                   " Which key
 Plug 'abecodes/tabout.nvim'                                   " tabout
 Plug 'ok97465/ok97465.nvim', { 'do': ':UpdateRemotePlugins' } " python import from list
 Plug 'is0n/jaq-nvim'                                          " run script in float window
+Plug 'ok97465/my_ipy.nvim'                                    " My IPython terminal
 Plug 'windwp/nvim-spectre'                                    " Replace in workspace GUI
 
 call plug#end()
@@ -214,8 +216,6 @@ let g:nvim_tree_show_icons = {
     \ 'files': 1,
     \ 'folder_arrows': 1,
     \ }
-
-set termguicolors " this variable must be enabled for colors to be applied properly
 
 " a list of groups can be found at `:help nvim_tree_highlight`
 " highlight NvimTreeFolderIcon guibg=black
@@ -454,7 +454,7 @@ require'lualine'.setup {
 EOF
 
 " ----- bufferline -----
-autocmd TermOpen * set nobuflisted
+autocmd TermOpen * set nobuflisted colorcolumn=0
 autocmd FileType dap-repl set nobuflisted
 lua << EOF
 require("bufferline").setup{
@@ -731,8 +731,8 @@ EOF
 " ---- renamer ----
 lua require('renamer').setup()
 inoremap <silent> <F2> <cmd>lua require('renamer').rename()<cr>
-nnoremap <silent> <leader>rn <cmd>lua require('renamer').rename()<cr>
-vnoremap <silent> <leader>rn <cmd>lua require('renamer').rename()<cr>
+nnoremap <silent> <leader>R <cmd>lua require('renamer').rename()<cr>
+vnoremap <silent> <leader>R <cmd>lua require('renamer').rename()<cr>
 
 " ---- outline ----
 autocmd FileType c,cpp,objc nnoremap <silent> <leader>s <cmd>SymbolsOutline<CR>
@@ -976,6 +976,7 @@ autocmd FileType markdown nnoremap <buffer><leader>b <cmd>w<cr><cmd>MarkdownPrev
 " let g:mkdp_highlight_css = '/home/ok97465/.vim/github_ok97465_code.css'
 
 " ----- Table mode ------
+let g:table_mode_tableize_map = "<leader>()"
 " <leader>tm    ---> table mode toggle
 " <leader>tdd   ---> delete row
 " <leader>tdc   ---> delete col
@@ -985,8 +986,8 @@ autocmd FileType markdown nnoremap <buffer><leader>b <cmd>w<cr><cmd>MarkdownPrev
 augroup presentation
     autocmd!
 " Presentation mode
-    au Filetype markdown nnoremap <buffer> <F10> :PresentingStart<CR>
-    au Filetype markdown inoremap <buffer> <F10> <esc>:w<CR>:PresentingStart<CR>
+    au Filetype markdown nnoremap <buffer> <F10> <cmd>w<CR><cmd>PresentingStart<CR>
+    au Filetype markdown inoremap <buffer> <F10> <cmd>w<CR><cmd>PresentingStart<CR>
 augroup end
 
 " ----- rainbow(color paranthesis) -----
@@ -1231,6 +1232,28 @@ require('jaq-nvim').setup{
 }
 EOF
 
+" ---- my_ipython ---
+lua require("my_ipy").setup()
+nnoremap <silent> <leader>ti <cmd>lua require("my_ipy").toggle()<CR>
+nnoremap <silent> <C-S-i> <cmd>lua require('my_ipy').goto_ipy()<CR>
+inoremap <silent> <C-S-i> <cmd>lua require('my_ipy').goto_ipy()<CR>
+tnoremap <silent> <C-S-i> <cmd>lua require('my_ipy').goto_ipy()<CR>
+tnoremap <silent> <C-S-e> <cmd>lua require('my_ipy').goto_vi()<CR>
+noremap <silent> <C-S-e> <cmd>normal! G<CR><cmd>lua require('my_ipy').goto_vi()<CR>
+nnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
+nnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
+
+autocmd FileType python nnoremap <buffer> <F4> <cmd>w<CR><cmd>lua require('my_ipy').run_file()<CR>
+autocmd FileType python inoremap <buffer> <F4> <cmd>w<CR><cmd>lua require('my_ipy').run_file()<CR>
+
+autocmd FileType python nnoremap <buffer> <F9> <cmd>lua require('my_ipy').run_line()<CR>
+autocmd FileType python nnoremap <leader>r <cmd>lua require('my_ipy').run_line()<CR>
+autocmd FileType python inoremap <buffer> <F9> <cmd>lua require('my_ipy').run_line()<CR>
+autocmd FileType python vnoremap <buffer> <F9> :lua require('my_ipy').run_lines()<CR>
+autocmd FileType python vnoremap <leader>r :lua require('my_ipy').run_lines()<CR>
+
+autocmd FileType python nnoremap <leader><CR> <cmd>lua require('my_ipy').run_cell()<CR>
+
 " ----- nvim-spectre -----
 lua require('spectre').setup({ open_cmd="botright vnew" })
 nnoremap <silent> <C-S-h> <cmd>lua require('spectre').open()<CR>
@@ -1289,62 +1312,13 @@ cnoreabbrev <expr> q getcmdtype() == ":"
 cnoreabbrev <expr> bn<bar>bd#! getcmdtype() == ":" ? 'bn<bar>bd!#' : 'bn<bar>bd#!'
 
 " ----- Terminal -----
-tnoremap <c-space> <C-\><C-n>G<C-w>h
-
-let g:ipython_terminal_job_id = 0
-let g:ipython_terminal_buf_id = 0
-function! OpenIpython(b_open_cmd_window)
-    try
-        call chansend(g:ipython_terminal_job_id, '')
-        call jobstop(g:ipython_terminal_job_id)
-        exec "bd! ".g:ipython_terminal_buf_id
-    catch
-        if filereadable("import_in_console.py")
-            botright vsplit term://ipython -i import_in_console.py --profile=vim
-        else
-            botright vsplit term://ipython -i -c \"
-                        \import numpy as np;
-                        \import matplotlib.pyplot as plt;
-                        \from scipy.special import sindg, cosdg, tandg;
-                        \from matplotlib.pyplot import plot, hist, figure, subplots;
-                        \from numpy import (
-                        \pi, deg2rad, rad2deg, unwrap, angle, zeros, array, ones, linspace, cumsum,
-                        \diff, arange, interp, conj, exp, sqrt, vstack, hstack, dot, cross, newaxis);
-                        \from numpy import cos, sin, tan, arcsin, arccos, arctan;
-                        \from numpy import amin, amax, argmin, argmax, mean;
-                        \from numpy.linalg import svd, norm;
-                        \from numpy.fft import fftshift, ifftshift, fft, ifft, fft2, ifft2;
-                        \from numpy.random import randn, standard_normal, randint, choice, uniform;
-                        \\" --profile=vim
-        endif
-        let g:ipython_terminal_job_id = b:terminal_job_id
-        let g:ipython_terminal_buf_id = bufnr("%")
-        if a:b_open_cmd_window == 1
-            below split ipython_cmd_window.py
-            resize 10
-        endif
-        norm G    " For autoscroll
-    endtry
-endfunction
+tnoremap <c-space> <C-\><C-n>G<C-w>k
 
 function! OpenTerminal()
     botright split term://cmd
     resize 20
-    let g:cmd_terminal_job_id = b:terminal_job_id
 endfunction
 
-function! SendCmd2Terminal(cmd)
-    try
-        call chansend(g:cmd_terminal_job_id, '')
-    catch
-        call OpenTerminal()
-        sleep 500m
-    endtry
-    call chansend(g:cmd_terminal_job_id, a:cmd)
-    call chansend(g:cmd_terminal_job_id, "\<CR>")
-endfunction
-
-nnoremap <silent> <leader>ti <cmd>call OpenIpython(0)<CR>
 nnoremap <silent> <leader>tt <cmd>call OpenTerminal()<CR>
 
 " ------ Run C language -----
@@ -1353,57 +1327,12 @@ autocmd FileType c,cpp,objc nnoremap <buffer> <S-F7> <cmd>w<CR><cmd>call SendCmd
 autocmd FileType c,cpp,objc nnoremap <buffer><c-f5> <cmd>w<CR><cmd>call SendCmd2Terminal("cmake --build build/Debug/CMakefiles")<CR><cmd>lua require'dap'.continue()<CR>
 autocmd FileType c,cpp,objc inoremap <buffer><c-f5> <cmd>w<CR><cmd>call SendCmd2Terminal("cmake --build build/Debug/CMakefiles")<CR><cmd>lua require'dap'.continue()<CR>
 
-" ------ Run python ------
-function! SendCmd2Ipython(cmd)
-    try
-        call chansend(g:ipython_terminal_job_id, '')
-    catch
-        call OpenIpython(0)
-        sleep 2000m
-    endtry
-    call chansend(g:ipython_terminal_job_id, a:cmd)
-endfunction
-
-function! VisualSelection(use_cr)
-    if mode()=="v"
-        let [line_start, column_start] = getpos("v")[1:2]
-        let [line_end, column_end] = getpos(".")[1:2]
-    else
-        let [line_start, column_start] = getpos("'<")[1:2]
-        let [line_end, column_end] = getpos("'>")[1:2]
-    end
-    if (line2byte(line_start)+column_start) > (line2byte(line_end)+column_end)
-        let [line_start, column_start, line_end, column_end] =
-        \   [line_end, column_end, line_start, column_start]
-    end
-    let lines = getline(line_start, line_end)
-    if len(lines) == 0
-            return ''
-    endif
-    let lines[-1] = lines[-1][: column_end - 1]
-    let lines[0] = lines[0][column_start - 1:]
-    if a:use_cr == 1
-        return join(lines, "\x0D")
-    else
-        return join(lines, "\n")
-    endif
-endfunction
-
-" Send line to ipython
-autocmd FileType python nnoremap <buffer><leader>r <cmd>call SendCmd2Ipython(getline(".")."\x0D")<CR>
-autocmd FileType python inoremap <buffer><f9> <cmd>call SendCmd2Ipython(getline(".")."\x0D")<CR>
-autocmd FileType python vnoremap <buffer><leader>r <cmd>call SendCmd2Ipython(VisualSelection(1))<CR><cmd>sleep 100m<CR><cmd>call SendCmd2Ipython("\x0D")<cr>
-autocmd FileType python vnoremap <buffer><f9> <cmd>call SendCmd2Ipython(VisualSelection(1))<CR><cmd>sleep 100m<CR><cmd>call SendCmd2Ipython("\x0D")<cr>
-
-" send module to ipython
-autocmd FileType python nnoremap <buffer> <F4> <cmd>w<CR><cmd>call SendCmd2Ipython("%run ".expand("%:r")."\n")<CR>
-autocmd FileType python inoremap <buffer> <F4> <cmd>w<CR><cmd>call SendCmd2Ipython("%run ".expand("%:r")."\n")<CR>
 " run module
 " autocmd FileType python nnoremap <buffer> <F5> :w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), "\\", ".", "g"), 1)<CR>
-autocmd FileType python nnoremap <buffer> <F5> :w<CR>:Jaq<CR>
-autocmd FileType python inoremap <buffer> <F5> <esc>:w<CR>:Jaq<CR>
+autocmd FileType python nnoremap <buffer> <F5> <cmd>w<CR><cmd>Jaq<CR>
+autocmd FileType python inoremap <buffer> <F5> <cmd>w<CR><cmd>Jaq<CR>
 
 " run python file
-autocmd FileType python nnoremap <buffer> <s-F5> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
-autocmd FileType python inoremap <buffer> <s-F5> <esc>:w<CR>:exec '!python' shellescape(@%, 1)<CR>
+autocmd FileType python nnoremap <buffer> <s-F5> <cmd>w<CR><cmd>exec '!python' shellescape(@%, 1)<CR>
+autocmd FileType python inoremap <buffer> <s-F5> <cmd>w<CR><cmd>exec '!python' shellescape(@%, 1)<CR>
 
