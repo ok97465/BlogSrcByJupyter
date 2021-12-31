@@ -1242,6 +1242,11 @@ tnoremap <silent> <C-S-h> <cmd>lua require('my_ipy').goto_vi()<CR>
 nnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
 nnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
 
+onoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
+onoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
+vnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
+vnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
+
 autocmd FileType python nnoremap <buffer> <F4> <cmd>w<CR><cmd>lua require('my_ipy').run_file()<CR>
 autocmd FileType python inoremap <buffer> <F4> <cmd>w<CR><cmd>lua require('my_ipy').run_file()<CR>
 
