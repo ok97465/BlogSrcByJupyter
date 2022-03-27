@@ -197,16 +197,6 @@ lua vim.cmd[[colorscheme tokyonight]]
 highlight IncSearch ctermbg=0 guibg=#5cacee               " color of yank
 
 " ----- nvim-tree -----
-let g:nvim_tree_window_picker_exclude = {
-    \   'filetype': [
-    \     'packer',
-    \     'qf'
-    \   ],
-    \   'buftype': [
-    \     'terminal'
-    \   ]
-    \ }
-
 " Icon이 없는 파일도 Icon 있는 파일과 같은 들여쓰기가 되도록 deafult를 하나의 빈칸으로 설정한다.
 let g:nvim_tree_icons = {
       \ 'default': ' ',
@@ -276,6 +266,24 @@ require'nvim-tree'.setup {
       custom_only = false,
       -- list of mappings to set on the tree manually
       list = {}
+    }
+  },
+  actions = {
+    change_dir = {
+      enable = true,
+      global = false,
+    },
+    open_file = {
+      quit_on_open = false,
+      resize_window = false,
+      window_picker = {
+        enable = true,
+        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+        exclude = {
+          filetype = { "notify", "packer", "qf", "diff", "fugitive", "fugitiveblame", },
+          buftype  = { "nofile", "terminal", "help", },
+        }
+      }
     }
   }
 }
@@ -609,7 +617,7 @@ require('lspkind').init({
     -- enables text annotations
     --
     -- default: true
-    with_text = false,
+    mode = 'symbol_text',
 
     -- default symbol map
     -- can be either 'default' (requires nerd-fonts font) or
@@ -815,6 +823,7 @@ autocmd FileType json nnoremap <buffer> <Leader>f <cmd>call FormatJson()<CR>
 " ----- dap -----
 " C language c-f5는 run c language에서 저의함 
 autocmd FileType c,cpp,objc,python nnoremap <buffer><Leader>b <cmd>lua require'dap'.toggle_breakpoint()<CR>
+autocmd FileType c,cpp,objc,python nnoremap <buffer><leader>B <cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
 autocmd FileType python,dap-repl nnoremap <buffer><c-f5> <cmd>w<CR><cmd>lua require'dap'.continue()<CR>
 autocmd FileType python,dap-repl inoremap <buffer><c-f5> <cmd>w<CR><cmd>lua require'dap'.continue()<CR>
 autocmd FileType c,cpp,objc,python,dap-repl,dapui_watches nnoremap <buffer><f10> <cmd>lua require'dap'.step_over()<CR>
@@ -1261,6 +1270,7 @@ autocmd FileType python vnoremap <buffer> <F9> :lua require('my_ipy').run_lines(
 autocmd FileType python vnoremap <leader>r :lua require('my_ipy').run_lines()<CR>
 
 autocmd FileType python nnoremap <leader><CR> <cmd>lua require('my_ipy').run_cell()<CR>
+autocmd FileType python nnoremap <leader>ifc <cmd>lua require('my_ipy').run_cmd('plt.close("all")')<CR>
 
 " ----- nvim-spectre -----
 lua require('spectre').setup({ open_cmd="botright vnew" })
