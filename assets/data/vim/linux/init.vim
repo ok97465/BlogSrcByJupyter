@@ -127,7 +127,7 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " previ
 Plug 'dhruvasagar/vim-table-mode'                             " Markdown Table
 Plug 'sotte/presenting.vim'                                   " Presentation
 Plug 'p00f/nvim-ts-rainbow'                                   " color for parantheses
-Plug 'norcalli/nvim-colorizer.lua'                            " colorizer for hex code
+Plug 'NvChad/nvim-colorizer.lua'                            " colorizer for hex code
 Plug 'romgrk/fzy-lua-native'                                  " fuzzy for lua
 Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }   " Autocompletion in command line
 Plug 'folke/which-key.nvim'                                   " Which key
@@ -198,18 +198,6 @@ lua vim.cmd[[colorscheme tokyonight]]
 highlight IncSearch ctermbg=0 guibg=#5cacee               " color of yank
 
 " ----- nvim-tree -----
-" Icon이 없는 파일도 Icon 있는 파일과 같은 들여쓰기가 되도록 deafult를 하나의 빈칸으로 설정한다.
-let g:nvim_tree_icons = {
-      \ 'default': ' ',
-      \}
-
-let g:nvim_tree_show_icons = {
-    \ 'git': 0,
-    \ 'folders': 1,
-    \ 'files': 1,
-    \ 'folder_arrows': 1,
-    \ }
-
 " a list of groups can be found at `:help nvim_tree_highlight`
 " highlight NvimTreeFolderIcon guibg=black
 nnoremap <silent> <Leader>e <cmd>NvimTreeToggle<CR>
@@ -598,6 +586,13 @@ nvim_lsp.pylsp.setup{
             all_scopes = true,
             include_import_symbols = false
         },
+        pyls_flake8 = { enabled = false },
+        pylsp_mypy = {
+            enabled = false,
+            live_mode = false,
+            dmypy = false,
+            strict= false
+        }
       }
     }
   }
@@ -928,35 +923,51 @@ require("dapui").setup({
     remove = "d",
     edit = "e",
     repl = "r",
+    toggle = "t",
   },
-  sidebar = {
-    -- You can change the order of elements in the sidebar
-    elements = {
-      -- Provide as ID strings or tables with "id" and "size" keys
-      {
-        id = "scopes",
-        size = 0.5, -- Can be float or integer > 1
+  -- Expand lines larger than the window
+  -- Requires >= 0.7
+  expand_lines = vim.fn.has("nvim-0.7"),
+  -- Layouts define sections of the screen to place windows.
+  -- The position can be "left", "right", "top" or "bottom".
+  -- The size specifies the height/width depending on position. It can be an Int
+  -- or a Float. Integer specifies height/width directly (i.e. 20 lines/columns) while
+  -- Float value specifies percentage (i.e. 0.3 - 30% of available lines/columns)
+  -- Elements are the elements shown in the layout (in order).
+  -- Layouts are opened in order so that earlier layouts take priority in window sizing.
+  layouts = {
+    {
+      elements = {
+      -- Elements can be strings or table with id and size keys.
+        { id = "scopes", size = 0.5 },
+        -- "breakpoints",
+        -- "stacks",
+        "watches",
       },
-      { id = "watches", size = 0.5 },
-      -- { id = "breakpoints", size = 0.25 },
-      -- { id = "stacks", size = 0.25 },
+      size = 100, -- 40 columns
+      position = "left",
     },
-    size = 100,
-    position = "left", -- Can be "left" or "right"
-  },
-  tray = {
-    elements = { "repl" },
-    size = 15,
-    position = "bottom", -- Can be "bottom" or "top"
+    {
+      elements = {
+        "repl",
+        "console",
+      },
+      size = 0.25, -- 25% of total lines
+      position = "bottom",
+    },
   },
   floating = {
     max_height = nil, -- These can be integers or a float between 0 and 1.
     max_width = nil, -- Floats will be treated as percentage of your screen.
+    border = "single", -- Border style. Can be "single", "double" or "rounded"
     mappings = {
       close = { "q", "<Esc>" },
     },
   },
   windows = { indent = 1 },
+  render = {
+    max_type_length = nil, -- Can be integer or nil.
+  }
 })
 EOF
 
