@@ -20,5 +20,13 @@ map gf :cd /mnt/data
 map Z !python /home/ok97465/codepy/clis/archive.py $fx
 map E !python /home/ok97465/codepy/clis/extract.py $fx
 
+# Code
+map c $code $fx
+
+# config
+map <a-,> $$EDITOR ~/.config/lf/lfrc
+
 # Copy path
-map Y $echo $fx | xclip -selection clipboard
+# map Y $echo $fx | xclip -selection clipboard
+map Y &python /home/ok97465/codepy/clis/to_clipboard.py 0 $fx
+map <c-y> &python /home/ok97465/codepy/clis/to_clipboard.py 1 $fx
