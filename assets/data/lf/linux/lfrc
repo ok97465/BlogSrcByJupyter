@@ -15,6 +15,7 @@ map <c-e> &nemo .
 map gp :cd ~/codepy
 map gd :cd /mnt/data/Downloads
 map gf :cd /mnt/data
+map gm :cd /mnt/data/music
 
 # Archive
 map Z !python /home/ok97465/codepy/clis/archive.py $fx
@@ -24,9 +25,27 @@ map E !python /home/ok97465/codepy/clis/extract.py $fx
 map c $code $fx
 
 # config
-map <a-,> $$EDITOR ~/.config/lf/lfrc
+map <f-12> $$EDITOR ~/.config/lf/lfrc
 
 # Copy path
 # map Y $echo $fx | xclip -selection clipboard
 map Y &python /home/ok97465/codepy/clis/to_clipboard.py 0 $fx
 map <c-y> &python /home/ok97465/codepy/clis/to_clipboard.py 1 $fx
+
+# fzf
+map <c-t> $vi $(fzf)
+cmd fzf_jump ${{
+    res="$(fdfind -t d . $HOME /mnt/data | fzf --reverse --header='Jump to location' | sed 's/\\/\\\\/g;s/"/\\"/g')"
+    if [ -d "$res" ] ; then
+        cmd="cd"
+    elif [ -f "$res" ] ; then
+        cmd="select"
+    else
+        exit 0
+    fi
+    lf -remote "send $id $cmd \"$res\""
+}}
+map <a-c> :fzf_jump
+
+# drag & drop
+map <c-d> &python /home/ok97465/codepy/clis/drag.py once $fx
