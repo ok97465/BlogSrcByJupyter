@@ -1,6 +1,16 @@
 # Set filesep to use %fs% on windows
 set filesep " "
 
+# config
+map <f-12> &%EDITOR% c:/users/ok974/AppData/Local/lf/lfrc
+cmd refresh_config :source c:/users/ok974/AppData/Local/lf/lfrc
+map <f-5> refresh_config
+map <f-2> reload
+
+# editor
+map e &%EDITOR% %f%
+map C &code %fx%
+
 # Delete file
 map D delete
 
@@ -21,11 +31,19 @@ map o %mkdir 00_new
 map O $echo . > 00_new.md
 
 # Explorer
-map <c-e> &explorer .
+map <c-e> &start .
 
 # Archive
 map Z !python c:/codepy/clis/archive.py %fx%
 map E !python c:/codepy/clis/extract.py %fx%
 
 # Copy file path
-map Y %echo %fx% | clip
+map Y &python c:/codepy/clis/to_clipboard.py 0 %fx%
+map <c-y> &python c:/codepy/clis/to_clipboard.py 1 %fx%
+
+# fzf
+map <a-c> $python c:/codepy/clis/fzfpy_lf.py folder %id%
+map <c-t> $python c:/codepy/clis/fzfpy_lf.py files %id%
+
+# drag & drop
+map I &python c:/codepy/clis/drag.py once %fx%

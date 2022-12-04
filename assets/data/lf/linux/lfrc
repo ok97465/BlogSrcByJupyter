@@ -1,3 +1,4 @@
+set ratios 1:2:3
 # Delete file
 map D delete
 
@@ -22,13 +23,13 @@ map Z !python /home/ok97465/codepy/clis/archive.py $fx
 map E !python /home/ok97465/codepy/clis/extract.py $fx
 
 # Code
-map c $code $fx
+map C $code $fx
 
 # config
 map <f-12> $$EDITOR ~/.config/lf/lfrc
+map <f-5> :source ~/.config/lf/lfrc
 
 # Copy path
-# map Y $echo $fx | xclip -selection clipboard
 map Y &python /home/ok97465/codepy/clis/to_clipboard.py 0 $fx
 map <c-y> &python /home/ok97465/codepy/clis/to_clipboard.py 1 $fx
 
@@ -48,4 +49,10 @@ cmd fzf_jump ${{
 map <a-c> :fzf_jump
 
 # drag & drop
-map <c-d> &python /home/ok97465/codepy/clis/drag.py once $fx
+map I $python /home/ok97465/codepy/clis/drag.py once $fx
+
+# Image Preview
+set previewer ctpv
+set cleaner ctpvclear
+&ctpv -s $id
+&ctpvquit $id
