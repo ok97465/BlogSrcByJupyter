@@ -90,6 +90,8 @@ Plug 'junegunn/vim-easy-align'                                " Vim alignment
 Plug 'fisadev/vim-isort'                                      " Sort import statements of python
 Plug 'heavenshell/vim-pydocstring', { 'do': 'make install' }  " Autodocstring
 Plug 'phaazon/hop.nvim'                                       " easymotion for nvim
+Plug 'ggandor/leap.nvim'                                      " 2char search 
+Plug 'elihunter173/dirbuf.nvim'                               " lets you edit your filesystem like you edit text.
 Plug 'kyazdani42/nvim-web-devicons'                           " File icons for nvim-tree, lualine
 Plug 'kyazdani42/nvim-tree.lua'                               " File explorer
 Plug 'nvim-lua/popup.nvim'                                    " Dependency of telescope
@@ -117,6 +119,7 @@ Plug 'ray-x/lsp_signature.nvim'                               " Show function si
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
 Plug 'filipdutescu/renamer.nvim', { 'branch': 'master' }      " UI for rename
 Plug 'simrat39/symbols-outline.nvim'                          " Outline
+" Plug 'stevearc/aerial.nvim'                                  " Outline
 Plug 'mfussenegger/nvim-dap'                                  " debugger
 Plug 'rcarriga/nvim-dap-ui'                                   " debugger ui
 Plug 'rcarriga/cmp-dap'                                       " cmp for dap
@@ -209,10 +212,6 @@ require'nvim-tree'.setup {
   disable_netrw       = true,
   -- hijack netrw window on startup
   hijack_netrw        = true,
-  -- open the tree when running this setup function
-  open_on_setup       = false,
-  -- will not open on setup if the filetype is in this list
-  ignore_ft_on_setup  = {'alpha', 'dashboard'},
   -- opens the tree when changing/opening a new tab if the tree wasn't previously opened
   open_on_tab         = false,
   -- hijack the cursor in the tree to put it at the start of the filename
@@ -420,6 +419,9 @@ onoremap <silent> <leader>k <cmd>HopLine<cr>
 onoremap <silent> <leader>l <cmd>HopChar1<cr>
 onoremap <silent> <leader>h <cmd>HopChar2<cr>
 
+" ---- leap.nvim(sneak) ----
+lua require('leap').add_default_mappings()
+
 " ----- lualine -----
 lua << EOF
 require'lualine'.setup {
@@ -459,6 +461,7 @@ lua << EOF
 require("bufferline").setup{
     options = { 
         numbers="ordinal",
+        left_mouse_command = "buffer %d",
         diagnostics = "nvim_lsp",
         diagnostics_update_in_insert = false,
         diagnostics_indicator = function(count, level, diagnostics_dict, context)
@@ -747,6 +750,10 @@ lua require('renamer').setup()
 inoremap <silent> <F2> <cmd>lua require('renamer').rename()<cr>
 nnoremap <silent> <leader>R <cmd>lua require('renamer').rename()<cr>
 vnoremap <silent> <leader>R <cmd>lua require('renamer').rename()<cr>
+
+" " ---- aerial outline ----
+" lua require('aerial').setup({backends = {"pylsp"}})
+" lua require('telescope').load_extension('aerial')
 
 " ---- outline ----
 autocmd FileType c,cpp,objc nnoremap <silent> <leader>s <cmd>SymbolsOutline<CR>
