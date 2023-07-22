@@ -71,7 +71,8 @@ call plug#begin('~/.vim/plugged')
 Plug 'windwp/nvim-autopairs'                                  " Automatically insert pair char, ex (<->)
 Plug 'numToStr/Comment.nvim'                                  " Comment toggle
 Plug 'goolord/alpha-nvim'                                     " Greeter
-Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
+" Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
+Plug 'ofirgall/ofirkai.nvim'                                  " Theme
 Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
 Plug 'lukas-reineke/virt-column.nvim'                         " Draw max column line
 Plug 'ok97465/pycell_deco.nvim'                               " Python cell decoration
@@ -195,10 +196,11 @@ alpha.setup(dashboard.opts)
 EOF
 
 " ----- Theme -----
-lua vim.g.tokyonight_colors = { red = "NONE" }
-lua vim.g.tokyonight_style = "night"
-lua vim.cmd[[colorscheme tokyonight]]
-highlight IncSearch ctermbg=0 guibg=#5cacee               " color of yank
+" lua vim.g.tokyonight_colors = { red = "NONE" }
+" lua vim.g.tokyonight_style = "night"
+" lua vim.cmd[[colorscheme tokyonight]]
+" highlight IncSearch ctermbg=0 guibg=#5cacee               " color of yank
+lua require('ofirkai').setup {}
 
 " ----- nvim-tree -----
 " a list of groups can be found at `:help nvim_tree_highlight`
@@ -327,7 +329,7 @@ let g:easy_align_delimiters['#'] = {'pattern': '#', 'ignore_groups': ['String'],
 
 " ----- telescope ----
 nnoremap <silent> <C-p> <cmd>Telescope find_files<cr>
-nnoremap <silent> <S-home>f <cmd>Telescope live_grep<cr>
+nnoremap <silent> <leader>`f <cmd>Telescope live_grep<cr>
 nnoremap <silent> <leader>p <cmd>Telescope buffers<cr>
 nnoremap <silent> <leader>q <cmd>Telescope diagnostics bufnr=0<cr>
 nnoremap <silent> <leader>Q <cmd>Telescope diagnostics<cr>
@@ -353,7 +355,7 @@ EOF
 lua require('telescope').load_extension('fzy_native')
 
 " ----- telescope-project ----
-nnoremap <silent> <S-home>p <cmd>lua require'telescope'.extensions.project.project{}<CR>
+nnoremap <silent> <leader>`p <cmd>lua require'telescope'.extensions.project.project{}<CR>
 if filereadable(expand("~/project_info.vim"))
     source ~/project_info.vim
 else
@@ -427,7 +429,8 @@ lua << EOF
 require'lualine'.setup {
   options = {
     icons_enabled = true,
-    theme = 'tokyonight',
+    -- theme = 'tokyonight',
+    theme = require('ofirkai.statuslines.lualine').theme,
     component_separators = {left='', right=''},
     section_separators = {left='', right=''},
     disabled_filetypes = {}
@@ -1271,10 +1274,10 @@ EOF
 " ---- my_ipython ---
 lua require("my_ipy").setup()
 nnoremap <silent> <leader>ti <cmd>lua require("my_ipy").toggle()<CR>
-nnoremap <silent> <S-home>l <cmd>lua require('my_ipy').goto_ipy()<CR>
-inoremap <silent> <S-home>l <cmd>lua require('my_ipy').goto_ipy()<CR>
-tnoremap <silent> <S-home>l <cmd>lua require('my_ipy').goto_ipy()<CR>
-tnoremap <silent> <S-home>h <cmd>lua require('my_ipy').goto_vi()<CR>
+nnoremap <silent> <leader>`l <cmd>lua require('my_ipy').goto_ipy()<CR>
+inoremap <silent> <leader>`l <cmd>lua require('my_ipy').goto_ipy()<CR>
+tnoremap <silent> <leader>`l <cmd>lua require('my_ipy').goto_ipy()<CR>
+tnoremap <silent> <leader>`h <cmd>lua require('my_ipy').goto_vi()<CR>
 nnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
 nnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
 
@@ -1297,7 +1300,7 @@ autocmd FileType python nnoremap <leader>ifc <cmd>lua require('my_ipy').run_cmd(
 
 " ----- nvim-spectre -----
 lua require('spectre').setup({ open_cmd="botright vnew" })
-nnoremap <silent> <S-home>h <cmd>lua require('spectre').open()<CR>
+nnoremap <silent> <leader>`h <cmd>lua require('spectre').open()<CR>
 
 " ----- telekasten -----
 lua << EOF
