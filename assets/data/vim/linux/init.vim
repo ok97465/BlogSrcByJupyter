@@ -293,7 +293,7 @@ require("indent_blankline").setup {
 EOF
 
 " ----- column line -----
-highlight VirtColumn guifg=#3b4261
+highlight VirtColumn guifg=#33332a
 lua require("virt-column").setup()
 
 " ----- pycell_deco -----
@@ -329,7 +329,7 @@ let g:easy_align_delimiters['#'] = {'pattern': '#', 'ignore_groups': ['String'],
 
 " ----- telescope ----
 nnoremap <silent> <C-p> <cmd>Telescope find_files<cr>
-nnoremap <silent> <leader>`f <cmd>Telescope live_grep<cr>
+nnoremap <silent> <C-s>f <cmd>Telescope live_grep<cr>
 nnoremap <silent> <leader>p <cmd>Telescope buffers<cr>
 nnoremap <silent> <leader>q <cmd>Telescope diagnostics bufnr=0<cr>
 nnoremap <silent> <leader>Q <cmd>Telescope diagnostics<cr>
@@ -355,7 +355,7 @@ EOF
 lua require('telescope').load_extension('fzy_native')
 
 " ----- telescope-project ----
-nnoremap <silent> <leader>`p <cmd>lua require'telescope'.extensions.project.project{}<CR>
+nnoremap <silent> <C-s>p <cmd>lua require'telescope'.extensions.project.project{}<CR>
 if filereadable(expand("~/project_info.vim"))
     source ~/project_info.vim
 else
@@ -1274,10 +1274,10 @@ EOF
 " ---- my_ipython ---
 lua require("my_ipy").setup()
 nnoremap <silent> <leader>ti <cmd>lua require("my_ipy").toggle()<CR>
-nnoremap <silent> <leader>`l <cmd>lua require('my_ipy').goto_ipy()<CR>
-inoremap <silent> <leader>`l <cmd>lua require('my_ipy').goto_ipy()<CR>
-tnoremap <silent> <leader>`l <cmd>lua require('my_ipy').goto_ipy()<CR>
-tnoremap <silent> <leader>`h <cmd>lua require('my_ipy').goto_vi()<CR>
+nnoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
+inoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
+tnoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
+tnoremap <silent> <C-s>h <cmd>lua require('my_ipy').goto_vi()<CR>
 nnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
 nnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
 
@@ -1300,7 +1300,7 @@ autocmd FileType python nnoremap <leader>ifc <cmd>lua require('my_ipy').run_cmd(
 
 " ----- nvim-spectre -----
 lua require('spectre').setup({ open_cmd="botright vnew" })
-nnoremap <silent> <leader>`h <cmd>lua require('spectre').open()<CR>
+nnoremap <silent> <C-s>h <cmd>lua require('spectre').open()<CR>
 
 " ----- telekasten -----
 lua << EOF
