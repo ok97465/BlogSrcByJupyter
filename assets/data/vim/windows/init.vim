@@ -3,18 +3,15 @@
 
 "================================= General Config ===================================
 syntax on                                                    " 언어에 따른 자동 문법, 구문의 색을 다르게 표시
-filetype on                                                  " 파일 종류를 자동으로 인식
 let mapleader=" "
 
-set nocompatible                                             " vi와 호환하지 않음
 set title                                                    " change the terminal title
-set mousehide                                                " 타이핑시 마우스 커서 감추기
-set ru                                                       " 화면 우측 한단에 현재 커서의 위치(줄,칸)
-set cul                                                      " 커서가 있는 라인 하이라이트
-set sc                                                       " 완성중인 명령을 표시
-set sm                                                       " 괄호를 닫을때 짝이 맞는 괄호를 표시
-set vb                                                       " 키를 잘못눌렀을 때 삑 소리를 내는 대신 번쩍임
-set hi=50                                                    " 명령어를 기록에 날길 개수 지정
+set ruler                                                    " 화면 우측 한단에 현재 커서의 위치(줄,칸)
+set cursorline                                               " 커서가 있는 라인 하이라이트
+set showcmd                                                  " 완성중인 명령을 표시
+set showmatch                                                " 괄호를 닫을때 짝이 맞는 괄호를 표시
+set visualbell                                               " 키를 잘못눌렀을 때 삑 소리를 내는 대신 번쩍임
+set history=50                                               " 명령어를 기록에 날길 개수 지정
 set scrolloff=8                                              " Vim cursor가 화면 마지막 8줄 밑으로 내려가면 화면을 스크롤 한다.
 set backspace=eol,start,indent                               " 줄 끝, 시작, 들여쓰기의 백스페이스시 이전줄로
 set textwidth=88                                             " vim script 편집 시 88번째 글자를 넘어가면 자동 줄바꿈된다.
@@ -28,7 +25,6 @@ set mouse=a                                                  " Enable mouse scro
 
 syntax sync minlines=200                                     " speed-up vim
 set termguicolors                                            " this variable must be enabled for colors to be applied properly
-set colorcolumn=+1                                           " ruler
 
 " ============================ highlighted yank ==============================
 augroup highlight_yank
@@ -37,8 +33,8 @@ augroup highlight_yank
 augroup END
 
 " =================================== Search ==================================
-set ic                                                       " 검색시 대소문자 무시
-set scs                                                      " 똑똑한 대소문자 구별 기능
+set ignorecase                                               " 검색시 대소문자 무시
+set smartcase                                                " 똑똑한 대소문자 구별 기능
 set incsearch                                                " 키워드 입력시 점진적 검색
 " set hls                                                      " 검색된 스트링의 하이라이트
 set nohlsearch                                               " 검색 완료후 highlight 삭제
@@ -54,6 +50,9 @@ set nobackup
 set nowb
 
 " ================================= Turn of undo ==============================
+if !isdirectory(expand('~/undo'))
+  call mkdir(expand('~/undo'), 'p')
+endif
 set undodir=~/undo                                            " Undo Folder
 set undofile
 
@@ -91,10 +90,10 @@ Plug 'junegunn/vim-easy-align'                                " Vim alignment
 Plug 'fisadev/vim-isort'                                      " Sort import statements of python
 Plug 'heavenshell/vim-pydocstring', { 'do': 'make install' }  " Autodocstring
 Plug 'phaazon/hop.nvim'                                       " easymotion for nvim
-Plug 'ggandor/leap.nvim'                                      " 2char search 
-Plug 'elihunter173/dirbuf.nvim'                               " lets you edit your filesystem like you edit text.
-Plug 'kyazdani42/nvim-web-devicons'                           " File icons for nvim-tree, lualine
-Plug 'kyazdani42/nvim-tree.lua'                               " File explorer
+Plug 'ggandor/leap.nvim'                                      " two ch search
+Plug 'elihunter173/dirbuf.nvim'                               " Directory buffer
+Plug 'nvim-tree/nvim-web-devicons'                            " File icons for nvim-tree, lualine
+Plug 'nvim-tree/nvim-tree.lua'                                " File explorer
 Plug 'nvim-lua/popup.nvim'                                    " Dependency of telescope
 Plug 'nvim-lua/plenary.nvim'                                  " Dependency of telescope
 Plug 'nvim-telescope/telescope.nvim'                          " Fuzzy finder
@@ -122,6 +121,7 @@ Plug 'filipdutescu/renamer.nvim', { 'branch': 'master' }      " UI for rename
 Plug 'simrat39/symbols-outline.nvim'                          " Outline
 Plug 'mfussenegger/nvim-dap'                                  " debugger
 Plug 'rcarriga/nvim-dap-ui'                                   " debugger ui
+Plug 'nvim-neotest/nvim-nio'                                  " required by nvim-dap-ui
 Plug 'rcarriga/cmp-dap'                                       " cmp for dap
 Plug 'theHamsta/nvim-dap-virtual-text'                        " text for debugger
 Plug 'averms/black-nvim', {'do': ':UpdateRemotePlugins'}      " python formatter
@@ -129,10 +129,11 @@ Plug 'rhysd/vim-clang-format'                                 " c++ formatter
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " preview for markdown
 Plug 'dhruvasagar/vim-table-mode'                             " Markdown Table
 Plug 'sotte/presenting.vim'                                   " Presentation
-Plug 'p00f/nvim-ts-rainbow'                                   " color for parantheses
+Plug 'HiPhish/rainbow-delimiters.nvim'                        " color for parantheses
 Plug 'NvChad/nvim-colorizer.lua'                            " colorizer for hex code
 Plug 'romgrk/fzy-lua-native'                                  " fuzzy for lua
 Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }   " Autocompletion in command line
+Plug 'echasnovski/mini.icons'                                 " Which key Icons
 Plug 'folke/which-key.nvim'                                   " Which key
 Plug 'abecodes/tabout.nvim'                                   " tabout
 Plug 'ok97465/ok97465.nvim', { 'do': ':UpdateRemotePlugins' } " python import from list
@@ -202,98 +203,120 @@ EOF
 lua require('ofirkai').setup {}
 
 " ----- nvim-tree -----
-" a list of groups can be found at `:help nvim_tree_highlight`
-" highlight NvimTreeFolderIcon guibg=black
+" ----- nvim-tree (latest) -----
+" Plugin은 최신 리포로: Plug 'nvim-tree/nvim-tree.lua' / Plug 'nvim-tree/nvim-web-devicons'
+
 nnoremap <silent> <Leader>e <cmd>NvimTreeToggle<CR>
-autocmd BufEnter * ++nested if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif
+
+" 트리만 남으면 자동 종료
+autocmd BufEnter * ++nested if winnr('$') == 1
+      \ && bufname() =~ 'NvimTree_'
+      \ && &buftype == ''
+      \ && !exists('t:quit_on_tree')
+      \ | let t:quit_on_tree = 1 | quit | endif
 
 lua << EOF
-require'nvim-tree'.setup {
-  -- disables netrw completely
-  disable_netrw       = true,
-  -- hijack netrw window on startup
-  hijack_netrw        = true,
-  -- opens the tree when changing/opening a new tab if the tree wasn't previously opened
-  open_on_tab         = false,
-  -- hijack the cursor in the tree to put it at the start of the filename
-  hijack_cursor       = true,
-  -- updates the root directory of the tree on `DirChanged` (when your run `:cd` usually) 
-  update_cwd          = true,
-  -- update the focused file on `BufEnter`, un-collapses the folders recursively until it finds the file
+local function my_nvim_tree_on_attach(bufnr)
+  local api = require('nvim-tree.api')
+  local function map(lhs, rhs, desc)
+    vim.keymap.set('n', lhs, rhs, { buffer = bufnr, noremap = true, silent = true, nowait = true, desc = 'nvim-tree: ' .. desc })
+  end
+
+  -- 기본 키맵 몇 가지 (원하면 추가하세요)
+  map('<CR>',  api.node.open.edit,        'Open')
+  map('o',     api.node.open.edit,        'Open')
+  map('v',     api.node.open.vertical,    'Open: Vertical Split')
+  map('s',     api.node.open.horizontal,  'Open: Horizontal Split')
+  map('t',     api.node.open.tab,         'Open: New Tab')
+  map('r',     api.fs.rename,             'Rename')
+  map('a',     api.fs.create,             'Create')
+  map('d',     api.fs.remove,             'Delete')
+  map('y',     api.fs.copy.node,          'Copy')
+  map('p',     api.fs.paste,              'Paste')
+  map('R',     api.tree.reload,           'Refresh')
+  map('q',     api.tree.close,            'Close')
+end
+
+require('nvim-tree').setup({
+  disable_netrw            = true,
+  hijack_netrw             = true,
+  hijack_cursor            = true,
+
+  -- cwd 동기화 (update_cwd 대체)
+  sync_root_with_cwd       = true,
+  respect_buf_cwd          = true,
+
+  -- 현재 파일 따라가기 & root 갱신
   update_focused_file = {
-    -- enables the feature
-    enable      = false,
-    -- update the root directory of the tree to the one of the folder containing the file if the file is not under the current root directory
-    -- only relevant when `update_focused_file.enable` is true
-    update_cwd  = false,
-    -- list of buffer names / filetypes that will not update the cwd if the file isn't found under the current root directory
-    -- only relevant when `update_focused_file.update_cwd` is true and `update_focused_file.enable` is true
-    ignore_list = {'.git', 'node_modules', '.cache', '__pycache__'}
-  },
-  -- configuration options for the system open command (`s` in the tree by default)
-  system_open = {
-    -- the command to run this, leaving nil should work in most cases
-    cmd  = nil,
-    -- the command arguments as a list
-    args = {}
+    enable      = true,
+    update_root = true,
+    ignore_list = { '.git', 'node_modules', '.cache', '__pycache__' },
   },
 
+  -- 필터
   filters = {
-    dotfiles = true,
-    custom = {}
+    dotfiles   = true,
+    git_ignored = true,
+    custom     = {},
   },
+
+  -- 뷰
   view = {
-    -- width of the window, can be either a number (columns) or a string in `%`
-    width = 30,
-    -- side of the tree, can be one of 'left' | 'right' | 'top' | 'bottom'
-    side = 'left',
-    -- if true the tree will resize itself after opening a file
-    mappings = {
-      -- custom only false will merge the list with the default mappings
-      -- if true, it will only use your list to set the mappings
-      custom_only = false,
-      -- list of mappings to set on the tree manually
-      list = {}
-    }
+    width  = 30,
+    side   = 'left',
+    preserve_window_proportions = true,
   },
-  actions = {
-    change_dir = {
-      enable = true,
-      global = false,
+
+  -- 렌더러(아이콘/하이라이트 등)
+  renderer = {
+    group_empty   = true,
+    highlight_git = true,
+    icons = {
+      show = { folder_arrow = false },
     },
+  },
+
+  -- Git 표시
+  git = {
+    enable  = true,
+    ignore  = true,
+    timeout = 400,
+  },
+
+  -- 열기/디렉터리 이동 동작
+  actions = {
+    change_dir = { enable = true, global = false },
     open_file = {
-      quit_on_open = false,
-      resize_window = false,
-      window_picker = {
+      quit_on_open   = false,
+      resize_window  = true,
+      window_picker  = {
         enable = true,
-        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+        chars  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
         exclude = {
-          filetype = { "notify", "packer", "qf", "diff", "fugitive", "fugitiveblame", },
-          buftype  = { "nofile", "terminal", "help", },
-        }
-      }
-    }
-  }
-}
+          filetype = { "notify", "qf", "diff", "fugitive", "fugitiveblame", "packer" },
+          buftype  = { "nofile", "terminal", "help" },
+        },
+      },
+    },
+  },
+
+  -- 최신 키맵 방식
+  on_attach = my_nvim_tree_on_attach,
+})
 EOF
 
 " ----- Indent guide -----
 lua << EOF
-vim.opt.listchars = {
-    space = "⋅",
-    eol = "↴",
-}
-require("indent_blankline").setup {
-    show_end_of_line = false,
-    space_char_blankline = " ",
-    show_current_context = false,
-    filetype_exclude = {"alpha", "dap-repl", "dapui_scopes", "dapui_watches"},
-}
+local ibl = require("ibl")
+ibl.setup({
+  scope = { enabled = false },
+  exclude = { filetypes = { "alpha", "dap-repl", "dapui_scopes", "dapui_watches" } },
+})
 EOF
 
 " ----- column line -----
 highlight VirtColumn guifg=#33332a
-lua require("virt-column").setup()
+lua require("virt-column").setup({ char = "│", virtcolumn = "+1" })
 
 " ----- pycell_deco -----
 lua require("pycell_deco").setup{cell_name_fg="#1abc9c", cell_line_bg=nil}
@@ -420,8 +443,9 @@ onoremap <silent> <leader>k <cmd>HopLine<cr>
 onoremap <silent> <leader>l <cmd>HopChar1<cr>
 onoremap <silent> <leader>h <cmd>HopChar2<cr>
 
-" ---- leap.nvim(sneak) ----
+" ----- leap.nvim -----
 lua require('leap').add_default_mappings()
+autocmd ColorScheme * lua require('leap').init_highlight(true)
 
 " ----- lualine -----
 lua << EOF
@@ -483,8 +507,6 @@ EOF
 " unmap gT
 nnoremap <silent>gt :BufferLineCycleNext<CR>
 nnoremap <silent>gT :BufferLineCyclePrev<CR>
-nnoremap <silent>gt :BufferLineCycleNext<CR>
-nnoremap <silent>gT :BufferLineCyclePrev<CR>
 nnoremap <silent><leader>1 <Cmd>BufferLineGoToBuffer 1<CR>
 nnoremap <silent><leader>2 <Cmd>BufferLineGoToBuffer 2<CR>
 nnoremap <silent><leader>3 <Cmd>BufferLineGoToBuffer 3<CR>
@@ -506,7 +528,8 @@ lua << EOF
 require('lint').linters_by_ft = {
   markdown = {'markdownlint'},
 }
-require('lint').linters.markdownlint.args = {'-c', '%HOME%/.markdownlint.jsonc'}
+local home = vim.fn.expand("$HOME")
+require('lint').linters.markdownlint.args = { '-c', home .. '/.markdownlint.jsonc' }
 EOF
 
 au BufWritePost *.md lua require('lint').try_lint()
@@ -564,7 +587,7 @@ nvim_lsp.jsonls.setup {
     commands = {
       Format = {
         function()
-          vim.lsp.buf.range_formatting({},{0,0},{vim.fn.line("$"),0})
+          vim.lsp.buf.format({ async = false })
         end
       }
     }
@@ -734,8 +757,12 @@ EOF
 " ---- treesitter ----
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ensure_installed = {
+  "c", "cpp", "python", "cuda", "lua", "json", "cmake", "markdown", "markdown_inline", "vim", "vimdoc", "yaml", "bash", "html", "javascript", "typescript", "css", "rust", "go", "java", "jsonc","toml"
+  },
   ignore_install = {}, -- List of parsers to ignore installing
+  auto_install = false,
+  sync_install = false,
   highlight = {
     enable = true,              -- false will disable the whole extension
     disable = { },  -- list of language that will be disabled
@@ -745,6 +772,7 @@ require'nvim-treesitter.configs'.setup {
     -- Instead of true it can also be a list of languages
     additional_vim_regex_highlighting = false,
   },
+  indent = {enable = true},
 }
 EOF
 
@@ -1122,43 +1150,47 @@ call wilder#set_option('renderer', wilder#renderer_mux({
 set timeoutlen=500
 lua << EOF
 
-local wk = require("which-key")
-wk.setup {
-    -- your configuration comes here
-    -- or leave it empty to use the default settings
-    -- refer to the configuration section below
-}
+require('mini.icons').setup()
 
-wk.register({
-  t = {
-    name = "Telescope", -- optional group name
-    p = { "<cmd>Telescope find_files<cr>", "Find File" },
-    o = { "<cmd>Telescope oldfiles<cr>", "Open Recent File" },
-    g = { "<cmd>Telescope live_grep<cr>", "Search for a String" },
-    b = { "<cmd>Telescope buffers<cr>", "Open Buffers" },
-    r = { "<cmd>Telescope registers<cr>", "Registers" },
-    c = { "<cmd>Telescope git_commits<cr>", "Git Commits" },
-    C = { "<cmd>Telescope git_bcommits<cr>", "Git Commits of This" },
-    a = { "<cmd>Telescope git_branches<cr>", "Git Branches" },
-    s = { "<cmd>Telescope git_status<cr>", "Git Status" },
-    S = { "<cmd>Telescope git_status<cr>", "Git Stash" },
-    h = { "<cmd>Telescope command_history<cr>", "command history" },
+require("which-key").setup({
+  -- which-key가 감시할 접두사만 지정 (리더키만 팝업)
+  triggers = {
+    { "<leader>", mode = { "n", "v" } },
+    -- 필요하면 g 접두사 팝업도 열기:
+    -- { "g", mode = { "n" } },
   },
-}, { prefix = "<leader>" })
+})
 
-wk.register({
-  g = {
-    name = "Fugitive", -- optional group name
-    s = { "<cmd>Git<cr>", "Git status" },
-    b = { "<cmd>Git blame<cr>", "Git blame" },
-    d = { "<cmd>Git difftool<cr>", "Git difftool" },
-    l = { "<cmd>Git log<cr>", "Git log" },
-    c = { "<cmd>Git commit<cr>", "Git commit" },
-    p = { "<cmd>Git push<cr>", "Git push" },
-    v = { "<cmd>GV<cr>", "Commit browser" },
-    V = { "<cmd>GV!<cr>", "Commit browser this" },
-  },
-}, { prefix = "<leader>" })
+
+-- which-key 최신 스펙 등록 (Telescope)
+require("which-key").add({
+  { "<leader>t",  group = "Telescope" },
+  { "<leader>tC", "<cmd>Telescope git_bcommits<cr>",   desc = "Git Commits of This" },
+  { "<leader>tS", "<cmd>Telescope git_status<cr>",     desc = "Git Stash" },
+  { "<leader>ta", "<cmd>Telescope git_branches<cr>",   desc = "Git Branches" },
+  { "<leader>tb", "<cmd>Telescope buffers<cr>",        desc = "Open Buffers" },
+  { "<leader>tc", "<cmd>Telescope git_commits<cr>",    desc = "Git Commits" },
+  { "<leader>tg", "<cmd>Telescope live_grep<cr>",      desc = "Search for a String" },
+  { "<leader>th", "<cmd>Telescope command_history<cr>",desc = "command history" },
+  { "<leader>to", "<cmd>Telescope oldfiles<cr>",       desc = "Open Recent File" },
+  { "<leader>tp", "<cmd>Telescope find_files<cr>",     desc = "Find File" },
+  { "<leader>tr", "<cmd>Telescope registers<cr>",      desc = "Registers" },
+  { "<leader>ts", "<cmd>Telescope git_status<cr>",     desc = "Git Status" },
+})
+
+-- which-key 최신 스펙 등록 (Fugitive)
+require("which-key").add({
+  { "<leader>g",  group = "Fugitive" },
+  { "<leader>gV", "<cmd>GV!<cr>",     desc = "Commit browser this" },
+  { "<leader>gb", "<cmd>Git blame<cr>",   desc = "Git blame" },
+  { "<leader>gc", "<cmd>Git commit<cr>",  desc = "Git commit" },
+  { "<leader>gd", "<cmd>Git difftool<cr>",desc = "Git difftool" },
+  { "<leader>gl", "<cmd>Git log<cr>",     desc = "Git log" },
+  { "<leader>gp", "<cmd>Git push<cr>",    desc = "Git push" },
+  { "<leader>gs", "<cmd>Git<cr>",         desc = "Git status" },
+  { "<leader>gv", "<cmd>GV<cr>",          desc = "Commit browser" },
+})
+
 EOF
 
 " ----- tabout -----
@@ -1487,4 +1519,3 @@ autocmd FileType python inoremap <buffer> <F5> <cmd>w<CR><cmd>Jaq<CR>
 " run python file
 autocmd FileType python nnoremap <buffer> <s-F5> <cmd>w<CR><cmd>exec '!python' shellescape(@%, 1)<CR>
 autocmd FileType python inoremap <buffer> <s-F5> <cmd>w<CR><cmd>exec '!python' shellescape(@%, 1)<CR>
-
