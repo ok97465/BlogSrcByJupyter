@@ -70,17 +70,17 @@ call plug#begin('~/.vim/plugged')
 Plug 'windwp/nvim-autopairs'                                  " Automatically insert pair char, ex (<->)
 Plug 'numToStr/Comment.nvim'                                  " Comment toggle
 Plug 'goolord/alpha-nvim'                                     " Greeter
-" Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
-Plug 'ofirgall/ofirkai.nvim'                                  " Theme
+Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
+" Plug 'ofirgall/ofirkai.nvim'                                  " Theme
 Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
 Plug 'lukas-reineke/virt-column.nvim'                         " Draw max column line
-Plug 'ok97465/pycell_deco.nvim'                               " Python cell decoration
 Plug 'RRethy/vim-illuminate'                                  " Highlight word under cursor
 Plug 'tpope/vim-surround'                                     " replace surrounding
 Plug 'tpope/vim-speeddating'                                  " apply ^A to date string
 Plug 'tpope/vim-repeat'                                       " enhance dot command
 Plug 'tpope/vim-fugitive'                                     " For git
-Plug 'junegunn/gv.vim'                                        " Git commit browser
+Plug 'sindrets/diffview.nvim'                                 " For gitgraph.nvim
+Plug 'isakbm/gitgraph.nvim'                                   " Git graph 
 Plug 'mbbill/undotree'                                        " Visualize undo history
 Plug 'alfredodeza/pytest.vim'                                 " Pytest
 Plug 'seandewar/nvimesweeper'                                 " minesweeper
@@ -99,8 +99,6 @@ Plug 'nvim-lua/plenary.nvim'                                  " Dependency of te
 Plug 'nvim-telescope/telescope.nvim'                          " Fuzzy finder
 Plug 'nvim-telescope/telescope-fzy-native.nvim'               " Fzy for fuzzy finder
 Plug 'nvim-telescope/telescope-project.nvim'                  " project manager
-Plug 'ok97465/telescope-py-importer.nvim'                     " python import in workspace
-Plug 'ok97465/telescope-py-outline.nvim'                      " python outline
 Plug 'ryanoasis/vim-devicons'                                 " Icons for lualine
 Plug 'nvim-lualine/lualine.nvim'                              " Status bar
 Plug 'akinsho/bufferline.nvim'                                " Buffer line
@@ -136,12 +134,16 @@ Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }   " Autocompletion i
 Plug 'echasnovski/mini.icons'                                 " Which key Icons
 Plug 'folke/which-key.nvim'                                   " Which key
 Plug 'abecodes/tabout.nvim'                                   " tabout
-Plug 'ok97465/ok97465.nvim', { 'do': ':UpdateRemotePlugins' } " python import from list
 Plug 'is0n/jaq-nvim'                                          " run script in float window
-Plug 'ok97465/my_ipy.nvim'                                    " My IPython terminal
 Plug 'windwp/nvim-spectre'                                    " Replace in workspace GUI
 Plug 'renerocksai/calendar-vim'                               " 일정관리를 위한 달력
 Plug 'renerocksai/telekasten.nvim'                            " 일정관리
+
+Plug 'ok97465/pycell_deco.nvim'                               " Python cell decoration
+Plug 'ok97465/telescope-py-importer.nvim'                     " python import in workspace
+Plug 'ok97465/telescope-py-outline.nvim'                      " python outline
+Plug 'ok97465/py-autoimport.nvim'                             " python import from list
+Plug 'ok97465/ipybridge.nvim'                                 " IPython module like spyder-ide
 
 call plug#end()
 
@@ -197,10 +199,9 @@ EOF
 
 " ----- Theme -----
 " lua vim.g.tokyonight_colors = { red = "NONE" }
-" lua vim.g.tokyonight_style = "night"
-" lua vim.cmd[[colorscheme tokyonight]]
-" highlight IncSearch ctermbg=0 guibg=#5cacee               " color of yank
-lua require('ofirkai').setup {}
+lua vim.cmd[[colorscheme tokyonight-night]]
+highlight IncSearch ctermbg=0 guibg=#5cacee               " color of yank
+" lua require('ofirkai').setup {}
 
 " ----- nvim-tree -----
 " ----- nvim-tree (latest) -----
@@ -318,8 +319,78 @@ EOF
 highlight VirtColumn guifg=#33332a
 lua require("virt-column").setup({ char = "│", virtcolumn = "+1" })
 
+" ---- gitgraph.nvim ----
+lua << EOF
+-- diffview 기본 설정(필요시 수정)
+require('diffview').setup({
+  use_icons = true,  -- devicons 설치 시 아이콘 표시
+  view = {
+    default = { layout = "diff2_horizontal", winbar_info = false },
+    merge_tool = { layout = "diff3_horizontal", winbar_info = true },
+    file_history = { layout = "diff2_horizontal", winbar_info = false },
+  },
+})
+
+-- gitgraph 설정 + diffview 연동 훅
+require('gitgraph').setup({
+  git_cmd = "git",
+  symbols = {
+    -- 기본 기호(원하면 바꿔도 됨)
+    merge_commit = 'M',
+    commit = '*',
+  },
+  format = {
+    timestamp = '%H:%M:%S %d-%m-%Y',
+    fields = { 'hash', 'timestamp', 'author', 'branch_name', 'tag' },
+  },
+  hooks = {
+    -- 커서 위치 커밋의 diff 열기 (Enter 눌렀을 때 동작)
+    on_select_commit = function(commit)
+      vim.cmd('DiffviewOpen ' .. commit.hash .. '^!')
+    end,
+    -- 비주얼로 커밋 범위 선택 후 그 범위 diff 열기
+    on_select_range_commit = function(from, to)
+      vim.cmd('DiffviewOpen ' .. from.hash .. '~1..' .. to.hash)
+    end,
+  },
+})
+
+vim.keymap.set('n', '<leader>do', '<cmd>DiffviewOpen<CR>', { desc = 'Diffview Open' })
+vim.keymap.set('n', '<leader>df', '<cmd>DiffviewFileHistory %<CR>', { desc = 'Diffview File History (current file)' })
+vim.keymap.set('n', '<leader>dh', '<cmd>DiffviewFileHistory<CR>', { desc = 'Diffview Repo History' })
+vim.keymap.set('n', '<leader>dq', '<cmd>DiffviewClose<CR>', { desc = 'Diffview Close' })
+
+local function GitGraphOpen(opts, range_opts)
+  local prev = vim.api.nvim_get_current_buf()
+
+  -- draw: 끝나면 그래프 버퍼가 현재 버퍼가 된다
+  require('gitgraph').draw(opts or {}, vim.tbl_extend('force', { all = true, max_count = 2000 }, range_opts or {}))
+
+  local gbuf = vim.api.nvim_get_current_buf()
+
+  -- bufferline에 보이도록: listed=true, 이름 지정
+  pcall(function()
+    -- 버퍼를 listed 로 표시
+    vim.bo[gbuf].buflisted  = true
+    vim.bo[gbuf].modifiable = true
+    vim.bo[gbuf].swapfile   = false
+    vim.bo[gbuf].filetype   = 'gitgraph'
+    -- 이름이 없으면 보기 좋은 이름 붙이기
+    local name = vim.api.nvim_buf_get_name(gbuf)
+    if name == nil or name == '' then
+      local cwd = vim.loop.cwd() or ''
+      local repo = vim.fn.fnamemodify(cwd, ':t')
+      vim.api.nvim_buf_set_name(gbuf, ('gitgraph://%s'):format(repo ~= '' and repo or 'repo'))
+    end
+  end)
+end
+
+_G.GitGraphOpen = GitGraphOpen
+
+EOF
+
 " ----- pycell_deco -----
-lua require("pycell_deco").setup{cell_name_fg="#1abc9c", cell_line_bg=nil}
+lua require("pycell_deco").setup{color="#1abc9c"}
 
 " ----- Undotreee -----
 nnoremap <silent> <leader>u <cmd>UndotreeShow<CR>
@@ -407,8 +478,33 @@ autocmd FileType python nnoremap <silent> <leader>I <cmd>lua require 'telescope'
 lua require('telescope').load_extension('py_outline')
 autocmd FileType python nnoremap <silent> <leader>s <cmd>lua require 'telescope'.extensions.py_outline.outline_file({layout_config={prompt_position="top"}, sorting_strategy="ascending"})<cr>
 
+" ----- py-autoimport -----
+autocmd FileType python nnoremap <silent> <leader>i <cmd>PyAutoImport<cr>
+lua << EOF
+require('py_autoimport').setup({
+  search = {
+    globs_include = { '*.py' },
+    globs_exclude = { '.venv/**', 'venv/**', '__pycache__/**', 'build/**', 'dist/**' },
+    include_variables = true,                -- also search variables
+    include_annotations_without_value = false,
+  },
+  insert = {
+    docstring_scan_lines = 50,
+    import_scan_lines = 300,
+    isort_command = 'Isort',                 -- set to nil to disable
+    add_trailing_blank_line = true,
+    header_markers = {
+      '# %% Import',
+      '# Standard library imports',
+      '# Local imports',
+      '# Third party imports',
+    },
+  },
+  path = { collapse_dunder_init = true },    -- pkg/__init__.py -> pkg
+})
+EOF
+
 " ----- isort -----
-autocmd FileType python nnoremap <silent> <leader>i <cmd>ImportFromJson<cr>
 let g:vim_isort_map = ''
 let g:vim_isort_config_overrides = {
   \ 'profile': 'black', 'multi_line_output': 3,
@@ -452,8 +548,8 @@ lua << EOF
 require'lualine'.setup {
   options = {
     icons_enabled = true,
-    -- theme = 'tokyonight',
-    theme = require('ofirkai.statuslines.lualine').theme,
+    theme = 'tokyonight',
+    -- theme = require('ofirkai.statuslines.lualine').theme,
     component_separators = {left='', right=''},
     section_separators = {left='', right=''},
     disabled_filetypes = {}
@@ -1055,23 +1151,15 @@ augroup presentation
     au Filetype markdown inoremap <buffer> <F10> <cmd>w<CR><cmd>PresentingStart<CR>
 augroup end
 
-" ----- rainbow(color paranthesis) -----
-lua <<EOF
-require'nvim-treesitter.configs'.setup {
-  rainbow = {
-    enable = true,
-    extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
-    max_file_lines = nil, -- Do not enable for files with more than n lines, int
-    colors = {
-      "#823c41", -------
-      "#e0af68", -------
-      "#7dcfff", -------
-      "#c0caf5", -------
-      "#9ece6a", -------
-      "#41a6b5", -------
-      "#9d7cd8"
-    } -- table of hex strings
-  }
+" ----- rainbow-delimieter(color paranthesis) -----
+lua << EOF
+local rd = require('rainbow-delimiters')
+vim.g.rainbow_delimiters = {
+  strategy = { [''] = rd.strategy['global'] },
+  query = { [''] = 'rainbow-delimiters', lua = 'rainbow-blocks' },
+  priority = { [''] = 110 },
+  highlight = { 'RainbowDelimiterRed','RainbowDelimiterYellow','RainbowDelimiterBlue',
+                'RainbowDelimiterOrange','RainbowDelimiterGreen','RainbowDelimiterViolet','RainbowDelimiterCyan' },
 }
 EOF
 
@@ -1181,14 +1269,13 @@ require("which-key").add({
 -- which-key 최신 스펙 등록 (Fugitive)
 require("which-key").add({
   { "<leader>g",  group = "Fugitive" },
-  { "<leader>gV", "<cmd>GV!<cr>",     desc = "Commit browser this" },
   { "<leader>gb", "<cmd>Git blame<cr>",   desc = "Git blame" },
   { "<leader>gc", "<cmd>Git commit<cr>",  desc = "Git commit" },
   { "<leader>gd", "<cmd>Git difftool<cr>",desc = "Git difftool" },
+  { "<leader>gg", "<cmd>lua GitGraphOpen()<cr>",desc = "Git graph" },
   { "<leader>gl", "<cmd>Git log<cr>",     desc = "Git log" },
   { "<leader>gp", "<cmd>Git push<cr>",    desc = "Git push" },
   { "<leader>gs", "<cmd>Git<cr>",         desc = "Git status" },
-  { "<leader>gv", "<cmd>GV<cr>",          desc = "Commit browser" },
 })
 
 EOF
@@ -1301,31 +1388,42 @@ require('jaq-nvim').setup{
 }
 EOF
 
-" ---- my_ipython ---
-lua require("my_ipy").setup()
-nnoremap <silent> <leader>ti <cmd>lua require("my_ipy").toggle()<CR>
-nnoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
-inoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
-tnoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
-tnoremap <silent> <C-s>h <cmd>lua require('my_ipy').goto_vi()<CR>
-nnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
-nnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
-
-onoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
-onoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
-vnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
-vnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
-
-autocmd FileType python nnoremap <buffer> <F4> <cmd>w<CR><cmd>lua require('my_ipy').run_file()<CR>
-autocmd FileType python inoremap <buffer> <F4> <cmd>w<CR><cmd>lua require('my_ipy').run_file()<CR>
-
-autocmd FileType python nnoremap <buffer> <F9> <cmd>lua require('my_ipy').run_line()<CR>
-autocmd FileType python nnoremap <leader>r <cmd>lua require('my_ipy').run_line()<CR>
-autocmd FileType python inoremap <buffer> <F9> <cmd>lua require('my_ipy').run_line()<CR>
-autocmd FileType python vnoremap <buffer> <F9> :lua require('my_ipy').run_lines()<CR>
-autocmd FileType python vnoremap <leader>r :lua require('my_ipy').run_lines()<CR>
-
-autocmd FileType python nnoremap <leader><CR> <cmd>lua require('my_ipy').run_cell()<CR>
+" ---- ipybridge.nvim ---
+lua << EOF
+require("ipybridge").setup(
+{
+    matplotlib_backend="qt",
+    prefer_runcell_magic=true,
+    exec_cwd_mode='pwd',
+    ipython_colors='Linux',
+    python_cmd='python',
+    hidden_var_names={'pi', 'newaxis'},
+    hidden_type_names={'ZMQInteractiveShell', 'Axes', 'Figure', 'AxesSubplot'},
+})
+EOF
+" nnoremap <silent> <leader>ti <cmd>lua require("my_ipy").toggle()<CR>
+" nnoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
+" inoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
+" tnoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
+" tnoremap <silent> <C-s>h <cmd>lua require('my_ipy').goto_vi()<CR>
+" nnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
+" nnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
+"
+" onoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
+" onoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
+" vnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
+" vnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
+"
+" autocmd FileType python nnoremap <buffer> <F4> <cmd>w<CR><cmd>lua require('my_ipy').run_file()<CR>
+" autocmd FileType python inoremap <buffer> <F4> <cmd>w<CR><cmd>lua require('my_ipy').run_file()<CR>
+"
+" autocmd FileType python nnoremap <buffer> <F9> <cmd>lua require('my_ipy').run_line()<CR>
+" autocmd FileType python nnoremap <leader>r <cmd>lua require('my_ipy').run_line()<CR>
+" autocmd FileType python inoremap <buffer> <F9> <cmd>lua require('my_ipy').run_line()<CR>
+" autocmd FileType python vnoremap <buffer> <F9> :lua require('my_ipy').run_lines()<CR>
+" autocmd FileType python vnoremap <leader>r :lua require('my_ipy').run_lines()<CR>
+"
+" autocmd FileType python nnoremap <leader><CR> <cmd>lua require('my_ipy').run_cell()<CR>
 autocmd FileType python nnoremap <leader>ifc <cmd>lua require('my_ipy').run_cmd('plt.close("all")')<CR>
 
 " ----- nvim-spectre -----
@@ -1445,7 +1543,6 @@ EOF
 "================================= Key binding ==================================
 " ESC키를 누르면 한글모드가 해제
 " 입력모드에서 이전 언어 설정 모드를 유지
-inoremap <ESC> <ESC>:set imdisable<CR>
 nnoremap i :set noimd<CR>i
 nnoremap I :set noimd<CR>I
 nnoremap a :set noimd<CR>a
@@ -1513,8 +1610,8 @@ autocmd FileType c,cpp,objc inoremap <buffer><c-f5> <cmd>w<CR><cmd>call SendCmd2
 
 " run module
 " autocmd FileType python nnoremap <buffer> <F5> :w<CR>:exec '!python' shellescape('-m', 1) shellescape(substitute(substitute(fnamemodify(expand("%:r"), ":~:."), "/", ".", "g"), "\\", ".", "g"), 1)<CR>
-autocmd FileType python nnoremap <buffer> <F5> <cmd>w<CR><cmd>Jaq<CR>
-autocmd FileType python inoremap <buffer> <F5> <cmd>w<CR><cmd>Jaq<CR>
+autocmd FileType python nnoremap <buffer> <F4> <cmd>w<CR><cmd>Jaq<CR>
+autocmd FileType python inoremap <buffer> <F4> <cmd>w<CR><cmd>Jaq<CR>
 
 " run python file
 autocmd FileType python nnoremap <buffer> <s-F5> <cmd>w<CR><cmd>exec '!python' shellescape(@%, 1)<CR>
