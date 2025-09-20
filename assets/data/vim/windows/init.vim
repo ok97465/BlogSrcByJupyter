@@ -22,6 +22,8 @@ set shortmess+=c                                             " Avoid showing mes
 set hidden                                                   " buffer가 수정되었어도 다른 buffer을 불러온다.
 set signcolumn=yes                                           " Lint 결과를 표시할 column을 항상 표시한다.
 set mouse=a                                                  " Enable mouse scroll.
+set autoread                                                 " 외부에서 파일 수정 시 바로 load, 특정 이벤트가 발생시 갱신
+autocmd FocusGained,BufEnter * checktime                     " 포커스가 돌아왔을 때 갱신
 
 syntax sync minlines=200                                     " speed-up vim
 set termguicolors                                            " this variable must be enabled for colors to be applied properly
@@ -88,7 +90,6 @@ Plug 'kana/vim-textobj-user'                                  " Engine Textobj
 Plug 'coachshea/vim-textobj-markdown'                         " Textobj for markdown
 Plug 'junegunn/vim-easy-align'                                " Vim alignment
 Plug 'fisadev/vim-isort'                                      " Sort import statements of python
-Plug 'heavenshell/vim-pydocstring', { 'do': 'make install' }  " Autodocstring
 Plug 'phaazon/hop.nvim'                                       " easymotion for nvim
 Plug 'ggandor/leap.nvim'                                      " two ch search
 Plug 'elihunter173/dirbuf.nvim'                               " Directory buffer
@@ -143,6 +144,7 @@ Plug 'ok97465/pycell_deco.nvim'                               " Python cell deco
 Plug 'ok97465/telescope-py-importer.nvim'                     " python import in workspace
 Plug 'ok97465/telescope-py-outline.nvim'                      " python outline
 Plug 'ok97465/py-autoimport.nvim'                             " python import from list
+Plug 'ok97465/py-autodoc.nvim'                                " python auto docstring
 Plug 'ok97465/ipybridge.nvim'                                 " IPython module like spyder-ide
 
 call plug#end()
@@ -183,7 +185,7 @@ dashboard.section.header.opts.hl = 'dashboard'
 
 -- Set menu
 dashboard.section.buttons.val = {
-    dashboard.button( "Ctrl+Shift+p", "  > Select Project", "<cmd>lua require'telescope'.extensions.project.project{}<CR>"),
+    dashboard.button( "<Ctrl+s>p", "  > Select Project", "<cmd>lua require'telescope'.extensions.project.project{}<CR>"),
     dashboard.button( "Leader t o", "  > Recent files"   , "<cmd>lua require'telescope.builtin'.oldfiles{}<CR>"),
     dashboard.button( "Ctrl+p", "﯒  > Find files" , "<cmd>Telescope find_files<CR>"),
     dashboard.button( "e", "  > New file" , ":enew <CR>"),
@@ -420,6 +422,33 @@ if !exists('g:easy_align_delimiters')
 endif
 let g:easy_align_delimiters['#'] = {'pattern': '#', 'ignore_groups': ['String'], 'left_margin': 2}
 
+" ---- python template ----
+" 새 Python 파일을 만들 때 자동으로 docstring 삽입
+augroup AutoPyTemplate
+  autocmd!
+  autocmd BufNewFile *.py call s:insert_python_template()
+augroup END
+
+function! s:insert_python_template() abort
+  let l:author = 'ok97465'
+  let l:date   = strftime("%Y-%m-%d %H:%M:%S")
+
+  call setline(1, [
+        \ '"""',
+        \ '',
+        \ 'File Infos:',
+        \ '    Author: ' . l:author,
+        \ '    Created: ' . l:date,
+        \ '',
+        \ '"""',
+        \ '',
+        \ '# %% Imports',
+        \ ''
+        \ ])
+  " 커서를 Description: 줄 끝으로 이동
+  call cursor(1, 4)
+endfunction
+
 " ----- telescope ----
 nnoremap <silent> <C-p> <cmd>Telescope find_files<cr>
 nnoremap <silent> <C-s>f <cmd>Telescope live_grep<cr>
@@ -485,7 +514,7 @@ require('py_autoimport').setup({
   search = {
     globs_include = { '*.py' },
     globs_exclude = { '.venv/**', 'venv/**', '__pycache__/**', 'build/**', 'dist/**' },
-    include_variables = true,                -- also search variables
+    include_variables = false,                -- also search variables
     include_annotations_without_value = false,
   },
   insert = {
@@ -512,12 +541,15 @@ let g:vim_isort_config_overrides = {
   \ 'import_heading_firstparty' : 'Local imports',
   \ 'import_heading_thirdparty': 'Third party imports'}
 
-" ----- vim-pydocstring -----
-autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
-nnoremap <silent> <leader>d <cmd>Pydocstring<cr>
-let g:pydocstring_doq_path = 'C:\Anaconda3\Scripts\doq.exe'
-let g:pydocstring_formatter = 'google'
-let g:pydocstring_enable_mapping=0  " Disable default keymap of pydocstring
+" ----- py-autodoc.nvim -----
+lua << EOF
+require("py-autodoc").setup({
+doc_style="googledoc",
+include_type_hints=false,
+snippet_tab_jump=false,
+})
+EOF
+autocmd FileType python nnoremap <silent> <leader>d <cmd>PyAutodoc<cr>
 
 " ----- hop.nvim (easymotion) -----
 lua require'hop'.setup()
@@ -691,33 +723,45 @@ nvim_lsp.jsonls.setup {
 
 ------ pylsp -----
 -- Window에서는 관리자 권한에서만 수행하여야 한다.
-nvim_lsp.pylsp.setup{
-  --on_attach=require'completion'.on_attach
+
+-- pylsp는 진단/호버 등은 두고, completion/definition만 끈다
+local function pylsp_light_on_attach(client, bufnr)
+  -- 공용 on_attach 호출하지 않음: pylsp가 버퍼 키맵/omnifunc에 간섭하지 않게
+  -- if type(on_attach) == "function" then on_attach(client, bufnr) end  -- <-- 호출 안 함
+
+  -- === pylsp의 기능 중 끄고 싶은 것들 ===
+  client.server_capabilities.completionProvider      = nil   -- ✅ nvim-cmp에 제안 안 들어오게
+  client.server_capabilities.definitionProvider      = false -- 선택: 중복 정의 방지
+  -- 필요하면 더 끄기:
+  -- client.server_capabilities.implementationProvider  = false
+  -- client.server_capabilities.typeDefinitionProvider  = false
+  -- client.server_capabilities.referencesProvider      = false
+  -- client.server_capabilities.signatureHelpProvider   = nil
+
+  -- 구버전 호환(Nvim 0.7대)
+  if client.resolved_capabilities then
+    client.resolved_capabilities.completion = false
+    client.resolved_capabilities.goto_definition = false
+  end
+end
+
+require('lspconfig').pylsp.setup{
+  on_attach = pylsp_light_on_attach,   -- ✨ 공용 on_attach 대신 얘만 사용
   settings = {
     pylsp = {
       plugins = {
+        -- 🔒 jedi의 completion 자체를 끄면 더 확실 (벨트+멜빵)
+        jedi_completion = { enabled = false },
+
         pyflakes = { enabled = true },
-        pydocstyle = { enabled = true,
-                       convention = "google" },
-        pycodestyle = { enabled = true,
-                        maxLineLength = 88,
-                        ignore = {"W503", "E221", "E203"}
-                      },
+        pydocstyle = { enabled = true, convention = "google" },
+        pycodestyle = { enabled = true, maxLineLength = 88, ignore = {"W503", "E221", "E203"} },
         pylint =  { enabled = false },
-        pyls_spyder = { enable_block_comments = false,
-                        group_cells = false},
-        jedi_symbols = {
-            enabled = true,
-            all_scopes = true,
-            include_import_symbols = false
-        },
+        pyls_spyder = { enable_block_comments = false, group_cells = false },
+        jedi_symbols = { enabled = true, all_scopes = true, include_import_symbols = false },
         pyls_flake8 = { enabled = false },
-        pylsp_mypy = {
-            enabled = false,
-            live_mode = false,
-            dmypy = false,
-            strict= false
-        }
+        pylsp_mypy = { enabled = false, live_mode = false, dmypy = false, strict= false },
+        rope_autoimport = { enabled = false },
       }
     }
   }
@@ -797,8 +841,14 @@ lua <<EOF
       { name = 'nvim_lsp' },
       { name = 'vsnip' }, -- For vsnip users.
       { name = 'buffer', keyword_length=4 }, -- For vsnip users.
-      { name = 'path' }, -- For vsnip users.
-    }, {
+      { name = 'path',
+        option = {
+          -- 항상 nvim 현재 working directory(:pwd)를 기준으로
+          get_cwd = function()
+            return vim.fn.getcwd()
+          end,
+        },
+      },
       { name = 'buffer' },
     }),
 
@@ -1306,19 +1356,23 @@ local function replace_keycodes(str)
 end
 
 function _G.tab_binding()
+  if vim.snippet and vim.snippet.active and vim.snippet.active({ direction = 1 }) then
+    return replace_keycodes("<Cmd>lua vim.snippet.jump(1)<CR>")
+  end
   if vim.fn["vsnip#available"](1) ~= 0 then
     return replace_keycodes("<Plug>(vsnip-expand-or-jump)")
-  else
-    return replace_keycodes("<Plug>(Tabout)")
   end
+    return replace_keycodes("<Plug>(Tabout)")
 end
 
 function _G.s_tab_binding()
+  if vim.snippet and vim.snippet.active and vim.snippet.active({ direction = -1 }) then
+    return replace_keycodes("<Cmd>lua vim.snippet.jump(-1)<CR>")
+  end
   if vim.fn["vsnip#jumpable"](-1) ~= 0 then
     return replace_keycodes("<Plug>(vsnip-jump-prev)")
-  else
-    return replace_keycodes("<Plug>(TaboutBack)")
   end
+    return replace_keycodes("<Plug>(TaboutBack)")
 end
 
 vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_binding()", {expr = true})
@@ -1388,7 +1442,7 @@ require('jaq-nvim').setup{
 }
 EOF
 
-" ---- ipybridge.nvim ---
+" ---- ipybridge ---
 lua << EOF
 require("ipybridge").setup(
 {
@@ -1401,30 +1455,7 @@ require("ipybridge").setup(
     hidden_type_names={'ZMQInteractiveShell', 'Axes', 'Figure', 'AxesSubplot'},
 })
 EOF
-" nnoremap <silent> <leader>ti <cmd>lua require("my_ipy").toggle()<CR>
-" nnoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
-" inoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
-" tnoremap <silent> <C-s>l <cmd>lua require('my_ipy').goto_ipy()<CR>
-" tnoremap <silent> <C-s>h <cmd>lua require('my_ipy').goto_vi()<CR>
-" nnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
-" nnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
-"
-" onoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
-" onoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
-" vnoremap <silent> <up> <cmd>lua require("my_ipy").up_cell()<CR>
-" vnoremap <silent> <down> <cmd>lua require('my_ipy').down_cell()<CR>
-"
-" autocmd FileType python nnoremap <buffer> <F4> <cmd>w<CR><cmd>lua require('my_ipy').run_file()<CR>
-" autocmd FileType python inoremap <buffer> <F4> <cmd>w<CR><cmd>lua require('my_ipy').run_file()<CR>
-"
-" autocmd FileType python nnoremap <buffer> <F9> <cmd>lua require('my_ipy').run_line()<CR>
-" autocmd FileType python nnoremap <leader>r <cmd>lua require('my_ipy').run_line()<CR>
-" autocmd FileType python inoremap <buffer> <F9> <cmd>lua require('my_ipy').run_line()<CR>
-" autocmd FileType python vnoremap <buffer> <F9> :lua require('my_ipy').run_lines()<CR>
-" autocmd FileType python vnoremap <leader>r :lua require('my_ipy').run_lines()<CR>
-"
-" autocmd FileType python nnoremap <leader><CR> <cmd>lua require('my_ipy').run_cell()<CR>
-autocmd FileType python nnoremap <leader>ifc <cmd>lua require('my_ipy').run_cmd('plt.close("all")')<CR>
+autocmd FileType python nnoremap <leader>ifc <cmd>lua require('ipybridge').run_cmd('plt.close("all")')<CR>
 
 " ----- nvim-spectre -----
 lua require('spectre').setup({ open_cmd="botright vnew" })
@@ -1570,27 +1601,76 @@ nnoremap <silent> <f2> <cmd>e!<CR>
 
 " ----- Replace quit with buffer delete -----
 " 열린 buffer가 1보다 큰경우에는 q 명령을 bd로 변환한다.
-cnoreabbrev <expr> wq getcmdtype() == ":"
-            \&& len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1
-            \&& getcmdline() == 'wq'
-            \&& &filetype != 'fugitive'
-            \&& &filetype != 'gitcommit'
-            \&& &filetype != 'help'
-            \&& &buftype != 'terminal'
-            \&& &buftype != 'quickfix'
-            \&& &buftype != 'spectre_panel'
-            \? 'w<bar>bn<bar>bd#' : 'wq'
-cnoreabbrev <expr> q getcmdtype() == ":" 
-            \&& len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) > 1 
-            \&& getcmdline() == 'q' 
-            \&& &filetype != 'fugitive'
-            \&& &filetype != 'gitcommit'
-            \&& &filetype != 'help'
-            \&& &buftype != 'terminal'
-            \&& &buftype != 'quickfix'
-            \&& &buftype != 'spectre_panel'
-            \? 'bn<bar>bd#' : 'q'
-cnoreabbrev <expr> bn<bar>bd#! getcmdtype() == ":" ? 'bn<bar>bd!#' : 'bn<bar>bd#!'
+lua << EOF
+local function listed_buf_count()
+  local cnt = 0
+  for i = 1, vim.fn.bufnr('$') do
+    if vim.fn.buflisted(i) == 1 then cnt = cnt + 1 end
+  end
+  return cnt
+end
+
+local function excluded_ft_bt()
+  local ft = vim.bo.filetype
+  local bt = vim.bo.buftype
+  if ft == 'fugitive' or ft == 'gitcommit' or ft == 'help' then return true end
+  if bt == 'terminal' or bt == 'quickfix' or bt == 'spectre_panel' then return true end
+  return false
+end
+
+-- :q / :q! 전용 치환
+function _G.abbrev_q()
+  if vim.fn.getcmdtype() ~= ':' then return 'q' end
+  local cmd = vim.fn.getcmdline()
+  if cmd ~= 'q' and cmd ~= 'q!' then
+    return 'q' -- 다른 명령어의 일부일 때는 건드리지 않음
+  end
+
+  local ft = vim.bo.filetype
+
+  -- 1) Diffview 파일 패널/파일 뷰어면 DiffviewClose
+  if ft == 'DiffviewFiles' or ft == 'DiffviewFile' then
+    return 'DiffviewClose'
+  end
+
+  -- 2) gitgraph 버퍼면 언제나 그래프만 닫기 (bang 포함)
+  if ft == 'gitgraph' then
+    if listed_buf_count() > 1 then
+      return 'bn|bd!#'
+    else
+      return 'bd!'  -- 마지막 하나라면 안전하게 강제 삭제
+    end
+  end
+
+  -- 3) 일반 케이스: 기존 규칙 유지
+  if (not excluded_ft_bt()) and listed_buf_count() > 1 then
+    -- bang 여부는 원본 cmd를 그대로 반영: q -> bn|bd#, q! -> bn|bd!#
+    if cmd == 'q!' then
+      return 'bn|bd!#'
+    else
+      return 'bn|bd#'
+    end
+  end
+
+  return cmd -- 기본 q / q! 동작
+end
+
+-- :wq 전용 치환 (기존 규칙 유지)
+function _G.abbrev_wq()
+  if vim.fn.getcmdtype() ~= ':' then return 'wq' end
+  if vim.fn.getcmdline() ~= 'wq' then return 'wq' end
+
+  if (not excluded_ft_bt()) and listed_buf_count() > 1 then
+    return 'w|bn|bd#'
+  end
+  return 'wq'
+end
+EOF
+
+" --- Abbreviations ---
+" 기존 cnoreabbrev를 Lua 함수 호출로 단순화
+cnoreabbrev <expr> q  v:lua.abbrev_q()
+cnoreabbrev <expr> wq v:lua.abbrev_wq()
 
 " ----- Terminal -----
 tnoremap <c-space> <C-\><C-n>G<C-w>k
