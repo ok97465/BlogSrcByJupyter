@@ -1541,7 +1541,6 @@ nnoremap <silent> <Leader>, :e $MYVIMRC<CR>
 nnoremap <silent> <f2> <cmd>e!<CR>
 
 " ----- Replace quit with buffer delete -----
-" 열린 buffer가 1보다 큰경우에는 q 명령을 bd로 변환한다.
 lua << EOF
 local function listed_buf_count()
   local cnt = 0
@@ -1559,59 +1558,61 @@ local function excluded_ft_bt()
   return false
 end
 
--- :q / :q! 전용 치환
-function _G.abbrev_q()
-  if vim.fn.getcmdtype() ~= ':' then return 'q' end
-  local cmd = vim.fn.getcmdline()
-  if cmd ~= 'q' and cmd ~= 'q!' then
-    return 'q' -- 다른 명령어의 일부일 때는 건드리지 않음
-  end
-
-  local ft = vim.bo.filetype
-
-  -- 1) Diffview 파일 패널/파일 뷰어면 DiffviewClose
-  if ft == 'DiffviewFiles' or ft == 'DiffviewFile' then
-    return 'DiffviewClose'
-  end
-
-  -- 2) gitgraph 버퍼면 언제나 그래프만 닫기 (bang 포함)
-  if ft == 'gitgraph' then
-    if listed_buf_count() > 1 then
-      return 'bn|bd!#'
-    else
-      return 'bd!'  -- 마지막 하나라면 안전하게 강제 삭제
-    end
-  end
-
-  -- 3) 일반 케이스: 기존 규칙 유지
-  if (not excluded_ft_bt()) and listed_buf_count() > 1 then
-    -- bang 여부는 원본 cmd를 그대로 반영: q -> bn|bd#, q! -> bn|bd!#
-    if cmd == 'q!' then
-      return 'bn|bd!#'
-    else
-      return 'bn|bd#'
-    end
-  end
-
-  return cmd -- 기본 q / q! 동작
+-- 키코드 안전 변환 헬퍼
+local function keycode(s)
+  return vim.api.nvim_replace_termcodes(s, true, true, true)
 end
 
--- :wq 전용 치환 (기존 규칙 유지)
-function _G.abbrev_wq()
-  if vim.fn.getcmdtype() ~= ':' then return 'wq' end
-  if vim.fn.getcmdline() ~= 'wq' then return 'wq' end
-
-  if (not excluded_ft_bt()) and listed_buf_count() > 1 then
-    return 'w|bn|bd#'
+_G.cmdline_enter = function()
+  if vim.fn.getcmdtype() ~= ':' then
+    return '\r'
   end
-  return 'wq'
+  local cmd = vim.fn.getcmdline()
+  local ft  = vim.bo.filetype
+  local bufs = listed_buf_count()
+
+  -- 현재 cmdline을 취소하고 새 명령을 실행
+  local function exec(s)
+    return keycode('<C-c>:' .. s .. '<CR>')
+  end
+
+  -- :q / :q!
+  if cmd == 'q' or cmd == 'q!' then
+    local bang = (cmd == 'q!')
+    -- 1) Diffview
+    if ft == 'DiffviewFiles' or ft == 'DiffviewFile' then
+      return exec('DiffviewClose')
+    end
+    -- 2) gitgraph
+    if ft == 'gitgraph' then
+      if bufs > 1 then
+        return exec(bang and 'bn|bd!#' or 'bn|bd#')
+      else
+        return exec(bang and 'bd!' or 'bd')
+      end
+    end
+    -- 3) 일반
+    if (not excluded_ft_bt()) and bufs > 1 then
+      return exec(bang and 'bn|bd!#' or 'bn|bd#')
+    end
+    return exec(cmd)  -- 기본 q / q!
+  end
+
+  -- :wq
+  if cmd == 'wq' then
+    if (not excluded_ft_bt()) and bufs > 1 then
+      return exec('w|bn|bd#')
+    end
+    return exec('wq')
+  end
+
+  -- 기타는 그대로 실행
+  return '\r'
 end
 EOF
 
-" --- Abbreviations ---
-" 기존 cnoreabbrev를 Lua 함수 호출로 단순화
-cnoreabbrev <expr> q  v:lua.abbrev_q()
-cnoreabbrev <expr> wq v:lua.abbrev_wq()
+" --- Enter에서 최종 치환/실행 ---
+cnoremap <expr> <CR> v:lua.cmdline_enter()
 
 " ----- Terminal -----
 tnoremap <c-space> <C-\><C-n>G<C-w>k
