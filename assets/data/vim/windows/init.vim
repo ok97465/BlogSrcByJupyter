@@ -73,12 +73,11 @@ Plug 'windwp/nvim-autopairs'                                  " Automatically in
 Plug 'numToStr/Comment.nvim'                                  " Comment toggle
 Plug 'goolord/alpha-nvim'                                     " Greeter
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }            " Theme
-" Plug 'ofirgall/ofirkai.nvim'                                  " Theme
 Plug 'lukas-reineke/indent-blankline.nvim'                    " Indent guide
 Plug 'lukas-reineke/virt-column.nvim'                         " Draw max column line
 Plug 'RRethy/vim-illuminate'                                  " Highlight word under cursor
-Plug 'tpope/vim-surround'                                     " replace surrounding
-Plug 'tpope/vim-speeddating'                                  " apply ^A to date string
+Plug 'kylechui/nvim-surround'                                 " replace surrounding
+Plug 'monaqa/dial.nvim'                                       " apply ^A to date string
 Plug 'tpope/vim-repeat'                                       " enhance dot command
 Plug 'tpope/vim-fugitive'                                     " For git
 Plug 'sindrets/diffview.nvim'                                 " For gitgraph.nvim
@@ -92,9 +91,8 @@ Plug 'junegunn/vim-easy-align'                                " Vim alignment
 Plug 'fisadev/vim-isort'                                      " Sort import statements of python
 Plug 'phaazon/hop.nvim'                                       " easymotion for nvim
 Plug 'ggandor/leap.nvim'                                      " two ch search
-Plug 'elihunter173/dirbuf.nvim'                               " Directory buffer
+Plug 'stevearc/oil.nvim'                                      " file explorer
 Plug 'nvim-tree/nvim-web-devicons'                            " File icons for nvim-tree, lualine
-Plug 'nvim-tree/nvim-tree.lua'                                " File explorer
 Plug 'nvim-lua/popup.nvim'                                    " Dependency of telescope
 Plug 'nvim-lua/plenary.nvim'                                  " Dependency of telescope
 Plug 'nvim-telescope/telescope.nvim'                          " Fuzzy finder
@@ -103,7 +101,7 @@ Plug 'nvim-telescope/telescope-project.nvim'                  " project manager
 Plug 'ryanoasis/vim-devicons'                                 " Icons for lualine
 Plug 'nvim-lualine/lualine.nvim'                              " Status bar
 Plug 'akinsho/bufferline.nvim'                                " Buffer line
-Plug 'Pocco81/TrueZen.nvim'                                   " Zen mode
+Plug 'folke/zen-mode.nvim'                                    " Zen mode
 Plug 'simeji/winresizer'                                      " window resizer
 Plug 'mfussenegger/nvim-lint'                                 " lint language that lspconfig doesn't support
 Plug 'onsails/lspkind-nvim'                                   " add icon to nvim-cmp
@@ -111,18 +109,21 @@ Plug 'neovim/nvim-lspconfig'                                  " Language server
 Plug 'hrsh7th/cmp-nvim-lsp'                                   " Integrate nvim-lsp info with nvim-cmp
 Plug 'hrsh7th/cmp-buffer'                                     " Integrate buffer info with nvim-cmp
 Plug 'hrsh7th/cmp-path'                                       " Integrate filsystem info with nvim-cmp
+Plug 'hrsh7th/cmp-cmdline'                                    " Integrate commlandline info with nvim-cmp
+Plug 'dmitmel/cmp-cmdline-history'                            " Integrate commlandline history info with nvim-cmp
 Plug 'hrsh7th/nvim-cmp'                                       " Code Comepletion
 Plug 'hrsh7th/cmp-vsnip'                                      " Integrate vim-vsnip info with nvim-cmp  
 Plug 'hrsh7th/vim-vsnip'                                      " vim-vsnip
 Plug 'ray-x/lsp_signature.nvim'                               " Show function signature when you type
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
+Plug 'nvim-treesitter/playground'                        " Code highlight
 Plug 'filipdutescu/renamer.nvim', { 'branch': 'master' }      " UI for rename
-Plug 'simrat39/symbols-outline.nvim'                          " Outline
 Plug 'mfussenegger/nvim-dap'                                  " debugger
 Plug 'rcarriga/nvim-dap-ui'                                   " debugger ui
 Plug 'nvim-neotest/nvim-nio'                                  " required by nvim-dap-ui
 Plug 'rcarriga/cmp-dap'                                       " cmp for dap
 Plug 'theHamsta/nvim-dap-virtual-text'                        " text for debugger
+Plug 'stevearc/aerial.nvim'                                   " Symbol
 Plug 'averms/black-nvim', {'do': ':UpdateRemotePlugins'}      " python formatter
 Plug 'rhysd/vim-clang-format'                                 " c++ formatter
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " preview for markdown
@@ -131,7 +132,6 @@ Plug 'sotte/presenting.vim'                                   " Presentation
 Plug 'HiPhish/rainbow-delimiters.nvim'                        " color for parantheses
 Plug 'NvChad/nvim-colorizer.lua'                            " colorizer for hex code
 Plug 'romgrk/fzy-lua-native'                                  " fuzzy for lua
-Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }   " Autocompletion in command line
 Plug 'echasnovski/mini.icons'                                 " Which key Icons
 Plug 'folke/which-key.nvim'                                   " Which key
 Plug 'abecodes/tabout.nvim'                                   " tabout
@@ -200,112 +200,33 @@ alpha.setup(dashboard.opts)
 EOF
 
 " ----- Theme -----
-" lua vim.g.tokyonight_colors = { red = "NONE" }
+lua vim.g.tokyonight_colors = { red = "NONE" }
 lua vim.cmd[[colorscheme tokyonight-night]]
 highlight IncSearch ctermbg=0 guibg=#5cacee               " color of yank
 " lua require('ofirkai').setup {}
 
-" ----- nvim-tree -----
-" ----- nvim-tree (latest) -----
-" Plugin은 최신 리포로: Plug 'nvim-tree/nvim-tree.lua' / Plug 'nvim-tree/nvim-web-devicons'
-
-nnoremap <silent> <Leader>e <cmd>NvimTreeToggle<CR>
-
-" 트리만 남으면 자동 종료
-autocmd BufEnter * ++nested if winnr('$') == 1
-      \ && bufname() =~ 'NvimTree_'
-      \ && &buftype == ''
-      \ && !exists('t:quit_on_tree')
-      \ | let t:quit_on_tree = 1 | quit | endif
+" ----- oil.nvim -----
 
 lua << EOF
-local function my_nvim_tree_on_attach(bufnr)
-  local api = require('nvim-tree.api')
-  local function map(lhs, rhs, desc)
-    vim.keymap.set('n', lhs, rhs, { buffer = bufnr, noremap = true, silent = true, nowait = true, desc = 'nvim-tree: ' .. desc })
+require('oil').setup()
+-- Oil을 왼쪽 패널로 토글
+vim.keymap.set("n", "<leader>e", function()
+  -- 현재 열려있는 윈도우들 검사
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    local ft = vim.bo[buf].filetype
+    if ft == "oil" then
+      -- 이미 열려있으면 닫기
+      vim.api.nvim_win_close(win, true)
+      return
+    end
   end
 
-  -- 기본 키맵 몇 가지 (원하면 추가하세요)
-  map('<CR>',  api.node.open.edit,        'Open')
-  map('o',     api.node.open.edit,        'Open')
-  map('v',     api.node.open.vertical,    'Open: Vertical Split')
-  map('s',     api.node.open.horizontal,  'Open: Horizontal Split')
-  map('t',     api.node.open.tab,         'Open: New Tab')
-  map('r',     api.fs.rename,             'Rename')
-  map('a',     api.fs.create,             'Create')
-  map('d',     api.fs.remove,             'Delete')
-  map('y',     api.fs.copy.node,          'Copy')
-  map('p',     api.fs.paste,              'Paste')
-  map('R',     api.tree.reload,           'Refresh')
-  map('q',     api.tree.close,            'Close')
-end
-
-require('nvim-tree').setup({
-  disable_netrw            = true,
-  hijack_netrw             = true,
-  hijack_cursor            = true,
-
-  -- cwd 동기화 (update_cwd 대체)
-  sync_root_with_cwd       = true,
-  respect_buf_cwd          = true,
-
-  -- 현재 파일 따라가기 & root 갱신
-  update_focused_file = {
-    enable      = true,
-    update_root = true,
-    ignore_list = { '.git', 'node_modules', '.cache', '__pycache__' },
-  },
-
-  -- 필터
-  filters = {
-    dotfiles   = true,
-    git_ignored = true,
-    custom     = {},
-  },
-
-  -- 뷰
-  view = {
-    width  = 30,
-    side   = 'left',
-    preserve_window_proportions = true,
-  },
-
-  -- 렌더러(아이콘/하이라이트 등)
-  renderer = {
-    group_empty   = true,
-    highlight_git = true,
-    icons = {
-      show = { folder_arrow = false },
-    },
-  },
-
-  -- Git 표시
-  git = {
-    enable  = true,
-    ignore  = true,
-    timeout = 400,
-  },
-
-  -- 열기/디렉터리 이동 동작
-  actions = {
-    change_dir = { enable = true, global = false },
-    open_file = {
-      quit_on_open   = false,
-      resize_window  = true,
-      window_picker  = {
-        enable = true,
-        chars  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
-        exclude = {
-          filetype = { "notify", "qf", "diff", "fugitive", "fugitiveblame", "packer" },
-          buftype  = { "nofile", "terminal", "help" },
-        },
-      },
-    },
-  },
-
-  -- 최신 키맵 방식
-  on_attach = my_nvim_tree_on_attach,
-})
+  -- 열려있지 않으면 왼쪽 패널에 열기
+  vim.cmd("vertical leftabove 30split")
+  vim.cmd("Oil")
+  vim.cmd("setlocal winfixwidth") -- 패널 크기 고정
+end, { desc = "Toggle Oil in left panel" })
 EOF
 
 " ----- Indent guide -----
@@ -320,6 +241,37 @@ EOF
 " ----- column line -----
 highlight VirtColumn guifg=#33332a
 lua require("virt-column").setup({ char = "│", virtcolumn = "+1" })
+
+" ----- nvim-surround -----
+lua require('nvim-surround').setup()
+
+" ----- dial.nvim -----
+lua << EOF
+vim.keymap.set("n", "<C-a>", function()
+    require("dial.map").manipulate("increment", "normal")
+end)
+vim.keymap.set("n", "<C-x>", function()
+    require("dial.map").manipulate("decrement", "normal")
+end)
+vim.keymap.set("n", "g<C-a>", function()
+    require("dial.map").manipulate("increment", "gnormal")
+end)
+vim.keymap.set("n", "g<C-x>", function()
+    require("dial.map").manipulate("decrement", "gnormal")
+end)
+vim.keymap.set("x", "<C-a>", function()
+    require("dial.map").manipulate("increment", "visual")
+end)
+vim.keymap.set("x", "<C-x>", function()
+    require("dial.map").manipulate("decrement", "visual")
+end)
+vim.keymap.set("x", "g<C-a>", function()
+    require("dial.map").manipulate("increment", "gvisual")
+end)
+vim.keymap.set("x", "g<C-x>", function()
+    require("dial.map").manipulate("decrement", "gvisual")
+end)
+EOF
 
 " ---- gitgraph.nvim ----
 lua << EOF
@@ -450,7 +402,23 @@ function! s:insert_python_template() abort
 endfunction
 
 " ----- telescope ----
-nnoremap <silent> <C-p> <cmd>Telescope find_files<cr>
+" 현재 버퍼가 quickfix/aerial이면 k, 아니면 Telescope 실행
+lua << EOF
+local function smart_ctrl_p()
+  -- 빈/특수 버퍼에서도 안전
+  local bt = vim.bo.buftype or ''
+  local ft = vim.bo.filetype or ''
+  if bt == 'quickfix' or ft == 'aerial' then
+    -- aerial/quickfix에서는 선택 위로 이동
+    vim.api.nvim_feedkeys('k', 'n', false)
+  else
+    -- 일반 버퍼에서는 Telescope
+    vim.cmd('Telescope find_files')
+  end
+end
+
+vim.keymap.set('n', '<C-p>', smart_ctrl_p, { silent = true })
+EOF
 nnoremap <silent> <C-s>f <cmd>Telescope live_grep<cr>
 nnoremap <silent> <leader>p <cmd>Telescope buffers<cr>
 nnoremap <silent> <leader>q <cmd>Telescope diagnostics bufnr=0<cr>
@@ -646,7 +614,31 @@ nnoremap <silent><leader>8 <Cmd>BufferLineGoToBuffer 8<CR>
 nnoremap <silent><leader>9 <Cmd>BufferLineGoToBuffer 9<CR>
 
 " ----- Zen mode -----
-nnoremap <silent><F3> <cmd>TZAtaraxis<CR>
+lua << EOF
+-- zen-mode.nvim 설정
+require("zen-mode").setup({
+  -- 원하는 옵션 추가 가능
+  window = {
+    width = 0.8,         -- 창 너비 비율 (0.8 = 80%)
+    options = {
+      number = false,    -- line number 숨김
+      relativenumber = false,
+    },
+  },
+  plugins = {
+    options = {
+      enabled = true,
+      ruler = false,
+      showcmd = false,
+    },
+  },
+})
+
+-- F3 키로 ZenMode toggle
+vim.keymap.set("n", "<F3>", function()
+  require("zen-mode").toggle()
+end, { noremap = true, silent = true, desc = "Toggle Zen Mode" })
+EOF
 
 " ----- winresizer -----
 let g:winresizer_start_key = '<C-W>r'
@@ -887,6 +879,48 @@ lua <<EOF
   -- require('lspconfig')['pylsp'].setup {
   --   capabilities = capabilities
   -- }
+-- CMD line에서 nvim-cmp가 :만 눌러도 활성화되게 하기 
+-- nvim-cmp 불러오기
+local cmp = require('cmp')
+local types = require('cmp.types')
+
+-- ':' 명령행에서: 히스토리 먼저, 그 다음 path/명령 완성
+cmp.setup.cmdline(':', {
+  mapping = cmp.mapping.preset.cmdline(),
+  completion = {
+    -- 타자 칠 때마다 갱신
+    autocomplete = { types.cmp.TriggerEvent.TextChanged },
+    keyword_length = 0,  -- 빈 문자열에서도 후보 허용
+  },
+  sources = cmp.config.sources({
+    { name = 'cmdline_history', group_index = 1 }, -- 히스토리를 제일 위에
+  }, {
+    { name = 'path', group_index = 2 },
+    { name = 'cmdline', group_index = 2 },         -- :h, :write 등 서브커맨드
+  }),
+})
+
+-- 검색창('/', '?')도 원하면(옵션)
+cmp.setup.cmdline({ '/', '?' }, {
+  mapping = cmp.mapping.preset.cmdline(),
+  completion = {
+    autocomplete = { types.cmp.TriggerEvent.TextChanged },
+    keyword_length = 0,
+  },
+  sources = {
+    { name = 'cmdline_history' },
+    { name = 'buffer' },
+  },
+})
+
+-- ':'만 눌러도 팝업이 바로 뜨게
+vim.api.nvim_create_autocmd('CmdlineEnter', {
+  pattern = ':',
+  callback = function()
+    -- 빈 상태에서 강제로 completion 열기
+    require('cmp').complete()
+  end,
+})
 EOF
 
 " ----- lsp_signature -----
@@ -922,61 +956,47 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 
-" ---- renamer ----
-lua require('renamer').setup()
-inoremap <silent> <F2> <cmd>lua require('renamer').rename()<cr>
-nnoremap <silent> <leader>R <cmd>lua require('renamer').rename()<cr>
-vnoremap <silent> <leader>R <cmd>lua require('renamer').rename()<cr>
+" ---- aerial.nvim ----
+" ~/.config/nvim/after/queries/markdown/aerial.scm에 아래 코드 넣어서 treesitter에서 
+" spyder cell이 표시되도록 할것
 
-" ---- outline ----
-autocmd FileType c,cpp,objc nnoremap <silent> <leader>s <cmd>SymbolsOutline<CR>
-lua <<EOF
-vim.g.symbols_outline = {
-    highlight_hovered_item = true,
-    show_guides = true,
-    auto_preview = true,
-    position = 'left',
-    show_numbers = false,
-    show_relative_numbers = false,
-    show_symbol_details = false,
-    keymaps = {
-        close = "<Esc>",
-        goto_location = "<Cr>",
-        focus_location = "o",
-        hover_symbol = "<C-space>",
-        rename_symbol = "r",
-        code_actions = "a",
-    },
-    lsp_blacklist = {"pylsp"},
-    symbol_blacklist = {
-        "File",
-        "Module",
-        "Namespace",
-        "Package",
-        -- "Class",
-        -- "Method",
-        "Property",
-        "Field",
-        "Constructor",
-        "Enum",
-        "Interface",
-        -- "Function",
-        "Variable",
-        -- "Constant",
-        "String", 
-        "Number",
-        "Boolean",
-        "Array",
-        "Object",
-        "Key",
-        "Null",
-        "EnumMember",
-        "Struct",
-        "Event",
-        "Operator",
-        "TypeParameter"
-    }
-}
+" ; extends
+"
+" ((comment) @symbol @name
+"   (#match? @name "^#\\s\\%\\%\\s\\S")
+"   (#gsub! @name "^# %%%% " "")
+"   (#set! "kind" "Constructor"))
+"
+" ((comment) @symbol @name
+"   (#match? @name "^#\\s\\%\\%\\%\\s\\S")
+"   (#gsub! @name "^# %%%%%% " "")
+"   (#set! "kind" "Interface"))
+
+lua << EOF
+local aerial = require("aerial")
+aerial.setup({
+  layout = {
+      placement = "window",
+      default_direction="left",
+      focus = false,
+      win_opts = {winfixwidth = true},
+      min_width = 34
+  },
+  icons = {
+    Constructor = "#",
+    Interface = "##"
+  },
+  on_attach = function(bufnr)
+    -- python 파일은 aerial 키맵을 만들지 않음
+    if vim.bo[bufnr].filetype ~= "python" then
+      -- Jump forwards/backwards with '{' and '}'
+      vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+      vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+      -- Toggle aerial with <leader>s
+      vim.keymap.set("n", "<leader>s", "<cmd>AerialToggle!<CR>", { buffer = bufnr })
+    end
+  end,
+})
 EOF
 
 " ----- black formatter -----
@@ -1201,7 +1221,7 @@ augroup presentation
     au Filetype markdown inoremap <buffer> <F10> <cmd>w<CR><cmd>PresentingStart<CR>
 augroup end
 
-" ----- rainbow-delimieter(color paranthesis) -----
+" ----- rainbow-delimiters(color paranthesis) -----
 lua << EOF
 local rd = require('rainbow-delimiters')
 vim.g.rainbow_delimiters = {
@@ -1215,74 +1235,6 @@ EOF
 
 " ----- Colorizer for hex code -----
 lua require'colorizer'.setup()
-
-" ----- wilder -----
-call wilder#setup({
-      \ 'modes': [':', '/', '?'],
-      \ 'next_key': '<C-n>',
-      \ 'previous_key': '<C-p>',
-      \ 'accept_key': '<Tab>',
-      \ 'reject_key': '<Up>',
-      \ })
-
-call wilder#set_option('pipeline', [
-      \   wilder#branch(
-      \     [
-      \       wilder#check({_, x -> empty(x)}),
-      \       wilder#history(),
-      \       wilder#result({
-      \         'draw': [{_, x -> '  ' . x}],
-      \       }),
-      \     ],
-      \     wilder#substitute_pipeline({
-      \       'pipeline': wilder#python_search_pipeline({
-      \         'skip_cmdtype_check': 1,
-      \         'pattern': wilder#python_fuzzy_pattern({
-      \           'start_at_boundary': 0,
-      \         }),
-      \       }),
-      \     }),
-      \     wilder#cmdline_pipeline({
-      \       'fuzzy': 1,
-      \       'fuzzy_filter': has('nvim') ? wilder#lua_fzy_filter() : wilder#vim_fuzzy_filter(),
-      \     }),
-      \     wilder#python_search_pipeline({
-      \       'pattern': wilder#python_fuzzy_pattern({
-      \         'start_at_boundary': 0,
-      \       }),
-      \     }),
-      \   ),
-      \ ])
-
-let s:highlighters = [
-      \ wilder#pcre2_highlighter(),
-      \ has('nvim') ? wilder#lua_fzy_highlighter() : wilder#cpsm_highlighter(),
-      \ ]
-
-let s:popupmenu_renderer = wilder#popupmenu_renderer({
-      \ 'highlighter': s:highlighters,
-      \ 'left': [
-      \   wilder#popupmenu_devicons(),
-      \   wilder#popupmenu_buffer_flags(),
-      \ ],
-      \ 'right': [
-      \   ' ',
-      \   wilder#popupmenu_scrollbar(),
-      \ ],
-      \ })
-
-let s:wildmenu_renderer = wilder#wildmenu_renderer({
-      \ 'highlighter': s:highlighters,
-      \ 'separator': ' · ',
-      \ 'left': [' ', wilder#wildmenu_spinner(), ' '],
-      \ 'right': [' ', wilder#wildmenu_index()],
-      \ })
-
-call wilder#set_option('renderer', wilder#renderer_mux({
-      \ ':': s:popupmenu_renderer,
-      \ '/': s:popupmenu_renderer,
-      \ 'substitute': s:popupmenu_renderer,
-      \ }))
 
 " ----- which-key -----
 set timeoutlen=500
@@ -1696,3 +1648,80 @@ autocmd FileType python inoremap <buffer> <F4> <cmd>w<CR><cmd>Jaq<CR>
 " run python file
 autocmd FileType python nnoremap <buffer> <s-F5> <cmd>w<CR><cmd>exec '!python' shellescape(@%, 1)<CR>
 autocmd FileType python inoremap <buffer> <s-F5> <cmd>w<CR><cmd>exec '!python' shellescape(@%, 1)<CR>
+
+" ----- IDE layout -----
+" Left column: Aerial(top) + Oil(bottom), keep editor on the right
+lua << EOF
+local api = vim.api
+
+local function find_win_by_filetype(ft)
+  for _, win in ipairs(api.nvim_list_wins()) do
+    local buf = api.nvim_win_get_buf(win)
+    if api.nvim_win_is_valid(win) and vim.bo[buf].filetype == ft then
+      return win
+    end
+  end
+  return nil
+end
+
+local function close_win(win)
+  if win and api.nvim_win_is_valid(win) then pcall(api.nvim_win_close, win, true) end
+end
+
+local function toggle_left_aerial_oil()
+  local win_editor = api.nvim_get_current_win()
+
+  local w_aerial = find_win_by_filetype('aerial')
+  local w_oil    = find_win_by_filetype('oil')
+
+  -- 이미 열려 있으면 두 패널만 닫고 끝
+  if w_aerial or w_oil then
+    close_win(w_oil)
+    close_win(w_aerial)
+    if api.nvim_win_is_valid(win_editor) then api.nvim_set_current_win(win_editor) end
+    return
+  end
+
+  -- 1) Aerial 먼저 열기 (vsplit 만들지 않음)
+  local ok = pcall(function()
+    require('aerial').open({ direction = 'left', focus = false, win_opts = { winfixwidth = true } })
+  end)
+  if not ok then
+    vim.cmd('AerialOpen')
+  end
+
+  -- Aerial 창을 잡아서 맨 왼쪽으로 보내고 폭 고정
+  w_aerial = find_win_by_filetype('aerial')
+  if not w_aerial then
+    return
+  end
+  api.nvim_set_current_win(w_aerial)
+  vim.cmd('wincmd H')                 -- 좌측 끝으로 이동
+  -- vim.cmd('vertical resize 64')       -- Aerial 폭 (원하면 조정), Aerial 윈도 이름이 없어서 조절 불가, aerial setup에서 보완
+  vim.cmd('setlocal winfixwidth')
+
+  -- 2) 같은 컬럼에서 아래로 split -> Oil 배치
+  vim.cmd('belowright split')
+  vim.cmd('resize 42')                -- Oil 높이 (원하면 조정)
+  vim.cmd('Oil')
+  vim.cmd('setlocal winfixwidth')
+
+  -- 3) 포커스를 원래 편집창(오른쪽)으로 복귀
+  if api.nvim_win_is_valid(win_editor) then
+    api.nvim_set_current_win(win_editor)
+  else
+    -- 혹시 편집창 id가 무효면 aerial/oil이 아닌 창으로 이동
+    for _, win in ipairs(api.nvim_list_wins()) do
+      local buf = api.nvim_win_get_buf(win)
+      local ft = vim.bo[buf].filetype
+      if ft ~= 'aerial' and ft ~= 'oil' then
+        api.nvim_set_current_win(win)
+        break
+      end
+    end
+  end
+end
+
+vim.keymap.set('n', '<leader>tl', toggle_left_aerial_oil,
+  { noremap = true, silent = true, desc = 'Left: Aerial(top) + Oil(bottom), Right: editor' })
+EOF
