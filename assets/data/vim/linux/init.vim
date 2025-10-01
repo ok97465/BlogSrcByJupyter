@@ -208,7 +208,35 @@ highlight IncSearch ctermbg=0 guibg=#5cacee               " color of yank
 " ----- oil.nvim -----
 
 lua << EOF
-require('oil').setup()
+require('oil').setup({
+  keymaps = {
+    ["<CR>"] = {
+      function()
+        local oil = require("oil")
+        local entry = oil.get_cursor_entry()
+        if not entry then return end
+
+        -- 1. 디렉토리일 경우: Oil 내에서 이동
+        if entry.type == "directory" then
+          require("oil.actions").select.callback()
+          return
+        end
+
+        -- 2. 파일일 경우: 오른쪽 창에 파일 열기
+        local dir = oil.get_current_dir()
+        local path = dir .. entry.name  -- 현재 디렉토리 + 파일 이름
+
+        -- 오른쪽 창으로 포커스 이동
+        vim.cmd("wincmd l")
+
+        -- 해당 경로 열기
+        vim.cmd("edit " .. vim.fn.fnameescape(path))
+      end,
+      desc = "Open file in adjacent window and keep Oil open",
+    }
+  }
+})
+
 -- Oil을 왼쪽 패널로 토글
 vim.keymap.set("n", "<leader>e", function()
   -- 현재 열려있는 윈도우들 검사
@@ -224,7 +252,7 @@ vim.keymap.set("n", "<leader>e", function()
 
   -- 열려있지 않으면 왼쪽 패널에 열기
   vim.cmd("vertical leftabove 30split")
-  vim.cmd("Oil")
+  vim.cmd("Oil .")
   vim.cmd("setlocal winfixwidth") -- 패널 크기 고정
 end, { desc = "Toggle Oil in left panel" })
 EOF
@@ -435,7 +463,7 @@ require('telescope').setup{
         '%.exe', '%.tar', '%.mp3', '%.mp4', '%.m4a', '%.wav', '%.ogg', '%.pcx',
         '%.bdf', '%.pkg', '%.msu', '%.otf', '%.ttf', 'build/.*', '.git/.*',
         '__pycache__/.*', '.ipynb_checkpoints/.*', '.spyproject/.*', '.idea/.*',
-        'Doxygen/.*', 'MSVC/.*', 'make/.*', '.ccls_cache/.*', 'import_in_console.py',
+        'Doxygen/.*', 'MSVC/.*', 'make/.*', '.ccls_cache/.*',
         'venv/.*', '.venv/.*'}
   }
 }
@@ -1403,6 +1431,7 @@ require("ipybridge").setup(
     python_cmd='python3',
     hidden_var_names={'pi', 'newaxis'},
     hidden_type_names={'ZMQInteractiveShell', 'Axes', 'Figure', 'AxesSubplot'},
+    zmq_debug=false,
 })
 EOF
 autocmd FileType python nnoremap <leader>ifc <cmd>lua require('ipybridge').run_cmd('plt.close("all")')<CR>
@@ -1693,7 +1722,7 @@ local function toggle_left_aerial_oil()
   -- 2) 같은 컬럼에서 아래로 split -> Oil 배치
   vim.cmd('belowright split')
   vim.cmd('resize 42')                -- Oil 높이 (원하면 조정)
-  vim.cmd('Oil')
+  vim.cmd('Oil .')
   vim.cmd('setlocal winfixwidth')
 
   -- 3) 포커스를 원래 편집창(오른쪽)으로 복귀
