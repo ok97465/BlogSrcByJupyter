@@ -89,7 +89,7 @@ Plug 'kana/vim-textobj-user'                                  " Engine Textobj
 Plug 'coachshea/vim-textobj-markdown'                         " Textobj for markdown
 Plug 'junegunn/vim-easy-align'                                " Vim alignment
 Plug 'fisadev/vim-isort'                                      " Sort import statements of python
-Plug 'phaazon/hop.nvim'                                       " easymotion for nvim
+Plug 'smoka7/hop.nvim'                                        " easymotion for nvim
 Plug 'ggandor/leap.nvim'                                      " two ch search
 Plug 'stevearc/oil.nvim'                                      " file explorer
 Plug 'nvim-tree/nvim-web-devicons'                            " File icons for nvim-tree, lualine
