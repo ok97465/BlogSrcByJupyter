@@ -688,8 +688,6 @@ au BufEnter *.md lua require('lint').try_lint()
 " lua require 'lspconfig/health'.check_health()
 
 lua << EOF
-local nvim_lsp = require('lspconfig')
-
   local opts = { noremap=true, silent=true }
   vim.api.nvim_set_keymap('n', '<space>E', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
   vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
@@ -721,25 +719,25 @@ end
 -- map buffer local keybindings when the language server attaches
 local servers = { "pyright", "cmake", "ccls"}
 for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup {
+  vim.lsp.config(lsp, {
     on_attach = on_attach,
     flags = {
       debounce_text_changes = 150,
     }
-  }
+  })
+  vim.lsp.enable(lsp)
 end
 
 ------ json -----
-nvim_lsp.jsonls.setup {
-    cmd = {'vscode-json-language-server.cmd', '--stdio'},
+vim.lsp.config('jsonls', {cmd = {'vscode-json-language-server.cmd', '--stdio'},
     commands = {
       Format = {
         function()
           vim.lsp.buf.format({ async = false })
         end
       }
-    }
-}
+    }})
+vim.lsp.enable('jsonls')
 
 ------ pylsp -----
 -- Window에서는 관리자 권한에서만 수행하여야 한다.
@@ -765,8 +763,7 @@ local function pylsp_light_on_attach(client, bufnr)
   end
 end
 
-require('lspconfig').pylsp.setup{
-  on_attach = pylsp_light_on_attach,   -- ✨ 공용 on_attach 대신 얘만 사용
+vim.lsp.config('pylsp', {on_attach = pylsp_light_on_attach,   -- ✨ 공용 on_attach 대신 얘만 사용
   settings = {
     pylsp = {
       plugins = {
@@ -784,8 +781,8 @@ require('lspconfig').pylsp.setup{
         rope_autoimport = { enabled = false },
       }
     }
-  }
-}
+  }})
+vim.lsp.enable('pylsp')
 EOF
 
 " ----- lspkind -----
@@ -1644,7 +1641,7 @@ EOF
 cnoremap <expr> <CR> v:lua.cmdline_enter()
 
 " ----- Terminal -----
-" tnoremap <c-space> <C-\><C-n>G<C-w>k
+tnoremap <c-space> <C-\><C-n>G<C-w>k
 
 function! OpenTerminal()
     botright split term://zsh
