@@ -124,7 +124,6 @@ Plug 'nvim-neotest/nvim-nio'                                  " required by nvim
 Plug 'rcarriga/cmp-dap'                                       " cmp for dap
 Plug 'theHamsta/nvim-dap-virtual-text'                        " text for debugger
 Plug 'stevearc/aerial.nvim'                                   " Symbol
-Plug 'averms/black-nvim', {'do': ':UpdateRemotePlugins'}      " python formatter
 Plug 'rhysd/vim-clang-format'                                 " c++ formatter
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " preview for markdown
 Plug 'dhruvasagar/vim-table-mode'                             " Markdown Table
@@ -712,7 +711,7 @@ local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>R', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua vim.lsp.buf.format({async=true})<CR>', opts)
 end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
@@ -738,52 +737,119 @@ vim.lsp.config('jsonls', {cmd = {'vscode-json-language-server.cmd', '--stdio'},
       }
     }})
 vim.lsp.enable('jsonls')
-
------- pylsp -----
--- Window에서는 관리자 권한에서만 수행하여야 한다.
-
--- pylsp는 진단/호버 등은 두고, completion/definition만 끈다
-local function pylsp_light_on_attach(client, bufnr)
-  -- 공용 on_attach 호출하지 않음: pylsp가 버퍼 키맵/omnifunc에 간섭하지 않게
-  -- if type(on_attach) == "function" then on_attach(client, bufnr) end  -- <-- 호출 안 함
-
-  -- === pylsp의 기능 중 끄고 싶은 것들 ===
-  client.server_capabilities.completionProvider      = nil   -- ✅ nvim-cmp에 제안 안 들어오게
-  client.server_capabilities.definitionProvider      = false -- 선택: 중복 정의 방지
-  -- 필요하면 더 끄기:
-  -- client.server_capabilities.implementationProvider  = false
-  -- client.server_capabilities.typeDefinitionProvider  = false
-  -- client.server_capabilities.referencesProvider      = false
-  -- client.server_capabilities.signatureHelpProvider   = nil
-
-  -- 구버전 호환(Nvim 0.7대)
-  if client.resolved_capabilities then
-    client.resolved_capabilities.completion = false
-    client.resolved_capabilities.goto_definition = false
-  end
-end
-
-vim.lsp.config('pylsp', {on_attach = pylsp_light_on_attach,   -- ✨ 공용 on_attach 대신 얘만 사용
-  settings = {
-    pylsp = {
-      plugins = {
-        -- 🔒 jedi의 completion 자체를 끄면 더 확실 (벨트+멜빵)
-        jedi_completion = { enabled = false },
-
-        pyflakes = { enabled = true },
-        pydocstyle = { enabled = true, convention = "google" },
-        pycodestyle = { enabled = true, maxLineLength = 88, ignore = {"W503", "E221", "E203"} },
-        pylint =  { enabled = false },
-        pyls_spyder = { enable_block_comments = false, group_cells = false },
-        jedi_symbols = { enabled = true, all_scopes = true, include_import_symbols = false },
-        pyls_flake8 = { enabled = false },
-        pylsp_mypy = { enabled = false, live_mode = false, dmypy = false, strict= false },
-        rope_autoimport = { enabled = false },
-      }
-    }
-  }})
-vim.lsp.enable('pylsp')
 EOF
+
+" ------ pylsp -----
+" -- Window에서는 관리자 권한에서만 수행하여야 한다.
+
+" -- pylsp는 진단/호버 등은 두고, completion/definition만 끈다
+" local function pylsp_light_on_attach(client, bufnr)
+"   -- 공용 on_attach 호출하지 않음: pylsp가 버퍼 키맵/omnifunc에 간섭하지 않게
+"   -- if type(on_attach) == "function" then on_attach(client, bufnr) end  -- <-- 호출 안 함
+
+"   -- === pylsp의 기능 중 끄고 싶은 것들 ===
+"   client.server_capabilities.completionProvider      = nil   -- ✅ nvim-cmp에 제안 안 들어오게
+"   client.server_capabilities.definitionProvider      = false -- 선택: 중복 정의 방지
+"   -- 필요하면 더 끄기:
+"   -- client.server_capabilities.implementationProvider  = false
+"   -- client.server_capabilities.typeDefinitionProvider  = false
+"   -- client.server_capabilities.referencesProvider      = false
+"   -- client.server_capabilities.signatureHelpProvider   = nil
+
+"   -- 구버전 호환(Nvim 0.7대)
+"   if client.resolved_capabilities then
+"     client.resolved_capabilities.completion = false
+"     client.resolved_capabilities.goto_definition = false
+"   end
+" end
+
+" vim.lsp.config('pylsp', {on_attach = pylsp_light_on_attach,   -- ✨ 공용 on_attach 대신 얘만 사용
+"   settings = {
+"     pylsp = {
+"       plugins = {
+"         -- 🔒 jedi의 completion 자체를 끄면 더 확실 (벨트+멜빵)
+"         jedi_completion = { enabled = false },
+
+"         pyflakes = { enabled = true },
+"         pydocstyle = { enabled = true, convention = "google" },
+"         pycodestyle = { enabled = true, maxLineLength = 88, ignore = {"W503", "E221", "E203"} },
+"         pylint =  { enabled = false },
+"         pyls_spyder = { enable_block_comments = false, group_cells = false },
+"         jedi_symbols = { enabled = true, all_scopes = true, include_import_symbols = false },
+"         pyls_flake8 = { enabled = false },
+"         pylsp_mypy = { enabled = false, live_mode = false, dmypy = false, strict= false },
+"         rope_autoimport = { enabled = false },
+"       }
+"     }
+"   }})
+" vim.lsp.enable('pylsp')
+" EOF
+
+" ----- ruff -----
+lua << EOF
+local util = vim.lsp.util
+
+-- Inline configuration passed to Ruff server. This mirrors pyproject/ruff.toml keys.
+-- We enable fix-all on save but exclude F401 from being auto-fixed.
+local ruff_inline_config = {
+  ["line-length"] = 88,
+  ["target-version"] = "py311",
+  lint = {
+    select = { "E", "F", "I", "D", "UP" },
+    ignore = { "E221", "E203" },
+    unfixable = { "F401", "F841" }, -- don't auto-remove unused imports when fixing
+    pydocstyle = {
+      convention = "google",
+    },
+  }
+}
+
+vim.lsp.config('ruff', {
+  cmd = { 'ruff', 'server' },
+  init_options = {
+    settings = {
+      -- Register fixAll/organizeImports capabilities (keep true; we won't call organize on save).
+      fixAll = true,
+      organizeImports = true,
+      -- Provide inline configuration so it applies even without a pyproject.toml
+      configuration = ruff_inline_config,
+    },
+  },
+  -- root_dir = util.root_pattern("pyproject.toml", "ruff.toml", ".git"),
+  on_attach = function(client, bufnr)
+    -- Use Ruff for diagnostics/formatting; if you also attach Pyright, you may disable hover here.
+    -- client.server_capabilities.hoverProvider = false
+  end,
+})
+
+vim.lsp.enable('ruff')
+
+-- Save-time: apply Ruff's "source.fixAll" first, then format.
+-- We do NOT call organizeImports here, so imports are only affected by fixAll rules,
+-- which we've configured to exclude F401 from fixing.
+local group = vim.api.nvim_create_augroup("RuffFixAndFormatOnSave", { clear = true })
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = group,
+  pattern = "*.py",
+  callback = function(args)
+    -- 1) Ask Ruff for fixAll and apply automatically
+    local params = vim.lsp.util.make_range_params()
+    params.context = { only = { "source.fixAll" } }
+    -- Use the new vim.lsp.buf.code_action API with apply=true (NVIM 0.10+)
+    local ok = pcall(vim.lsp.buf.code_action, {
+      context = { only = { "source.fixAll" } },
+      apply = true,
+    })
+    -- 2) Format with Ruff (blocking to ensure it's applied before write)
+    pcall(vim.lsp.buf.format, {
+        bufnr = args.buf,
+        timeout_ms = 2000,
+        filter = function(client) return client.name == "ruff" end,
+    })
+  end,
+})
+EOF
+
 
 " ----- lspkind -----
 lua << EOF
@@ -1023,9 +1089,6 @@ aerial.setup({
   end,
 })
 EOF
-
-" ----- black formatter -----
-autocmd FileType python nnoremap <buffer> <Leader>f <cmd>call Black()<CR>
 
 " ----- json format -----
 function! FormatJson()
