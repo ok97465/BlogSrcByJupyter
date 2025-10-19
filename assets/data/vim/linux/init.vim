@@ -103,9 +103,9 @@ Plug 'nvim-lualine/lualine.nvim'                              " Status bar
 Plug 'akinsho/bufferline.nvim'                                " Buffer line
 Plug 'folke/zen-mode.nvim'                                    " Zen mode
 Plug 'simeji/winresizer'                                      " window resizer
+Plug 'neovim/nvim-lspconfig'
 Plug 'mfussenegger/nvim-lint'                                 " lint language that lspconfig doesn't support
 Plug 'onsails/lspkind-nvim'                                   " add icon to nvim-cmp
-Plug 'neovim/nvim-lspconfig'                                  " Language server
 Plug 'hrsh7th/cmp-nvim-lsp'                                   " Integrate nvim-lsp info with nvim-cmp
 Plug 'hrsh7th/cmp-buffer'                                     " Integrate buffer info with nvim-cmp
 Plug 'hrsh7th/cmp-path'                                       " Integrate filsystem info with nvim-cmp
@@ -126,7 +126,6 @@ Plug 'theHamsta/nvim-dap-virtual-text'                        " text for debugge
 Plug 'stevearc/aerial.nvim'                                   " Symbol
 Plug 'rhysd/vim-clang-format'                                 " c++ formatter
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  } " preview for markdown
-Plug 'dhruvasagar/vim-table-mode'                             " Markdown Table
 Plug 'sotte/presenting.vim'                                   " Presentation
 Plug 'HiPhish/rainbow-delimiters.nvim'                        " color for parantheses
 Plug 'NvChad/nvim-colorizer.lua'                            " colorizer for hex code
@@ -145,6 +144,7 @@ Plug 'ok97465/telescope-py-outline.nvim'                      " python outline
 Plug 'ok97465/py-autoimport.nvim'                             " python import from list
 Plug 'ok97465/py-autodoc.nvim'                                " python auto docstring
 Plug 'ok97465/ipybridge.nvim'                                 " IPython module like spyder-ide
+Plug 'ok97465/markdown_table.nvim'                            " Table
 
 call plug#end()
 
@@ -716,7 +716,7 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { "pyright", "cmake", "ccls"}
+local servers = {"cmake", "ccls"}
 for _, lsp in ipairs(servers) do
   vim.lsp.config(lsp, {
     on_attach = on_attach,
@@ -737,6 +737,39 @@ vim.lsp.config('jsonls', {cmd = {'vscode-json-language-server.cmd', '--stdio'},
       }
     }})
 vim.lsp.enable('jsonls')
+
+local caps = vim.lsp.protocol.make_client_capabilities()
+caps = require('cmp_nvim_lsp').default_capabilities(caps)
+
+vim.lsp.config('pyright', {
+  capabilities = caps, 
+  flags = {
+    debounce_text_changes = 150,
+  },
+  on_attach = on_attach,
+  settings = {
+    python = {
+      analysis = {
+        typeCheckingMode = "basic", -- 필요 시 "strict"
+        autoImportCompletions = true,
+        diagnosticMode = "openFilesOnly",
+
+        -- ⚡ lint 관련 진단을 끔
+        diagnosticSeverityOverrides = {
+          reportUnusedImport = "none",
+          reportUnusedVariable = "none",
+          reportUnusedFunction = "none",
+          reportGeneralTypeIssues = "none",
+          reportOptionalSubscript = "none",
+          reportOptionalMemberAccess = "none",
+          reportMissingImports = "none",
+        },
+      },
+    },
+  },
+}
+)
+vim.lsp.enable('pyright')
 EOF
 
 " ------ pylsp -----
@@ -785,6 +818,7 @@ EOF
 " vim.lsp.enable('pylsp')
 " EOF
 
+
 " ----- ruff -----
 lua << EOF
 local util = vim.lsp.util
@@ -806,6 +840,9 @@ local ruff_inline_config = {
 
 vim.lsp.config('ruff', {
   cmd = { 'ruff', 'server' },
+  flags = {
+    debounce_text_changes = 150,
+  },
   init_options = {
     settings = {
       -- Register fixAll/organizeImports capabilities (keep true; we won't call organize on save).
@@ -818,7 +855,7 @@ vim.lsp.config('ruff', {
   -- root_dir = util.root_pattern("pyproject.toml", "ruff.toml", ".git"),
   on_attach = function(client, bufnr)
     -- Use Ruff for diagnostics/formatting; if you also attach Pyright, you may disable hover here.
-    -- client.server_capabilities.hoverProvider = false
+    client.server_capabilities.hoverProvider = false
   end,
 })
 
@@ -842,6 +879,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     })
     -- 2) Format with Ruff (blocking to ensure it's applied before write)
     pcall(vim.lsp.buf.format, {
+        async=false,
         bufnr = args.buf,
         timeout_ms = 2000,
         filter = function(client) return client.name == "ruff" end,
@@ -1293,7 +1331,40 @@ autocmd FileType markdown nnoremap <buffer><leader>b <cmd>w<cr><cmd>MarkdownPrev
 " let g:mkdp_highlight_css = '/home/ok97465/.vim/github_ok97465_code.css'
 
 " ----- Table mode ------
-let g:table_mode_tableize_map = "<leader>()"
+lua << EOF
+require("markdown_table").setup({
+  highlight = true,        -- toggle table highlighting
+  highlight_group = "CursorLine", -- highlight group used for extmarks
+  auto_align = true,       -- enable InsertLeave/TextChanged auto-alignment
+  debounce_ms = 120,       -- delay (ms) before auto alignment runs
+})
+
+local map = vim.keymap.set
+local opts = { silent = true, desc = '' }
+
+map('n', '<leader>tm', function()
+  vim.cmd('MarkdownTableToggle')
+end, vim.tbl_extend('force', opts, { desc = 'Toggle table mode' }))
+
+map('n', '<leader>tdc', function()
+  vim.cmd('MarkdownTableColumnDelete')
+end, vim.tbl_extend('force', opts, { desc = 'Delete table column' }))
+
+map('n', '<leader>tic', function()
+  vim.cmd('MarkdownTableColumnInsertLeft')
+end, vim.tbl_extend('force', opts, { desc = 'Insert column left' }))
+
+map('n', '<leader>tac', function()
+  vim.cmd('MarkdownTableColumnInsertRight')
+end, vim.tbl_extend('force', opts, { desc = 'Insert column right' }))
+
+local table_mode = require("markdown_table")
+map("n", "[t", table_mode.move_cell_left, { desc = "Markdown table: previous cell" })
+map("n", "]t", table_mode.move_cell_right, { desc = "Markdown table: next cell" })
+
+EOF
+
+" let g:table_mode_tableize_map = "<leader>()"
 " <leader>tm    ---> table mode toggle
 " <leader>tdd   ---> delete row
 " <leader>tdc   ---> delete col
