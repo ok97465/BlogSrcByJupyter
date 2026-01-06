@@ -116,7 +116,6 @@ Plug 'hrsh7th/cmp-vsnip'                                      " Integrate vim-vs
 Plug 'hrsh7th/vim-vsnip'                                      " vim-vsnip
 Plug 'ray-x/lsp_signature.nvim'                               " Show function signature when you type
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " Code highlight
-Plug 'nvim-treesitter/playground'                        " Code highlight
 Plug 'filipdutescu/renamer.nvim', { 'branch': 'master' }      " UI for rename
 Plug 'mfussenegger/nvim-dap'                                  " debugger
 Plug 'rcarriga/nvim-dap-ui'                                   " debugger ui
@@ -567,7 +566,11 @@ onoremap <silent> <leader>l <cmd>HopChar1<cr>
 onoremap <silent> <leader>h <cmd>HopChar2<cr>
 
 " ----- leap.nvim -----
-lua require('leap').add_default_mappings()
+lua << EOF
+vim.keymap.set({ "n", "x", "o" }, "s",  "<Plug>(leap-forward)", { silent = true })
+vim.keymap.set({ "n", "x", "o" }, "S",  "<Plug>(leap-backward)", { silent = true })
+vim.keymap.set({ "n", "x", "o" }, "gs", "<Plug>(leap-from-window)", { silent = true })
+EOF
 autocmd ColorScheme * lua require('leap').init_highlight(true)
 
 " ----- lualine -----
@@ -959,6 +962,7 @@ lua <<EOF
       ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
     }),
     sources = cmp.config.sources({
+      { name = 'ipybridge_debug_hint' },
       { name = 'nvim_lsp' },
       { name = 'vsnip' }, -- For vsnip users.
       { name = 'buffer', keyword_length=4 }, -- For vsnip users.
@@ -1065,24 +1069,39 @@ EOF
 
 " ---- treesitter ----
 lua <<EOF
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = {
-  "c", "cpp", "python", "cuda", "lua", "json", "cmake", "markdown", "markdown_inline", "vim", "vimdoc", "yaml", "bash", "html", "javascript", "typescript", "css", "rust", "go", "java", "jsonc","toml"
-  },
-  ignore_install = {}, -- List of parsers to ignore installing
-  auto_install = false,
-  sync_install = false,
-  highlight = {
-    enable = true,              -- false will disable the whole extension
-    disable = { },  -- list of language that will be disabled
-    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-    -- Using this option may slow down your editor, and you may see some duplicate highlights.
-    -- Instead of true it can also be a list of languages
-    additional_vim_regex_highlighting = false,
-  },
-  indent = {enable = true},
+local ts = require('nvim-treesitter')
+
+-- 필요한 파서/쿼리를 "설치 요청"합니다. (이미 설치돼 있으면 no-op)
+ts.install({
+  "c", "cpp", "python", "cuda", "lua", "json", "cmake",
+  "markdown", "markdown_inline", "vim", "vimdoc", "yaml", "bash",
+  "html", "javascript", "typescript", "css", "rust", "go", "java",
+  "toml",
+})
+
+-- 예전 highlight.enable=true / indent.enable=true 대체:
+-- main 브랜치에서는 각 FileType에서 Neovim 내장 API로 직접 켜야 합니다.
+-- 하이라이트: vim.treesitter.start()
+-- 인덴트(실험적): vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+local fts = {
+  "c", "cpp", "python", "cuda", "lua", "json", "cmake",
+  "markdown", "vim", "vimdoc", "yaml", "bash",
+  "html", "javascript", "typescript", "css", "rust", "go", "java",
+  "jsonc", "toml",
 }
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = fts,
+  callback = function(args)
+    -- 하이라이트 시작 (기본적으로 legacy regex syntax highlighting을 꺼줍니다)
+    -- 필요하면 start() 뒤에 vim.bo[args.buf].syntax = 'ON' 으로 다시 켤 수 있어요.
+    pcall(vim.treesitter.start, args.buf)
+
+    -- 인덴트 (문제 생기면 이 줄만 주석 처리하거나,
+    -- 특정 ft에서만 켜도록 pattern을 줄이세요)
+    vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+  end,
+})
 EOF
 
 " ---- aerial.nvim ----
@@ -1557,14 +1576,23 @@ EOF
 lua << EOF
 require("ipybridge").setup(
 {
-    matplotlib_backend="qt",
-    prefer_runcell_magic=true,
+    matplotlib_backend="inline",
     exec_cwd_mode='pwd',
     ipython_colors='Linux',
     python_cmd='python',
     hidden_var_names={'pi', 'newaxis'},
     hidden_type_names={'ZMQInteractiveShell', 'Axes', 'Figure', 'AxesSubplot'},
     zmq_debug=false,
+    plot_viewer = {
+		mode = "browser",
+		auto_open = true,
+		history = 40,
+	},
+	debugfile_auto_imports = "import matplotlib.pyplot as plt;import numpy as np;",
+    completion = {
+    engine_priority = {"nvim-cmp"}, -- prefer blink when both are present
+    -- engine_priority = {}, -- prefer blink when both are present
+  },
 })
 EOF
 autocmd FileType python nnoremap <leader>ifc <cmd>lua require('ipybridge').run_cmd('plt.close("all")')<CR>
